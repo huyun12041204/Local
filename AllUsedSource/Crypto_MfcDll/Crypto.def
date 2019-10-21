@@ -1,0 +1,60 @@
+; Crypto.def : Declares the module parameters for the DLL.
+
+LIBRARY      "Crypto"
+DESCRIPTION  'Crypto Windows Dynamic Link Library'
+
+EXPORTS
+    ; Explicit exports can go here
+
+    A3A8                       @1
+    Stephi                     @2
+    Feal32                     @3
+                               
+    InitAKey                   @4
+    InitSSD_A                  @5
+    InitSSD_B                  @6
+    InitESN                    @7
+    A_Key_Verify               @8
+    SSD_Generation             @9
+    Auth_Signature             @10
+    UpdateSSD                  @11
+    Key_VPM_Generation         @12
+    MD5_Hash                   @13
+                               
+    MD5_Init                   @14
+    MD5_Update                 @15
+    MD5_Final                  @16
+                               
+    crc_16                     @17
+                               
+    Milenage_Set_C             @18
+    Milenage_Set_R             @19
+    Milenage_Set_OP            @20
+    Milenage_Set_OP_c          @21
+    Milenage_Set_OP_Ind        @22
+    Milenage_f1                @23 
+    Milenage_f1star            @24
+    Milenage_f2345             @25
+    Milenage_f5star            @26
+    Milenage_Generate_SRES     @27
+    Milenage_Generate_Kc       @28
+    Milenage_Compute_OP_c      @29
+	des                        @30
+	triple_des                 @31
+    hash                       @32
+    hmac                       @33
+    KDF1                       @34
+    KDF2                       @35
+	KDF                        @36
+	dochmac                    @37
+	crc_32                     @38
+    DocMilenage_f1             @39
+DocMilenage_f1star             @40
+    DocMilenage_f2             @41
+    DocMilenage_f3             @42
+    DocMilenage_f4             @43
+    DocMilenage_f5             @44
+DocMilenage_f5star             @45
+DocMilenage_f345               @46
+GenerateChallenge              @47
+GenerateRandom                 @48

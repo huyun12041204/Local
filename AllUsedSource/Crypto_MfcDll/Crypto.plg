@@ -1,0 +1,119 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: Crypto - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\Users\hum\AppData\Local\Temp\RSPFE8A.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_MBCS" /D "_USRDLL" /Fp"Release/Crypto.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\c_cave.cpp"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\c_feal32.cpp"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\c_stephi.cpp"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\CaveFunc.cpp"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\Comp128.cpp"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\CRC.CPP"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\crc32.cpp"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\Crypto.cpp"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\Des.cpp"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\DocMilenageFunc.cpp"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\GenerateChallenge.cpp"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\hash.cpp"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\kdf.cpp"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\MD5.cpp"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\MD5Func.cpp"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\MilenageFunc.cpp"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\PHS.CPP"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\rmd160.cpp"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\sha1.cpp"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\sha2.cpp"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\UNI_Aut_Algorithm.cpp"
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\UNI_Aut_Utilities.cpp"
+]
+Creating command line "cl.exe @C:\Users\hum\AppData\Local\Temp\RSPFE8A.tmp" 
+Creating temporary file "C:\Users\hum\AppData\Local\Temp\RSPFE8B.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_MBCS" /D "_USRDLL" /Fp"Release/Crypto.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\Users\hum\AppData\Local\Temp\RSPFE8B.tmp" 
+Creating temporary file "C:\Users\hum\AppData\Local\Temp\RSPFE8C.tmp" with contents
+[
+/nologo /subsystem:windows /dll /incremental:no /pdb:"Release/Crypto.pdb" /machine:I386 /def:".\Crypto.def" /out:"Release/Crypto.dll" /implib:"Release/Crypto.lib" 
+.\Release\c_cave.obj
+.\Release\c_feal32.obj
+.\Release\c_stephi.obj
+.\Release\CaveFunc.obj
+.\Release\Comp128.obj
+.\Release\CRC.OBJ
+.\Release\crc32.obj
+.\Release\Crypto.obj
+.\Release\Des.obj
+.\Release\DocMilenageFunc.obj
+.\Release\GenerateChallenge.obj
+.\Release\hash.obj
+.\Release\kdf.obj
+.\Release\MD5.obj
+.\Release\MD5Func.obj
+.\Release\MilenageFunc.obj
+.\Release\PHS.OBJ
+.\Release\rmd160.obj
+.\Release\sha1.obj
+.\Release\sha2.obj
+.\Release\StdAfx.obj
+.\Release\UNI_Aut_Algorithm.obj
+.\Release\UNI_Aut_Utilities.obj
+.\Release\Crypto.res
+]
+Creating command line "link.exe @C:\Users\hum\AppData\Local\Temp\RSPFE8C.tmp"
+<h3>Output Window</h3>
+Compiling...
+StdAfx.cpp
+Compiling...
+c_cave.cpp
+c_feal32.cpp
+c_stephi.cpp
+CaveFunc.cpp
+Comp128.cpp
+CRC.CPP
+C:\GIT\Local_\AllUsedSource\Crypto_MfcDll\CRC.CPP(88) : warning C4018: '<' : signed/unsigned mismatch
+crc32.cpp
+Crypto.cpp
+Des.cpp
+DocMilenageFunc.cpp
+GenerateChallenge.cpp
+hash.cpp
+kdf.cpp
+MD5.cpp
+MD5Func.cpp
+MilenageFunc.cpp
+PHS.CPP
+rmd160.cpp
+sha1.cpp
+sha2.cpp
+Generating Code...
+Compiling...
+UNI_Aut_Algorithm.cpp
+UNI_Aut_Utilities.cpp
+Generating Code...
+Linking...
+   Creating library Release/Crypto.lib and object Release/Crypto.exp
+
+
+
+<h3>Results</h3>
+Crypto.dll - 0 error(s), 1 warning(s)
+<h3>
+--------------------Configuration: Crypto - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+Crypto.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

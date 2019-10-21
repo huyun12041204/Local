@@ -1,0 +1,433 @@
+// Microsoft Visual C++ generated resource script.
+//
+#pragma code_page(65001)
+
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 中文(简体，中国) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
+    "LANGUAGE 4, 2\r\n"
+    "#pragma code_page(936)\r\n"
+    "#include ""res\\RunLog.rc2""  // 非 Microsoft Visual C++ 编辑的资源\r\n"
+    "#include ""afxres.rc""     // 标准组件\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\RunLog.ico"
+
+IDI_DIRIco              ICON                    "res\\DIR.ico"
+
+IDI_PathIco             ICON                    "res\\Path.ico"
+
+IDI_RightIco            ICON                    "res\\Sright.ico"
+
+IDI_WrongIco            ICON                    "res\\Swrong.ico"
+
+IDI_FileIco             ICON                    "res\\File.ico"
+
+IDI_ArrowIco            ICON                    "res\\arrow.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 235, 61
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "关于 RunLog"
+FONT 9, "宋体", 0, 0, 0x1
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "RunLog 1.10",IDC_STATIC,44,10,119,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) MW H                     2019/10/17",IDC_STATIC,44,25,76,23
+    DEFPUSHBUTTON   "确定",IDOK,178,7,50,16,WS_GROUP
+END
+
+IDD_RUNLOG_DIALOG DIALOGEX 0, 0, 700, 501
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "RunLog"
+MENU IDR_MENU1
+FONT 9, "宋体", 0, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_CTLOG_Edit,"RichEdit20A",ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_NOHIDESEL | ES_READONLY | ES_WANTRETURN | WS_BORDER | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP,245,50,300,400
+    EDITTEXT        IDC_CurrentSend_Edit,580,150,90,70,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN
+    EDITTEXT        IDC_CurrentResponse_Edit,580,393,90,58,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN
+    COMBOBOX        IDC_ReaderList_Combo,30,10,192,54,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Connect",IDC_Connect_Button,240,10,44,13
+    EDITTEXT        IDC_ExpectReponse_Edit,580,255,90,58,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN
+    EDITTEXT        IDC_ExpectSW_Edit,580,325,50,15,ES_AUTOHSCROLL
+    GROUPBOX        "测试内容",IDC_STATIC_Line,10,30,550,458
+    LTEXT           "卡片未连接",IDC_CardStatuse,10,490,50,8,WS_DISABLED
+    LTEXT           "Card ATR :",IDC_CardATR,20,455,200,18,WS_DISABLED
+    EDITTEXT        IDC_CurrentSW_Edit,580,463,50,15,ES_AUTOHSCROLL
+    PUSHBUTTON      "停止测试",IDC_Stop,580,70,90,15
+    CONTROL         "",IDC_TREE1,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | TVS_CHECKBOXES | TVS_TRACKSELECT | WS_BORDER | WS_HSCROLL | WS_TABSTOP,20,50,200,400
+    PUSHBUTTON      "暂停",IDC_Pause,630,90,40,15
+    CONTROL         "",IDC_PROGRESS1,"msctls_progress32",WS_BORDER,245,455,300,10
+    CONTROL         "",IDC_PROGRESS2,"msctls_progress32",WS_BORDER,245,470,300,10
+    PUSHBUTTON      "继续",IDC_Restore,580,90,40,15
+    LTEXT           "Send",IDC_STATIC4,580,140,30,10
+    LTEXT           "Response",IDC_STATIC5,580,383,63,10
+    LTEXT           "Response",IDC_STATIC6,580,245,34,10
+    LTEXT           "SW",IDC_STATIC7,580,453,23,10
+    LTEXT           "SW",IDC_STATIC8,580,315,53,10
+    PUSHBUTTON      "退出",IDC_Exit_Button,630,110,40,15
+    PUSHBUTTON      "执行一步",IDC_OneStep,580,110,40,15
+    LTEXT           "00:00:00",IDC_Times,175,490,40,8,WS_DISABLED
+    LTEXT           "运行时间：",IDC_STATIC_TIME,125,490,40,8,WS_DISABLED
+    LTEXT           "当前行数",IDC_CurrentRow,245,490,40,8,WS_DISABLED
+    LTEXT           "当前文件为空",IDC_CurrentFile,300,490,260,8,WS_DISABLED
+    PUSHBUTTON      "开始测试",IDC_StartCase,580,50,90,15
+    GROUPBOX        "Expect",IDC_ExpectLine,570,230,110,120
+    GROUPBOX        "Recieve",IDC_RecieveLine,570,368,110,120
+END
+
+IDD_InputDlg DIALOGEX 0, 0, 300, 150
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Input Key"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,185,126,50,14
+    PUSHBUTTON      "取消",IDCANCEL,240,126,50,14
+    CONTROL         "",IDC_LIST3,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,10,10,280,100
+    EDITTEXT        IDC_EDIT1,10,127,50,13,ES_AUTOHSCROLL | NOT WS_BORDER,WS_EX_TRANSPARENT
+END
+
+IDD_ManageSSDDlg DIALOGEX 0, 0, 350, 200
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Manage SSD"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_Result_Edit,10,70,200,120,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL
+    EDITTEXT        IDC_AKey_Edit,60,15,120,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_IMSI_M_Edit,60,30,120,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_UMID_ESN_Edit,60,45,120,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_Challage_Edit,230,15,100,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "计算ComfigSSD",IDC_Calculator_Button,240,90,80,12
+    EDITTEXT        IDC_RandSSD_Edit,230,30,100,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "卡片获取数据",IDC_GetData_Button,240,70,80,12
+    PUSHBUTTON      "执行结果",IDC_RunCommand_Button,240,110,80,12
+    LTEXT           "AKey",IDC_STATIC,15,15,37,12
+    LTEXT           "IMSI_M",IDC_STATIC,15,30,29,12
+    LTEXT           "UMID/ESN",IDC_STATIC,15,45,40,12
+    LTEXT           "Rand/Seed",IDC_STATIC,190,15,37,12
+    LTEXT           "SSDRand",IDC_STATIC,190,30,37,12
+END
+
+IDD_PathDlg DIALOGEX 0, 0, 309, 176
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Path"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,198,155,50,14
+    PUSHBUTTON      "取消",IDCANCEL,252,155,50,14
+    CONTROL         "",IDC_MFCEDITBROWSE1,"MfcEditBrowse",WS_BORDER | WS_TABSTOP | 0x80,20,30,253,14
+    LTEXT           "Log Path",IDC_STATIC,20,20,63,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,1,0
+ PRODUCTVERSION 1,0,1,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080403a8"
+        BEGIN
+            VALUE "CompanyName", "Giesecke&Devrient"
+            VALUE "FileDescription", "运行测试LOG"
+            VALUE "FileVersion", "1.0.1.0"
+            VALUE "InternalName", "RunLog.exe"
+            VALUE "LegalCopyright", "Maiowei Hu"
+            VALUE "OriginalFilename", "RunLog.exe"
+            VALUE "ProductName", "RunLog.exe"
+            VALUE "ProductVersion", "1.0.1.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 936
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 54
+    END
+
+    IDD_RUNLOG_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 10
+        RIGHTMARGIN, 690
+        TOPMARGIN, 10
+        HORZGUIDE, 10
+    END
+
+    IDD_InputDlg, DIALOG
+    BEGIN
+        LEFTMARGIN, 10
+        RIGHTMARGIN, 290
+        TOPMARGIN, 10
+        BOTTOMMARGIN, 140
+    END
+
+    IDD_ManageSSDDlg, DIALOG
+    BEGIN
+        LEFTMARGIN, 10
+        RIGHTMARGIN, 343
+        TOPMARGIN, 10
+        BOTTOMMARGIN, 193
+    END
+
+    IDD_PathDlg, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 302
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 169
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU
+BEGIN
+    POPUP "文件"
+    BEGIN
+        POPUP "打开"
+        BEGIN
+            MENUITEM "电信日志文件",                      ID_OpenCTLOG
+            MENUITEM "电信日志目录",                      ID_OpenDIR
+            MENUITEM "移动日志文件",                      ID_OpenCMCCLog
+            MENUITEM "移动日志列表文件",                    ID_OpenCMCCList
+            MENUITEM "抓包文件",                        ID_CatchLog
+            MENUITEM "转接文件",                        ID_ConvertionLog
+            MENUITEM "北京大抓包TXT",                    ID_BJ_LOG
+        END
+    END
+    POPUP "读卡器"
+    BEGIN
+        MENUITEM "PCSC",                        ID_PCSC_Reader, CHECKED
+        MENUITEM "CCR5",                        ID_CCR5_Reader
+        MENUITEM "STM（安全模式）",                   ID_Other_Reader
+    END
+    POPUP "运行"
+    BEGIN
+        MENUITEM "单个脚本",                        ID_1_Script
+        MENUITEM "整个目录",                        ID_All_List
+        MENUITEM SEPARATOR
+        MENUITEM "暂停",                          ID_MenuParse, INACTIVE
+        MENUITEM "继续",                          ID_MenuRestore, INACTIVE
+        MENUITEM "停止",                          ID_MenuStop, INACTIVE
+    END
+    POPUP "设置"
+    BEGIN
+        MENUITEM "运行记录",                        ID_WriteLoG, CHECKED
+        MENUITEM "出错停止",                        ID_WrongPause, CHECKED
+        MENUITEM "记录指令时间",                      ID_WriteRunTime
+        POPUP "校验等级"
+        BEGIN
+            MENUITEM "1(只完整校验ED ES)",               ID_Leve1, CHECKED
+            MENUITEM "2(没有ED ES,则完整校验AD AS)",       ID_Leve2
+            MENUITEM "3(校验ED ES，和SendMessage)",     ID_Leve3
+            MENUITEM "4(..)",                       ID_Leve4, INACTIVE
+            MENUITEM "5(..)",                       ID_Leve5, INACTIVE
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "默认设置",                        ID_DefaultSetting
+        MENUITEM "路径设置",                        ID_Path_Setting_Button
+    END
+    POPUP "调整"
+    BEGIN
+        POPUP "指令调整"
+        BEGIN
+            MENUITEM "0x10(TeminalProfile)",        ID_ADJ_0x10, CHECKED
+            MENUITEM "0x12(Fetch)",                 ID_ADJ_0x12, CHECKED
+            MENUITEM "0x14(TeminalResponse)",       ID_ADJ_0x14, CHECKED
+            MENUITEM "0x82(Manage SSD)",            ID_ADJ_0x82, CHECKED
+            MENUITEM "0xC0(Get Response)",          ID_ADJ_0xC0, CHECKED
+            MENUITEM "0xF2(Status)",                ID_ADJ_0xF2, CHECKED
+            MENUITEM SEPARATOR
+            MENUITEM "参数(Fetch)",                   ID_Para_0x12
+            MENUITEM "参数(Manage SSD)",              ID_Para_0x82
+            MENUITEM SEPARATOR
+        END
+        POPUP "返回调整"
+        BEGIN
+            MENUITEM "0x32(Increate)",              ID_ADJ_Res_0x32
+            MENUITEM "0x84(Get Challenge)",         ID_ADJ_Res_0x84
+            MENUITEM "0x8A(Basic Challenge)",       ID_ADJ_Res_0x8A
+            MENUITEM "0xA4(Select)",                ID_ADJ_Res_0xA4
+        END
+        POPUP "STK调整"
+        BEGIN
+            MENUITEM "开机调整",                        ID_STK_StartUp
+        END
+    END
+    POPUP "工具"
+    BEGIN
+        POPUP "UIM"
+        BEGIN
+            MENUITEM "Update/Comfirm SSD",          ID_UIM_UPDATESSD
+        END
+        POPUP "CSIM"
+        BEGIN
+            MENUITEM "Manage SSD",                  ID_CSIM_MANAGESSD
+        END
+    END
+    POPUP "帮助"
+    BEGIN
+        MENUITEM "关于",                          ID_About
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_PathDlg DLGINIT
+BEGIN
+    IDC_MFCEDITBROWSE1, 0x37c, 42, 0
+0x4d3c, 0x4346, 0x6445, 0x7469, 0x7242, 0x776f, 0x6573, 0x4d5f, 0x646f, 
+0x3e65, 0x3c32, 0x4d2f, 0x4346, 0x6445, 0x7469, 0x7242, 0x776f, 0x6573, 
+0x4d5f, 0x646f, 0x3e65, 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_PathDlg AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTBOX            "关于 RunLog(&A)..."
+END
+
+#endif    // 中文(简体，中国) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE 4, 2
+#pragma code_page(936)
+#include "res\RunLog.rc2"  // 非 Microsoft Visual C++ 编辑的资源
+#include "afxres.rc"     // 标准组件
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
