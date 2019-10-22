@@ -85,6 +85,12 @@
     <ClInclude Include="OutputWnd.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="EventList.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="WaveView.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BitsAnalyser.cpp">
@@ -103,6 +109,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="OutputWnd.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="EventList.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="WaveView.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

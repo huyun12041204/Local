@@ -106,7 +106,7 @@ BOOL CBitsAnalyserApp::InitInstance()
 	SetRegistryKey(_T("BitsAnalyser"));
 	LoadStdProfileSettings(4);  // 加载标准 INI 文件选项(包括 MRU)
 
-	InstallFont();
+	//InstallFont();
 
 
 	InitContextMenuManager();

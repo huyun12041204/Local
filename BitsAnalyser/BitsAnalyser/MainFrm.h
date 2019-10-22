@@ -14,6 +14,8 @@
 
 #pragma once
 #include "OutputWnd.h"
+#include "EventList.h"
+#include "WaveView.h"
 #include "lusb0_usb.h"
 #include "BitsAnalyserView.h"
 
@@ -77,6 +79,9 @@ protected:  // 控件条嵌入成员
 
 
 	COutputWnd           m_wndOutput;
+	CEventList           m_wndEventList;
+	CWaveView            m_wndWaveView;
+
 
 
 	CWinThread * GetBitThread;
@@ -98,6 +103,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 	
+	BOOL CreateRibbon();
+	BOOL CreateStatueBar();
 	BOOL CreateDockingWindows();
 	void SetDockingWindowIcons(BOOL bHiColorIcons);
 public:

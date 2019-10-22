@@ -308,12 +308,65 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CFrameWndEx::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
-	BOOL bNameValid;
+
 	// 基于持久值设置视觉管理器和样式
 	OnApplicationLook(theApp.m_nAppLook);
 
+
+	CreateRibbon();
+
+	CreateStatueBar();
+
+
+
+	// 启用 Visual Studio 2005 样式停靠窗口行为
+	CDockingManager::SetDockingMode(DT_SMART);
+	// 启用 Visual Studio 2005 样式停靠窗口自动隐藏行为
+	EnableAutoHidePanes(CBRS_ALIGN_ANY);
+
+	// 创建停靠窗口
+	if (!CreateDockingWindows())
+	{
+		TRACE0("未能创建停靠窗口\n");
+		return -1;
+	}
+
+	m_wndOutput.EnableDocking(CBRS_ALIGN_ANY);
+	DockPane(&m_wndOutput);
+
+	m_wndEventList.EnableDocking(CBRS_ALIGN_ANY);
+	DockPane(&m_wndEventList);
+
+	m_wndWaveView.EnableDocking(CBRS_ALIGN_ANY);
+	DockPane(&m_wndWaveView);
+	//自定义参数进行初始化
+	__Init();
+	return 0;
+}
+
+BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
+{
+	if( !CFrameWndEx::PreCreateWindow(cs) )
+		return FALSE;
+	// TODO: 在此处通过修改
+	//  CREATESTRUCT cs 来修改窗口类或样式
+
+	return TRUE;
+}
+
+
+BOOL CMainFrame::CreateRibbon()
+{
 	m_wndRibbonBar.Create(this);
 	m_wndRibbonBar.LoadFromResource(IDR_RIBBON);
+
+	return TRUE;
+}
+
+BOOL CMainFrame::CreateStatueBar()
+{
+
+	BOOL bNameValid;
 
 	if (!m_wndStatusBar.Create(this))
 	{
@@ -334,46 +387,15 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//m_wndStatusBar.AddExtendedElement(new CMFCRibbonStatusBarPane(ID_STATUSBAR_PANE2, strTitlePane2, TRUE), strTitlePane2);
 	//m_Progress.Create(this);
 
-	m_Progress = new CMFCRibbonProgressBar(ID_STATUSBAR_PANE1,300,22);
-	m_Progress->SetRange(0,300);
+	m_Progress = new CMFCRibbonProgressBar(ID_STATUSBAR_PANE1, 300, 22);
+	m_Progress->SetRange(0, 300);
 	m_Progress->SetPos(0);
-	m_wndStatusBar.AddElement(m_Progress,_T("进度条"));
+	m_wndStatusBar.AddElement(m_Progress, _T("进度条"));
 
 	strTitlePane2 = _T("0/0             \1");
 
 	m_ProgressData = new CMFCRibbonStatusBarPane(ID_STATUSBAR_PANE2, strTitlePane2, TRUE);
 	m_wndStatusBar.AddElement(m_ProgressData, _T("接受到/采集到"));
-
-
-
-	// 启用 Visual Studio 2005 样式停靠窗口行为
-	CDockingManager::SetDockingMode(DT_SMART);
-	// 启用 Visual Studio 2005 样式停靠窗口自动隐藏行为
-	EnableAutoHidePanes(CBRS_ALIGN_ANY);
-
-	// 创建停靠窗口
-	if (!CreateDockingWindows())
-	{
-		TRACE0("未能创建停靠窗口\n");
-		return -1;
-	}
-
-	m_wndOutput.EnableDocking(CBRS_ALIGN_ANY);
-	DockPane(&m_wndOutput);
-
-
-
-	//自定义参数进行初始化
-	__Init();
-	return 0;
-}
-
-BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
-{
-	if( !CFrameWndEx::PreCreateWindow(cs) )
-		return FALSE;
-	// TODO: 在此处通过修改
-	//  CREATESTRUCT cs 来修改窗口类或样式
 
 	return TRUE;
 }
@@ -385,13 +407,38 @@ BOOL CMainFrame::CreateDockingWindows()
 	CString strOutputWnd;
 	bNameValid = strOutputWnd.LoadString(IDS_OUTPUT_WND);
 	ASSERT(bNameValid);
-	if (!m_wndOutput.Create(strOutputWnd, this, CRect(0, 0, 100, 100), TRUE, ID_VIEW_OUTPUTWND, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_BOTTOM | CBRS_FLOAT_MULTI))
+	if (!m_wndOutput.Create(strOutputWnd, this, CRect(0, 0, 100, 100),
+		TRUE, ID_VIEW_OUTPUTWND, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_BOTTOM | CBRS_FLOAT_MULTI))
+	{
+		TRACE0("未能创建输出窗口\n");
+		return FALSE; // 未能创建
+	}
+
+	//SetDockingWindowIcons(theApp.m_bHiColorIcons);
+
+
+	//创建 EVENTLIST 停靠控件
+
+	strOutputWnd = "EVENTLIST";
+	if (!m_wndEventList.Create(strOutputWnd, this, CRect(0, 0, 100, 100), 
+		TRUE, ID_VIEW_EVENTLIST, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_BOTTOM | CBRS_FLOAT_MULTI))
+	{
+		TRACE0("未能创建输出窗口\n");
+		return FALSE; // 未能创建
+	}
+
+	
+
+	strOutputWnd = "WaveForm";
+	if (!m_wndWaveView.Create(strOutputWnd, this, CRect(0, 0, 100, 100),
+		TRUE, ID_VIEW_WAVEFORM, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_BOTTOM | CBRS_FLOAT_MULTI))
 	{
 		TRACE0("未能创建输出窗口\n");
 		return FALSE; // 未能创建
 	}
 
 	SetDockingWindowIcons(theApp.m_bHiColorIcons);
+
 	return TRUE;
 }
 
@@ -400,7 +447,14 @@ void CMainFrame::SetDockingWindowIcons(BOOL bHiColorIcons)
 	HICON hOutputBarIcon = (HICON) ::LoadImage(::AfxGetResourceHandle(), MAKEINTRESOURCE(bHiColorIcons ? IDI_OUTPUT_WND_HC : IDI_OUTPUT_WND), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), 0);
 	m_wndOutput.SetIcon(hOutputBarIcon, FALSE);
 
+	//
+	m_wndEventList.SetIcon(hOutputBarIcon, FALSE);
+
+	m_wndWaveView.SetIcon(hOutputBarIcon, FALSE);
+
 }
+
+
 
 // CMainFrame 诊断
 
@@ -506,6 +560,8 @@ void CMainFrame::OnSettingChange(UINT uFlags, LPCTSTR lpszSection)
 {
 	CFrameWndEx::OnSettingChange(uFlags, lpszSection);
 	m_wndOutput.UpdateFonts();
+
+	//m_wndEventList.UpdateFonts();
 }
 
 
