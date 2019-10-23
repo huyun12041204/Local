@@ -79,14 +79,16 @@ protected:  // 控件条嵌入成员
 
 
 	COutputWnd           m_wndOutput;
-	CEventList           m_wndEventList;
-	CWaveView            m_wndWaveView;
+
+
 
 
 
 	CWinThread * GetBitThread;
 	CWinThread * ViewBitThread;
 public:
+	CEventList           m_wndEventList;
+	CWaveView            m_wndWaveView;
 	CMFCRibbonProgressBar*   m_Progress;
 	CMFCRibbonBaseElement*   m_ProgressData; 
 // 生成的消息映射函数

@@ -43,7 +43,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>..\..\AllUsedSource\$(Configuration);C:\GIT\Local_\AllUsedSource\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\GIT\Local_\AllUsedSource\lib;C:\GIT\Local_\AllUsedSource\debug;$(LibraryPath)</LibraryPath>
     <IncludePath>..\..\AllUsedSource;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -75,6 +75,9 @@
       <Command>
       </Command>
     </PreBuildEvent>
+    <Manifest>
+      <AdditionalManifestFiles>%(AdditionalManifestFiles)</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

@@ -20,6 +20,7 @@
 
 #include "BitsAnalyserDoc.h"
 #include "BitsAnalyserView.h"
+#include "MainFrm.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -701,6 +702,7 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits , UINT BitsLen)
 
 		if (bbitsLen  == bdiflen)
 		{
+			AddEvent(bbits, bbitsLen);
 	
 			if (_CLKDiffData2Byte_2(bbits,bbitsLen,&bBYTE) == _BYTE_Success)
 			{
@@ -788,6 +790,8 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits , UINT BitsLen)
 				}
 
 
+				
+
 			}
 
 
@@ -819,4 +823,19 @@ void CBitsAnalyserView::UpdateFonts()
 	m_APDUList.SetFont(&afxGlobalData.fontRegular);
 	m_wndEdit.SetFont(&afxGlobalData.fontRegular);
 
+}
+
+int CBitsAnalyserView::AddEvent(BYTE* ucbits, int ibitslen)
+{
+	// TODO: 在此处添加实现代码.
+	CString csEvent;
+	CMainFrame* MainFrm;
+
+	_UcHex2CString(ucbits, ibitslen, csEvent);
+
+	CMainFrame* CurMainFrm;
+	CurMainFrm = (CMainFrame*)AfxGetApp()->GetMainWnd();
+	CurMainFrm->m_wndEventList.AddEvent(csEvent);
+
+	return TRUE;
 }

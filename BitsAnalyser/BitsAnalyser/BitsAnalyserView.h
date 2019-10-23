@@ -65,6 +65,7 @@ public:
 	int PrintEdit(BYTE* bInput, UINT uiLen);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	int ViewAPDU(BYTE* ucBits , UINT BitsLen);
+	int AddEvent(BYTE* ucbits, int ibitslen);
 };
 
 #ifndef _DEBUG  // BitsAnalyserView.cpp 中的调试版本
