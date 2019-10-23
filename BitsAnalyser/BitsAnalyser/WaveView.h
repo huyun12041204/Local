@@ -1,5 +1,9 @@
 #pragma once
 
+
+
+
+
 #define DEF_SIGLE_WIDE  40
 #define DEF_TEXT_HEIGHT 20
 #define DEF_TEXT_WIDE   40
@@ -16,6 +20,13 @@
 #define DEF_IO_PIN  0x40
 #define DEF_VCC_PIN 0x20
 #define DEF_RST_PIN 0x10
+#define  DEF_EVENTLIST_DATA 1
+
+
+
+#if DEF_EVENTLIST_DATA
+#include "EventList.h"
+#endif
 
 class CWaveForm :public CStatic
 {
@@ -46,6 +57,13 @@ protected:
 	//保存当前显示的POS
 	int iStartPos;
 
+#if DEF_EVENTLIST_DATA
+
+	CEventList* m_hEventList;
+
+#endif
+
+
 public:
 	
 	afx_msg void OnPaint();
@@ -60,6 +78,13 @@ public:
 	void GeneratePoint     (int* BitsOffset, POINT* pIO, POINT* pVCC, POINT* pRST);
 	int  GetBits(BYTE* ucBitss = NULL);
 	int  SetPos(int iPos);
+
+	//会从EventList里面获取数据的
+	int GenerateStartPoint(BYTE* bits, int bitSize, POINT* pIO, POINT* pVCC, POINT* pRST);
+	int GeneratePoint(BYTE* bits, int bitSize, POINT* pIO, POINT* pVCC, POINT* pRST);
+
+	int InputEventWnd(CWnd* EventWnd);
+
 };
 
 
@@ -83,6 +108,7 @@ public:
 
 	int GetBitsEvenSum();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	int InputEventWnd(CWnd* EventWnd);
 };
 
 

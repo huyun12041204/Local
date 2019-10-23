@@ -49,7 +49,11 @@ int CEventList::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
+void CEventList::UpdateFonts()
+{
+	m_pEventList.SetFont(&afxGlobalData.fontRegular);
 
+}
 void CEventList::OnSize(UINT nType, int cx, int cy)
 {
 	CDockablePane::OnSize(nType, cx, cy);

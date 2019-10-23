@@ -20,6 +20,7 @@ protected:
 
 public:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	void UpdateFonts();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	// 获取一共有多少个事件
 	int GetEventCount();

@@ -207,12 +207,58 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect)
 	newPen.CreatePen(PS_SOLID, 1, RGB(0, 255, 0));    // 创建实心画笔，粗度为1，颜色为绿色
 	pOldPen = pDC->SelectObject(&newPen);    // 选择新画笔，并将旧画笔的指针保存到pOldPen
 
+#if DEF_EVENTLIST_DATA
+	CString csEvent,csDes;
+	BYTE __Event[8];
+	int  __EventSize = 0;
+	int  __EventSum = m_hEventList->GetEventCount();
+
+	m_hEventList->GetEvent(iOffset, csEvent, csDes);
+	__EventSize = _CString2UcHex(csEvent, __Event);
+
+	if (!GenerateStartPoint(__Event, __EventSize, &pOriIO, &pOriVCC, &pOriRST))
+	{
+		AfxMessageBox("EVENTData is wrong　");
+		return;
+	}
+	
+	pDesIO = pOriIO;
+	pDesVCC = pOriVCC;
+	pDesRST = pOriRST;
+	for (int i = iOffset +1; i < __EventSum; i++)
+	{
+
+		m_hEventList->GetEvent(i, csEvent, csDes);
+		__EventSize = _CString2UcHex(csEvent, __Event);
+		GeneratePoint(__Event, __EventSize, &pDesIO, &pDesVCC, &pDesRST);
+
+		if (pDesIO.y > rect.right)
+		{
+			return;
+
+		}
+
+		DrawWave(pDC, pOriIO, pDesIO);
+		DrawWave(pDC, pOriVCC, pDesVCC);
+		DrawWave(pDC, pOriRST, pDesRST);
+
+		pOriIO = pDesIO;
+		pOriVCC = pDesVCC;
+		pOriRST = pDesRST;
+
+	}
+
+
+
+
+
+#else
 
 	GenerateStartPoint(&iOffset, &pOriIO, &pOriVCC, &pOriRST);
 
-	pDesIO  = pOriIO  ;
-	pDesVCC = pOriVCC  ;
-	pDesRST = pOriRST  ;
+	pDesIO = pOriIO;
+	pDesVCC = pOriVCC;
+	pDesRST = pOriRST;
 
 	for (1; iOffset < iBitsLen; 1)
 	{
@@ -227,14 +273,18 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect)
 
 		}
 
-		DrawWave(pDC, pOriIO , pDesIO);
+		DrawWave(pDC, pOriIO, pDesIO);
 		DrawWave(pDC, pOriVCC, pDesVCC);
 		DrawWave(pDC, pOriRST, pDesRST);
 
-		pOriIO  = pDesIO  ;
-		pOriVCC = pDesVCC ;
-		pOriRST = pDesRST ;
-	}
+		pOriIO = pDesIO;
+		pOriVCC = pDesVCC;
+		pOriRST = pDesRST;
+
+#endif
+
+	
+	
 
 
 	//pVCCFARME.x = rect.left + DEF_LEFT_FRAME_INDENT + DEF_SIGLE_WIDE;
@@ -388,32 +438,130 @@ int  CWaveForm::GetBits(BYTE* ucBitss)
 	ucBitss = ucBits;
 	return iBitsLen;
 }
-
 int  CWaveForm::SetPos(int iPos)
 {
+
+#if DEF_EVENTLIST_DATA
+	iStartPos = iPos;
+	return iStartPos;
+#else
 	int iOffset = 0;
 	int __Len;
 	iPos = iPos - 1;
-	if(iPos >= iBitsLen)
+	if (iPos >= iBitsLen)
 	{
 		return 0;
 	}
 	do
 	{
 		__Len = (ucBits[iOffset] & 0x7);
-		iOffset += ( 1 + __Len);
+		iOffset += (1 + __Len);
 	} while (iOffset < iPos);
-
-	iStartPos = iOffset;
+	return iOffset + 1;
+#endif
 
 	
 
-	return iOffset+1;
-
 }
 
+int  CWaveForm::GenerateStartPoint(BYTE* bits,int bitSize, POINT* pIO, POINT* pVCC, POINT* pRST)
+{
+
+	int iCLKNum = 0;
+	int iCLKTEMP = 0;
+
+	if ((bits[0]&7) != (bitSize-1))
+		return FALSE;
+
+	for (int i = 0; i < (bits[0] & 0x7); i++)
+	{
+		iCLKTEMP = bits[ 1 + i];
+		iCLKTEMP = (iCLKTEMP << (i * 8));
+		iCLKNum += iCLKTEMP;
+	}
+
+	int iDetal = iCLKNum * 40 / iGroupCLK;
+	if (iDetal == 0)
+		iDetal = 1;
+
+	if (iDetal > 40)
+		iDetal = 40;
+
+	pIO->x = iStartX - iDetal;
+	pVCC->x = iStartX - iDetal;
+	pRST->x = iStartX - iDetal;
+
+	if ((bits[0] & DEF_IO_PIN) == DEF_IO_PIN)
+		pIO->y = iIOUP;
+	else
+		pIO->y = iIODOWN;
 
 
+	if ((bits[0] & DEF_VCC_PIN) == DEF_VCC_PIN)
+		pVCC->y = iVCCUP;
+	else
+		pVCC->y = iVCCDOWN;
+
+
+	if ((bits[0] & DEF_RST_PIN) == DEF_RST_PIN)
+		pRST->y = iRSTUP;
+	else
+		pRST->y = iRSTDOWN;
+
+	return TRUE;
+}
+
+int CWaveForm::GeneratePoint(BYTE* bits, int bitSize, POINT* pIO, POINT* pVCC, POINT* pRST)
+{
+
+	int iCLKNum = 0;
+	int iCLKTEMP = 0;
+
+	if ((bits[0] & 7) != (bitSize - 1))
+		return FALSE;
+	for (int i = 0; i < (bits[0] & 0x7); i++)
+	{
+		iCLKTEMP = bits[ 1 + i];
+		iCLKTEMP = (iCLKTEMP << (i * 8));
+		iCLKNum += iCLKTEMP;
+	}
+	int iDetal = iCLKNum * 40 / iGroupCLK;
+	if (iDetal == 0)
+		iDetal = 1;
+
+	if (iDetal > 40 * 8)
+		iDetal = 320;
+
+
+	pIO->x = pIO->x + iDetal;
+	pVCC->x = pVCC->x + iDetal;
+	pRST->x = pRST->x + iDetal;
+
+	if ((bits[0] & DEF_IO_PIN) == DEF_IO_PIN)
+		pIO->y = iIOUP;
+	else
+		pIO->y = iIODOWN;
+
+
+	if ((bits[0] & DEF_VCC_PIN) == DEF_VCC_PIN)
+		pVCC->y = iVCCUP;
+	else
+		pVCC->y = iVCCDOWN;
+
+
+	if ((bits[0] & DEF_RST_PIN) == DEF_RST_PIN)
+		pRST->y = iRSTUP;
+	else
+		pRST->y = iRSTDOWN;
+
+	return TRUE;
+}
+
+int CWaveForm::InputEventWnd(CWnd* EventWnd)
+{
+	m_hEventList = (CEventList*)EventWnd;
+	return TRUE;
+}
 BEGIN_MESSAGE_MAP(CWaveForm, CStatic)
 
 	ON_WM_PAINT()
@@ -481,13 +629,9 @@ void CWaveView::OnSize(UINT nType, int cx, int cy)
 
 	m_pScrollBar.SetWindowPos(this, -1, cy - 20, cx, 20, SWP_NOACTIVATE| SWP_NOZORDER);
 
-	m_pScrollBar.SetScrollRange(1, m_pWaveForm.GetBits());
+	m_pScrollBar.SetScrollRange(1, 100);
 
 }
-
-
-
-
 
 
 void CWaveView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
@@ -541,13 +685,13 @@ void CWaveView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		{
 			// 如果向左滚动一列，则pos减1  
 		case SB_LINELEFT:
-			if (__pos < 2)
+			if (__pos < 1)
 				return;
-			__pos -= 2;
+			__pos -= 1;
 			break;
 			// 如果向右滚动一列，则pos加1  
 		case SB_LINERIGHT:
-			__pos += 2;
+			__pos += 1;
 			break;
 			// 如果拖动滚动块滚动到指定位置，则pos赋值为nPos的值  
 		case SB_THUMBPOSITION:
@@ -567,4 +711,9 @@ void CWaveView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	m_pScrollBar.SetScrollPos(__Newpos);
 
 	//CDockablePane::OnHScroll(nSBCode, nPos, pScrollBar);
+}
+
+int CWaveView ::InputEventWnd(CWnd* EventWnd)
+{
+	return m_pWaveForm.InputEventWnd(EventWnd);
 }
