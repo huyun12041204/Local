@@ -1,7 +1,5 @@
 // Microsoft Visual C++ generated resource script.
 //
-#pragma code_page(65001)
-
 #include "resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
@@ -19,10 +17,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// 中文(简体，中国) resources
+// ����(���壬�й�) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -53,11 +52,11 @@ BEGIN
     "\r\n"
     "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
     "LANGUAGE 4, 2\r\n"
-    "#include ""res\\BitsAnalyser.rc2""  // 非 Microsoft Visual C++ 编辑的资源\r\n"
+    "#include ""res\\BitsAnalyser.rc2""  // �?Microsoft Visual C++ 编辑的资�?\n"
     "#include ""l.CHS\\afxres.rc""      // 标准组件\r\n"
     "#if !defined(_AFXDLL)\r\n"
     "#include ""l.CHS\\afxprint.rc""        // 打印/打印预览资源\r\n"
-    "#include ""l.CHS\\afxribbon.rc""        // MFC 功能区和控件条资源\r\n"
+    "#include ""l.CHS\\afxribbon.rc""        // MFC 功能区和控件条资�?\n"
     "#endif\r\n"
     "#endif\r\n"
     "\0"
@@ -145,29 +144,29 @@ END
 
 IDR_MAINFRAME MENU
 BEGIN
-    POPUP "文件(&F)"
+    POPUP "�ļ�(&F)"
     BEGIN
-        MENUITEM "新建(&N)\tCtrl+N",              ID_FILE_NEW
-        MENUITEM "打开(&O)...\tCtrl+O",           ID_FILE_OPEN
-        MENUITEM "保存(&S)\tCtrl+S",              ID_FILE_SAVE
-        MENUITEM "另存为(&A)...",                  ID_FILE_SAVE_AS
+        MENUITEM "�½�(&N)\tCtrl+N",              ID_FILE_NEW
+        MENUITEM "��(&O)...\tCtrl+O",           ID_FILE_OPEN
+        MENUITEM "����(&S)\tCtrl+S",              ID_FILE_SAVE
+        MENUITEM "����Ϊ(&A)...",                  ID_FILE_SAVE_AS
         MENUITEM SEPARATOR
-        MENUITEM "最近的文件",                       ID_FILE_MRU_FILE1, GRAYED
+        MENUITEM "������ļ�",                       ID_FILE_MRU_FILE1, GRAYED
         MENUITEM SEPARATOR
-        MENUITEM "退出(&X)",                      ID_APP_EXIT
+        MENUITEM "�˳�(&X)",                      ID_APP_EXIT
     END
-    POPUP "编辑(&E)"
+    POPUP "�༭(&E)"
     BEGIN
-        MENUITEM "撤消(&U)\tCtrl+Z",              ID_EDIT_UNDO
+        MENUITEM "����(&U)\tCtrl+Z",              ID_EDIT_UNDO
         MENUITEM SEPARATOR
-        MENUITEM "剪切(&T)\tCtrl+X",              ID_EDIT_CUT
-        MENUITEM "复制(&C)\tCtrl+C",              ID_EDIT_COPY
-        MENUITEM "粘贴(&P)\tCtrl+V",              ID_EDIT_PASTE
+        MENUITEM "����(&T)\tCtrl+X",              ID_EDIT_CUT
+        MENUITEM "����(&C)\tCtrl+C",              ID_EDIT_COPY
+        MENUITEM "ճ��(&P)\tCtrl+V",              ID_EDIT_PASTE
     END
-    POPUP "视图(&V)"
+    POPUP "��ͼ(&V)"
     BEGIN
-        MENUITEM "状态栏(&S)",                     ID_VIEW_STATUS_BAR
-        POPUP "应用程序外观(&A)"
+        MENUITEM "״̬��(&S)",                     ID_VIEW_STATUS_BAR
+        POPUP "Ӧ�ó������(&A)"
         BEGIN
             MENUITEM "Windows 2000(&2)",            ID_VIEW_APPLOOK_WIN_2000
             MENUITEM "Office XP(&X)",               ID_VIEW_APPLOOK_OFF_XP
@@ -177,51 +176,51 @@ BEGIN
             MENUITEM "Visual Studio 200&8",         ID_VIEW_APPLOOK_VS_2008
             POPUP "Office 2007(&7)"
             BEGIN
-                MENUITEM "蓝色样式(&B)",                    ID_VIEW_APPLOOK_OFF_2007_BLUE
-                MENUITEM "黑色样式(&L)",                    ID_VIEW_APPLOOK_OFF_2007_BLACK
-                MENUITEM "银色样式(&S)",                    ID_VIEW_APPLOOK_OFF_2007_SILVER
-                MENUITEM "水绿色样式(&A)",                   ID_VIEW_APPLOOK_OFF_2007_AQUA
+                MENUITEM "��ɫ��ʽ(&B)",                    ID_VIEW_APPLOOK_OFF_2007_BLUE
+                MENUITEM "��ɫ��ʽ(&L)",                    ID_VIEW_APPLOOK_OFF_2007_BLACK
+                MENUITEM "��ɫ��ʽ(&S)",                    ID_VIEW_APPLOOK_OFF_2007_SILVER
+                MENUITEM "ˮ��ɫ��ʽ(&A)",                   ID_VIEW_APPLOOK_OFF_2007_AQUA
             END
         END
     END
-    POPUP "帮助(&H)"
+    POPUP "����(&H)"
     BEGIN
-        MENUITEM "关于 BitsAnalyser(&A)...",      ID_APP_ABOUT
+        MENUITEM "���� BitsAnalyser(&A)...",      ID_APP_ABOUT
     END
 END
 
 IDR_POPUP_EDIT MENU
 BEGIN
-    POPUP "编辑"
+    POPUP "�༭"
     BEGIN
-        MENUITEM "剪切(&T)\tCtrl+X",              ID_EDIT_CUT
-        MENUITEM "复制(&C)\tCtrl+C",              ID_EDIT_COPY
-        MENUITEM "粘贴(&P)\tCtrl+V",              ID_EDIT_PASTE
+        MENUITEM "����(&T)\tCtrl+X",              ID_EDIT_CUT
+        MENUITEM "����(&C)\tCtrl+C",              ID_EDIT_COPY
+        MENUITEM "ճ��(&P)\tCtrl+V",              ID_EDIT_PASTE
     END
 END
 
 IDR_WINDOWS_MENU MENU
 BEGIN
-    MENUITEM "新建窗口(&N)",                    ID_WINDOW_NEW
+    MENUITEM "�½�����(&N)",                    ID_WINDOW_NEW
 END
 
 IDR_OUTPUT_POPUP MENU
 BEGIN
-    POPUP "弹出项"
+    POPUP "������"
     BEGIN
-        MENUITEM "复制(&C)",                      ID_EDIT_COPY
-        MENUITEM "清除(&C)",                      ID_EDIT_CLEAR
+        MENUITEM "����(&C)",                      ID_EDIT_COPY
+        MENUITEM "���(&C)",                      ID_EDIT_CLEAR
         MENUITEM SEPARATOR
-        MENUITEM "保存",                          ID_EDIT_Save
+        MENUITEM "����",                          ID_EDIT_Save
     END
 END
 
 IDR_THEME_MENU MENU
 BEGIN
-    MENUITEM "Office 2007 (蓝色样式)(&B)",      ID_VIEW_APPLOOK_OFF_2007_BLUE
-    MENUITEM "Office 2007 (黑色样式)(&L)",      ID_VIEW_APPLOOK_OFF_2007_BLACK
-    MENUITEM "Office 2007 (银色样式)(&S)",      ID_VIEW_APPLOOK_OFF_2007_SILVER
-    MENUITEM "Office 2007 (水绿色样式)(&A)",     ID_VIEW_APPLOOK_OFF_2007_AQUA
+    MENUITEM "Office 2007 (��ɫ��ʽ)(&B)",      ID_VIEW_APPLOOK_OFF_2007_BLUE
+    MENUITEM "Office 2007 (��ɫ��ʽ)(&L)",      ID_VIEW_APPLOOK_OFF_2007_BLACK
+    MENUITEM "Office 2007 (��ɫ��ʽ)(&S)",      ID_VIEW_APPLOOK_OFF_2007_SILVER
+    MENUITEM "Office 2007 (ˮ��ɫ��ʽ)(&A)",     ID_VIEW_APPLOOK_OFF_2007_AQUA
     MENUITEM "Windows 7(&D)",               ID_VIEW_APPLOOK_WINDOWS_7
 END
 
@@ -256,13 +255,13 @@ END
 
 IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "关于 BitsAnalyser"
+CAPTION "���� BitsAnalyser"
 FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,14,14,21,20
-    LTEXT           "BitsAnalyser，1.0 版",IDC_STATIC,42,14,114,8,SS_NOPREFIX
+    LTEXT           "BitsAnalyser��1.0 ��",IDC_STATIC,42,14,114,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2019",IDC_STATIC,42,26,114,8
-    DEFPUSHBUTTON   "确定",IDOK,113,41,50,14,WS_GROUP
+    DEFPUSHBUTTON   "ȷ��",IDOK,113,41,50,14,WS_GROUP
 END
 
 
@@ -288,13 +287,13 @@ BEGIN
     BEGIN
         BLOCK "080404b0"
         BEGIN
-            VALUE "CompanyName", "TODO: <公司名>"
+            VALUE "CompanyName", "TODO: <��˾��>"
             VALUE "FileDescription", "BitsAnalyser"
             VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "BitsAnalyser.exe"
-            VALUE "LegalCopyright", "TODO: (C) <公司名>。保留所有权利。"
+            VALUE "LegalCopyright", "TODO: (C) <��˾��>����������Ȩ����"
             VALUE "OriginalFilename", "BitsAnalyser.exe"
-            VALUE "ProductName", "TODO: <产品名>"
+            VALUE "ProductName", "TODO: <��Ʒ��>"
             VALUE "ProductVersion", "1.0.0.1"
         END
     END
@@ -339,7 +338,7 @@ IDR_RIBBON              RT_RIBBON_XML           "res\\ribbon.mfcribbon-ms"
 
 STRINGTABLE
 BEGIN
-    IDP_OLE_INIT_FAILED     "OLE 初始化失败。请确保 OLE 库是正确的版本。"
+    IDP_OLE_INIT_FAILED     "OLE ��ʼ��ʧ�ܡ���ȷ�� OLE ������ȷ�İ汾��"
 END
 
 STRINGTABLE
@@ -350,7 +349,7 @@ END
 STRINGTABLE
 BEGIN
     AFX_IDS_APP_TITLE       "BitsAnalyser"
-    AFX_IDS_IDLEMESSAGE     "就绪"
+    AFX_IDS_IDLEMESSAGE     "����"
 END
 
 STRINGTABLE
@@ -365,86 +364,86 @@ END
 
 STRINGTABLE
 BEGIN
-    ID_FILE_NEW             "创建新文档\n新建"
-    ID_FILE_OPEN            "打开现有文档\n打开"
-    ID_FILE_CLOSE           "关闭活动文档\n关闭"
-    ID_FILE_SAVE            "保存活动文档\n保存"
-    ID_FILE_SAVE_AS         "用新名称保存活动文档\n另存为"
+    ID_FILE_NEW             "�������ĵ�\n�½�"
+    ID_FILE_OPEN            "�������ĵ�\n��"
+    ID_FILE_CLOSE           "�رջ�ĵ�\n�ر�"
+    ID_FILE_SAVE            "�����ĵ�\n����"
+    ID_FILE_SAVE_AS         "�������Ʊ����ĵ�\n����Ϊ"
 END
 
 STRINGTABLE
 BEGIN
-    ID_APP_ABOUT            "显示程序信息、版本号和版权信息\n关于"
-    ID_APP_EXIT             "退出应用程序；提示保存文档\n退出"
+    ID_APP_ABOUT            "��ʾ������Ϣ���汾�źͰ�Ȩ��Ϣ\n����"
+    ID_APP_EXIT             "�˳�Ӧ�ó�����ʾ�����ĵ�\n�˳�"
 END
 
 STRINGTABLE
 BEGIN
-    ID_FILE_MRU_FILE1       "打开此文档"
-    ID_FILE_MRU_FILE2       "打开此文档"
-    ID_FILE_MRU_FILE3       "打开此文档"
-    ID_FILE_MRU_FILE4       "打开此文档"
-    ID_FILE_MRU_FILE5       "打开此文档"
-    ID_FILE_MRU_FILE6       "打开此文档"
-    ID_FILE_MRU_FILE7       "打开此文档"
-    ID_FILE_MRU_FILE8       "打开此文档"
-    ID_FILE_MRU_FILE9       "打开此文档"
-    ID_FILE_MRU_FILE10      "打开此文档"
-    ID_FILE_MRU_FILE11      "打开此文档"
-    ID_FILE_MRU_FILE12      "打开此文档"
-    ID_FILE_MRU_FILE13      "打开此文档"
-    ID_FILE_MRU_FILE14      "打开此文档"
-    ID_FILE_MRU_FILE15      "打开此文档"
-    ID_FILE_MRU_FILE16      "打开此文档"
+    ID_FILE_MRU_FILE1       "�򿪴��ĵ�"
+    ID_FILE_MRU_FILE2       "�򿪴��ĵ�"
+    ID_FILE_MRU_FILE3       "�򿪴��ĵ�"
+    ID_FILE_MRU_FILE4       "�򿪴��ĵ�"
+    ID_FILE_MRU_FILE5       "�򿪴��ĵ�"
+    ID_FILE_MRU_FILE6       "�򿪴��ĵ�"
+    ID_FILE_MRU_FILE7       "�򿪴��ĵ�"
+    ID_FILE_MRU_FILE8       "�򿪴��ĵ�"
+    ID_FILE_MRU_FILE9       "�򿪴��ĵ�"
+    ID_FILE_MRU_FILE10      "�򿪴��ĵ�"
+    ID_FILE_MRU_FILE11      "�򿪴��ĵ�"
+    ID_FILE_MRU_FILE12      "�򿪴��ĵ�"
+    ID_FILE_MRU_FILE13      "�򿪴��ĵ�"
+    ID_FILE_MRU_FILE14      "�򿪴��ĵ�"
+    ID_FILE_MRU_FILE15      "�򿪴��ĵ�"
+    ID_FILE_MRU_FILE16      "�򿪴��ĵ�"
 END
 
 STRINGTABLE
 BEGIN
-    ID_NEXT_PANE            "切换到下一个窗格\n下一窗格"
-    ID_PREV_PANE            "切换回上一个窗格\n上一窗格"
+    ID_NEXT_PANE            "�л�����һ������\n��һ����"
+    ID_PREV_PANE            "�л�����һ������\n��һ����"
 END
 
 STRINGTABLE
 BEGIN
-    ID_WINDOW_SPLIT         "将活动窗口拆分为多个窗格\n拆分"
+    ID_WINDOW_SPLIT         "������ڲ��Ϊ�������\n���"
 END
 
 STRINGTABLE
 BEGIN
-    ID_EDIT_CLEAR           "清除所选内容\n清除"
-    ID_EDIT_CLEAR_ALL       "清除全部内容\n全部清除"
-    ID_EDIT_COPY            "复制所选内容，将其放入剪贴板\n复制"
-    ID_EDIT_CUT             "剪切所选内容，将其放入剪贴板\n剪切"
-    ID_EDIT_FIND            "查找指定的文本\n查找"
-    ID_EDIT_PASTE           "插入剪贴板内容\n粘贴"
-    ID_EDIT_REPEAT          "重复上一操作\n重复"
-    ID_EDIT_REPLACE         "用其他文本替换特定的文本\n替换"
-    ID_EDIT_SELECT_ALL      "选定整个文档\n全选"
-    ID_EDIT_UNDO            "撤消上一操作\n撤消"
-    ID_EDIT_REDO            "重做上次撤消的操作\n重做"
+    ID_EDIT_CLEAR           "�����ѡ����\n���"
+    ID_EDIT_CLEAR_ALL       "���ȫ������\nȫ�����"
+    ID_EDIT_COPY            "������ѡ���ݣ�������������\n����"
+    ID_EDIT_CUT             "������ѡ���ݣ�������������\n����"
+    ID_EDIT_FIND            "����ָ�����ı�\n����"
+    ID_EDIT_PASTE           "�������������\nճ��"
+    ID_EDIT_REPEAT          "�ظ���һ����\n�ظ�"
+    ID_EDIT_REPLACE         "�������ı��滻�ض����ı�\n�滻"
+    ID_EDIT_SELECT_ALL      "ѡ�������ĵ�\nȫѡ"
+    ID_EDIT_UNDO            "������һ����\n����"
+    ID_EDIT_REDO            "�����ϴγ����Ĳ���\n����"
 END
 
 STRINGTABLE
 BEGIN
-    ID_VIEW_TOOLBAR         "显示或隐藏工具栏\n切换工具栏"
-    ID_VIEW_STATUS_BAR      "显示或隐藏状态栏\n切换状态栏"
+    ID_VIEW_TOOLBAR         "��ʾ�����ع�����\n�л�������"
+    ID_VIEW_STATUS_BAR      "��ʾ������״̬��\n�л�״̬��"
 END
 
 STRINGTABLE
 BEGIN
-    AFX_IDS_SCSIZE          "更改窗口大小"
-    AFX_IDS_SCMOVE          "更改窗口位置"
-    AFX_IDS_SCMINIMIZE      "将窗口缩小成图标"
-    AFX_IDS_SCMAXIMIZE      "将窗口放大到最大尺寸"
-    AFX_IDS_SCNEXTWINDOW    "切换到下一个文档窗口"
-    AFX_IDS_SCPREVWINDOW    "切换到上一个文档窗口"
-    AFX_IDS_SCCLOSE         "关闭活动窗口并提示保存文档"
+    AFX_IDS_SCSIZE          "���Ĵ��ڴ�С"
+    AFX_IDS_SCMOVE          "���Ĵ���λ��"
+    AFX_IDS_SCMINIMIZE      "��������С��ͼ��"
+    AFX_IDS_SCMAXIMIZE      "�����ڷŴ����ߴ�"
+    AFX_IDS_SCNEXTWINDOW    "�л�����һ���ĵ�����"
+    AFX_IDS_SCPREVWINDOW    "�л�����һ���ĵ�����"
+    AFX_IDS_SCCLOSE         "�رջ���ڲ���ʾ�����ĵ�"
 END
 
 STRINGTABLE
 BEGIN
-    AFX_IDS_SCRESTORE       "将窗口恢复到正常大小"
-    AFX_IDS_SCTASKLIST      "激活任务列表"
+    AFX_IDS_SCRESTORE       "�����ڻָ���������С"
+    AFX_IDS_SCTASKLIST      "���������б�"
 END
 
 STRINGTABLE
@@ -455,22 +454,22 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_OUTPUT_WND          "输出"
+    IDS_OUTPUT_WND          "���"
 END
 
 STRINGTABLE
 BEGIN
-    IDS_BUILD_TAB           "生成"
-    IDS_DEBUG_TAB           "调试"
-    IDS_FIND_TAB            "查找"
+    IDS_BUILD_TAB           "����"
+    IDS_DEBUG_TAB           "����"
+    IDS_FIND_TAB            "����"
 END
 
 STRINGTABLE
 BEGIN
-    IDS_EDIT_MENU           "编辑"
+    IDS_EDIT_MENU           "�༭"
 END
 
-#endif    // 中文(简体，中国) resources
+#endif    // ����(���壬�й�) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -486,11 +485,11 @@ END
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 LANGUAGE 4, 2
-#include "res\BitsAnalyser.rc2"  // 非 Microsoft Visual C++ 编辑的资源
+#include "res\BitsAnalyser.rc2"  // �?Microsoft Visual C++ 编辑的资�?
 #include "l.CHS\afxres.rc"      // 标准组件
 #if !defined(_AFXDLL)
 #include "l.CHS\afxprint.rc"        // 打印/打印预览资源
-#include "l.CHS\afxribbon.rc"        // MFC 功能区和控件条资源
+#include "l.CHS\afxribbon.rc"        // MFC 功能区和控件条资�?
 #endif
 #endif
 

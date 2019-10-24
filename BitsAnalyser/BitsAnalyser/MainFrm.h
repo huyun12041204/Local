@@ -100,7 +100,11 @@ protected:
 
 	afx_msg void OnConnectButton();
 	afx_msg void OnDisconnectButton();
+
+
 	afx_msg void OnUpdateConnected(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateDockablePane(CCmdUI* pCmdUI);
+	afx_msg void OnDockablePane(UINT iID);
 	afx_msg LRESULT OnUpdateProgress(WPARAM /* wParam*/,LPARAM /* LParam*/);
 	DECLARE_MESSAGE_MAP()
 

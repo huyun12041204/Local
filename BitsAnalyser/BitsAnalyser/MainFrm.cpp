@@ -252,7 +252,7 @@ UINT ViewBits(LPVOID pParam)
 			//pView->PrintEdit(__Bits+uiPrinLen,uiTEmp );
 			pView->ViewAPDU ((BYTE*)__Bits+uiPrinLen,uiTEmp );
 			uiPrinLen = (uiPrinLen+uiTEmp);
-			pFrame->SendMessage( 0x1000 ,0,0 );
+			pFrame->SendMessage(ID_MESSAGE_UPDATE_PROGRESS,0,0 );
 	
 		
 		}
@@ -287,7 +287,11 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_COMMAND(ID_Connect_BUTTON, &CMainFrame::OnConnectButton)
 	ON_COMMAND(ID_Disconnect_BUTTON, &CMainFrame::OnDisconnectButton)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_Connect_BUTTON, ID_Disconnect_BUTTON, &CMainFrame::OnUpdateConnected)
-	ON_MESSAGE(0x1000 , &CMainFrame::OnUpdateProgress)
+	
+	ON_COMMAND_RANGE(ID_VIEW_CHECK_WAVEFORM,ID_VIEW_CHECK_EVENTLIST, &CMainFrame::OnDockablePane)
+	ON_UPDATE_COMMAND_UI_RANGE(ID_VIEW_CHECK_WAVEFORM, ID_VIEW_CHECK_EVENTLIST, &CMainFrame::OnUpdateDockablePane)
+
+	ON_MESSAGE(ID_MESSAGE_UPDATE_PROGRESS, &CMainFrame::OnUpdateProgress)
 
 END_MESSAGE_MAP()
 
@@ -331,8 +335,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	}
 
-	m_wndOutput.EnableDocking(CBRS_ALIGN_ANY);
-	DockPane(&m_wndOutput);
+	//m_wndOutput.EnableDocking(CBRS_ALIGN_ANY);
+	//DockPane(&m_wndOutput);
 
 	m_wndEventList.EnableDocking(CBRS_ALIGN_ANY);
 	DockPane(&m_wndEventList);
@@ -405,14 +409,14 @@ BOOL CMainFrame::CreateDockingWindows()
 	BOOL bNameValid;
 	// 创建输出窗口
 	CString strOutputWnd;
-	bNameValid = strOutputWnd.LoadString(IDS_OUTPUT_WND);
-	ASSERT(bNameValid);
-	if (!m_wndOutput.Create(strOutputWnd, this, CRect(0, 0, 100, 100),
-		TRUE, ID_VIEW_OUTPUTWND, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_BOTTOM | CBRS_FLOAT_MULTI))
-	{
-		TRACE0("未能创建输出窗口\n");
-		return FALSE; // 未能创建
-	}
+	//bNameValid = strOutputWnd.LoadString(IDS_OUTPUT_WND);
+	//ASSERT(bNameValid);
+	//if (!m_wndOutput.Create(strOutputWnd, this, CRect(0, 0, 100, 100),
+	//	TRUE, ID_VIEW_OUTPUTWND, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_BOTTOM | CBRS_FLOAT_MULTI))
+	//{
+	//	TRACE0("未能创建输出窗口\n");
+	//	return FALSE; // 未能创建
+	//}
 
 	//SetDockingWindowIcons(theApp.m_bHiColorIcons);
 
@@ -445,7 +449,7 @@ BOOL CMainFrame::CreateDockingWindows()
 void CMainFrame::SetDockingWindowIcons(BOOL bHiColorIcons)
 {
 	HICON hOutputBarIcon = (HICON) ::LoadImage(::AfxGetResourceHandle(), MAKEINTRESOURCE(bHiColorIcons ? IDI_OUTPUT_WND_HC : IDI_OUTPUT_WND), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), 0);
-	m_wndOutput.SetIcon(hOutputBarIcon, FALSE);
+	//m_wndOutput.SetIcon(hOutputBarIcon, FALSE);
 
 	//
 	m_wndEventList.SetIcon(hOutputBarIcon, FALSE);
@@ -559,9 +563,9 @@ void CMainFrame::OnUpdateApplicationLook(CCmdUI* pCmdUI)
 void CMainFrame::OnSettingChange(UINT uFlags, LPCTSTR lpszSection)
 {
 	CFrameWndEx::OnSettingChange(uFlags, lpszSection);
-	m_wndOutput.UpdateFonts();
+	//m_wndOutput.UpdateFonts();
 
-	//m_wndEventList.UpdateFonts();
+	m_wndEventList.UpdateFonts();
 }
 
 
@@ -704,31 +708,55 @@ void CMainFrame::OnDisconnectButton()
 
  void CMainFrame::OnUpdateConnected(CCmdUI* pCmdUI)
 {
-
-	//if (ConnectState)
-	//{
-
-
-
-
-	//}
-
-
-	//// if ((iReaderStatus == Def_Terminal_Disconnected)&&
-	//// (bReadMode == true))
-	//if (iReaderStatus == Def_Terminal_Disconnected)
-	//	pCmdUI->Enable(TRUE);
-	//else
-	//	pCmdUI->Enable(FALSE);
-
 	switch(pCmdUI->m_nID)
 	{
 	case ID_Connect_BUTTON:     pCmdUI->Enable(!ConnectState);break;
 	case ID_Disconnect_BUTTON:   pCmdUI->Enable(ConnectState);break;
 	default:break;
 	}
-
 }
+ void CMainFrame::OnDockablePane(UINT iID)
+ {
+	 
+	 switch (iID)
+	 {
+	 case ID_VIEW_CHECK_EVENTLIST:
+		 if (m_wndEventList.IsVisible())
+			 m_wndEventList.ShowPane(FALSE, FALSE, TRUE);
+		 else
+		 { 
+			 m_wndEventList.SetAutoHideMode(FALSE, CBRS_ALIGN_ANY);
+			 m_wndEventList.ShowPane(TRUE, FALSE, TRUE);
+		 }
+		 break;
+	 case ID_VIEW_CHECK_WAVEFORM: 
+		 if (m_wndWaveView.IsVisible())
+			 m_wndWaveView.ShowPane(FALSE, FALSE, TRUE);
+		 else
+		 { 
+			 m_wndWaveView.SetAutoHideMode(FALSE, CBRS_ALIGN_ANY);
+			 m_wndWaveView.ShowPane(TRUE, FALSE, TRUE);
+		 }
+		 break;
+	 }
+ }
+
+ void CMainFrame::OnUpdateDockablePane(CCmdUI* pCmdUI)
+ {
+
+	 BOOL bShow;
+
+	 switch (pCmdUI->m_nID)
+	 {
+	 case ID_VIEW_CHECK_EVENTLIST:bShow = m_wndEventList.IsVisible(); break;
+	 case ID_VIEW_CHECK_WAVEFORM:bShow  = m_wndWaveView.IsVisible(); break;
+	 default:break;
+	 }
+
+	 pCmdUI->SetCheck(bShow);
+
+
+ }
 
  LRESULT CMainFrame::OnUpdateProgress(WPARAM /* wParam*/,LPARAM /* LParam*/)
  {
