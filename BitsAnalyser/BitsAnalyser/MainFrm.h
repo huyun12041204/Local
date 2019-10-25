@@ -44,7 +44,23 @@
 
 #endif
 
+#ifndef _PRESCALE_LIST_
 
+#define _PRESCALE_LIST_
+
+#define DEF_PRESCALE_10      0
+#define DEF_PRESCALE_16      1
+#define DEF_PRESCALE_31      2
+#define DEF_PRESCALE_32      3
+#define DEF_PRESCALE_64      4
+#define DEF_PRESCALE_100     5
+#define DEF_PRESCALE_372     6
+#define DEF_PRESCALE_1000    7
+#define DEF_PRESCALE_10000   8
+#define DEF_PRESCALE_100000  9
+#define DEF_PRESCALE_1000000 10
+
+#endif
 
 class CMainFrame : public CFrameWndEx
 {
@@ -106,10 +122,13 @@ protected:
 	afx_msg void OnUpdateDockablePane(CCmdUI* pCmdUI);
 	afx_msg void OnDockablePane(UINT iID);
 	afx_msg LRESULT OnUpdateProgress(WPARAM /* wParam*/,LPARAM /* LParam*/);
+	afx_msg LRESULT OnUpdateEvent(WPARAM /* wParam*/, LPARAM /* LParam*/);
 	DECLARE_MESSAGE_MAP()
 
 	
 	BOOL CreateRibbon();
+	BOOL Initialize_Ribbon();
+	afx_msg void OnUpdateComboPrescale(CCmdUI* pCmdUI);
 	BOOL CreateStatueBar();
 	BOOL CreateDockingWindows();
 	void SetDockingWindowIcons(BOOL bHiColorIcons);
@@ -119,6 +138,8 @@ public:
 	usb_dev_handle * Open_Dev(void);
 	void __Init(void);
 
+
+	afx_msg void OnComboPrescale();
 };
 
 

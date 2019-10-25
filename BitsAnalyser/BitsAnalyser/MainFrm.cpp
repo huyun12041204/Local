@@ -253,6 +253,7 @@ UINT ViewBits(LPVOID pParam)
 			pView->ViewAPDU ((BYTE*)__Bits+uiPrinLen,uiTEmp );
 			uiPrinLen = (uiPrinLen+uiTEmp);
 			pFrame->SendMessage(ID_MESSAGE_UPDATE_PROGRESS,0,0 );
+			pFrame->SendMessage(ID_MESSAGE_UPDATE_EVENT, 0, 0);
 	
 		
 		}
@@ -292,7 +293,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_VIEW_CHECK_WAVEFORM, ID_VIEW_CHECK_EVENTLIST, &CMainFrame::OnUpdateDockablePane)
 
 	ON_MESSAGE(ID_MESSAGE_UPDATE_PROGRESS, &CMainFrame::OnUpdateProgress)
-
+	ON_MESSAGE(ID_MESSAGE_UPDATE_EVENT, &CMainFrame::OnUpdateEvent)
+	
+	ON_UPDATE_COMMAND_UI(ID_COMBO_PRESCALE, &CMainFrame::OnUpdateComboPrescale)
+	ON_COMMAND(ID_COMBO_PRESCALE, &CMainFrame::OnComboPrescale)
 END_MESSAGE_MAP()
 
 // CMainFrame 构造/析构
@@ -359,13 +363,65 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 }
 
 
-BOOL CMainFrame::CreateRibbon()
+BOOL CMainFrame::CreateRibbon(void)
 {
 	m_wndRibbonBar.Create(this);
 	m_wndRibbonBar.LoadFromResource(IDR_RIBBON);
 
 	return TRUE;
 }
+
+
+
+BOOL CMainFrame::Initialize_Ribbon(void)
+{
+
+	CMFCRibbonComboBox* pFontComboBox = DYNAMIC_DOWNCAST(
+		CMFCRibbonComboBox, m_wndRibbonBar.FindByID(ID_COMBO_PRESCALE));
+
+	if (pFontComboBox == NULL)
+	{
+		return FALSE;
+	}
+
+	pFontComboBox->AddItem(_T("10"));
+	pFontComboBox->AddItem(_T("16"));
+	pFontComboBox->AddItem(_T("31"));
+	pFontComboBox->AddItem(_T("32"));
+	pFontComboBox->AddItem(_T("64"));
+	pFontComboBox->AddItem(_T("100"));
+	pFontComboBox->AddItem(_T("372"));
+	pFontComboBox->AddItem(_T("1000"));
+	pFontComboBox->AddItem(_T("10000"));
+	pFontComboBox->AddItem(_T("100000"));
+	pFontComboBox->AddItem(_T("1000000"));
+
+	pFontComboBox->SelectItem(DEF_PRESCALE_372);
+
+	return TRUE;
+}
+
+void CMainFrame::OnUpdateComboPrescale(CCmdUI* pCmdUI)
+{
+	// TODO: 在此添加命令更新用户界面处理程序代码
+	//CString csPrescale;
+	//CMFCRibbonComboBox* pFontComboBox = DYNAMIC_DOWNCAST(
+	//	CMFCRibbonComboBox, m_wndRibbonBar.FindByID(ID_COMBO_PRESCALE));
+	//csPrescale = pFontComboBox->GetText();
+
+	//int iPrescale = _CString2IntDecimal(csPrescale);
+	//if (iPrescale <= 0)
+	//	return;
+
+
+	//m_wndWaveView.InputPrescale(iPrescale);
+
+	////通知更新绘制 WaveView
+	//OnUpdateEvent(NULL, NULL);
+
+
+}
+
 
 BOOL CMainFrame::CreateStatueBar()
 {
@@ -579,7 +635,7 @@ void CMainFrame::__Init(void)
 	ConnectState = 0;
 	threadState  = 1;
 	uiRecvLen    = 0;
-
+	Initialize_Ribbon();
 
 	//此行为测试使用
 	//*************************
@@ -588,24 +644,25 @@ void CMainFrame::__Init(void)
 	//_CString2UcHex(csTemp, __Bits);
 	//m_wndWaveView.m_pWaveForm.InputBitsDatas(__Bits, csTemp.GetLength() / 2);
 
-	m_wndEventList.AddEvent("0101");
-	m_wndEventList.AddEvent("2101");
-	m_wndEventList.AddEvent("6103");
-	m_wndEventList.AddEvent("320ED37");
-	m_wndEventList.AddEvent("727501");
-	m_wndEventList.AddEvent("32E702");
-	m_wndEventList.AddEvent("727401");
-	m_wndEventList.AddEvent("325C04");
-	m_wndEventList.AddEvent("72E802");
-	m_wndEventList.AddEvent("72FFFF");
-	m_wndEventList.AddEvent("33CABD02");
-	m_wndEventList.AddEvent("72E802");
-	m_wndEventList.AddEvent("327401");
-	m_wndEventList.AddEvent("727401");
-	m_wndEventList.AddEvent("32E802");
-	m_wndEventList.AddEvent("72E802");
+	//m_wndEventList.AddEvent("0101");
+	//m_wndEventList.AddEvent("2101");
+	//m_wndEventList.AddEvent("6103");
+	//m_wndEventList.AddEvent("320ED37");
+	//m_wndEventList.AddEvent("727501");
+	//m_wndEventList.AddEvent("32E702");
+	//m_wndEventList.AddEvent("727401");
+	//m_wndEventList.AddEvent("325C04");
+	//m_wndEventList.AddEvent("72E802");
+	//m_wndEventList.AddEvent("72FFFF");
+	//m_wndEventList.AddEvent("33CABD02");
+	//m_wndEventList.AddEvent("72E802");
+	//m_wndEventList.AddEvent("327401");
+	//m_wndEventList.AddEvent("727401");
+	//m_wndEventList.AddEvent("32E802");
+	//m_wndEventList.AddEvent("72E802");
 
 	m_wndWaveView.InputEventWnd(&m_wndEventList);
+	m_wndWaveView.InputPrescale(372);
 	//*************************
 
 }
@@ -774,5 +831,50 @@ void CMainFrame::OnDisconnectButton()
 	 m_ProgressData->SetText(csText);
 
 	 m_wndStatusBar.RedrawWindow();
+
+
 	 return 1;
+ }
+
+ LRESULT CMainFrame::OnUpdateEvent(WPARAM /* wParam*/, LPARAM /* LParam*/)
+ {
+
+	int iCount = m_wndEventList.GetEventCount();
+
+	if (iCount < 1)
+		return 0;
+		 
+
+	m_wndWaveView.m_pScrollBar.SetScrollRange(1, iCount);
+
+	m_wndWaveView.m_pWaveForm.OnPaint();
+
+	m_wndWaveView.m_pScrollBar.SetScrollPos(m_wndWaveView.m_pScrollBar.GetScrollPos());
+
+	return 1;
+  }
+
+
+
+
+ void CMainFrame::OnComboPrescale()
+ {
+	 // TODO: 在此添加命令处理程序代码
+
+	 CString csPrescale;
+	 CMFCRibbonComboBox* pFontComboBox = DYNAMIC_DOWNCAST(
+		 CMFCRibbonComboBox, m_wndRibbonBar.FindByID(ID_COMBO_PRESCALE));
+	 csPrescale = pFontComboBox->GetEditText();
+
+	 
+
+	 int iPrescale = _CString2IntDecimal(csPrescale);
+	 if (iPrescale <= 0)
+		 return;
+
+
+	 m_wndWaveView.InputPrescale(iPrescale);
+
+	 //通知更新绘制 WaveView
+	 OnUpdateEvent(NULL, NULL);
  }

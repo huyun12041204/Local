@@ -16,7 +16,7 @@ CWaveForm::CWaveForm()
 	extern BYTE* __Bits;
 	ucBits    = NULL;
 	iBitsLen  = 0;
-	iGroupCLK = 372;
+	iGroupCLK = 100;
 
 	iStartPos = 0;
 
@@ -181,14 +181,53 @@ void CWaveForm::DrawBackGround(CDC* pDC, CRect& rect)
 
 }
 
-void CWaveForm::DrawWave(CDC* pDC, POINT pStart, POINT pEnd)
+void CWaveForm::DrawWave(CDC* pDC, POINT pStart, POINT* pEnd,int iLimit, int iSighLimit)
 {
+	CPen  newPen;       // 用于创建新画笔   
+	CPen* pOldPen = NULL;     // 用于存放旧画笔   
 
-	pDC->MoveTo(pStart.x,pStart.y);
+	pDC->MoveTo(pStart.x, pStart.y);
 
-	pDC->LineTo(pEnd.x, pStart.y);
 
-	pDC->LineTo(pEnd.x, pEnd.y);
+
+ 
+
+
+	//此处表示超宽的波形此处需要省略
+	if ((pEnd->x - pStart.x) > iSighLimit)
+	{
+		LOGBRUSH logBrush;
+		logBrush.lbStyle = BS_SOLID;
+		logBrush.lbColor = RGB(0, 255, 0);
+		logBrush.lbHatch = HS_VERTICAL;
+		newPen.CreatePen(PS_DASHDOTDOT | PS_GEOMETRIC | PS_ENDCAP_ROUND, 2, &logBrush);
+		pOldPen = pDC->SelectObject(&newPen);    // 选择新画笔，并将旧画笔的指针保存到pOldPen
+
+		pEnd->x = pStart.x + iSighLimit;
+
+	}
+
+	BOOL bOver = FALSE;
+
+	if ((iLimit != 0) && (pEnd->x > iLimit))
+	{
+		pDC->LineTo(iLimit, pStart.y);
+		bOver = TRUE;
+	}
+	else
+		pDC->LineTo(pEnd->x, pStart.y);
+
+	if (pOldPen != NULL)
+	{
+		pDC->SelectObject(pOldPen);    // 选择新画笔，并将旧画笔的指针保存到pOldPen
+		newPen.DeleteObject();         // 删除新画笔 
+		
+	}
+
+	if (!bOver)
+		pDC->LineTo(pEnd->x, pEnd->y);
+
+
 
 }
 
@@ -212,35 +251,80 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect)
 	BYTE __Event[8];
 	int  __EventSize = 0;
 	int  __EventSum = m_hEventList->GetEventCount();
+	BYTE __Pre;
 
-	m_hEventList->GetEvent(iOffset, csEvent, csDes);
-	__EventSize = _CString2UcHex(csEvent, __Event);
 
-	if (!GenerateStartPoint(__Event, __EventSize, &pOriIO, &pOriVCC, &pOriRST))
+
+
+	if (iOffset == 0)
+	{
+
+		m_hEventList->GetEvent(iOffset, csEvent, csDes);
+		__EventSize = _CString2UcHex(csEvent, __Event);
+
+		if (!GeneratePrePoint(__Event, __EventSize, __Event[0],&pOriIO, &pOriVCC, &pOriRST))
+		{
+			AfxMessageBox("EVENTData is wrong　");
+			return;
+		}
+
+	}
+	else
+	{
+		m_hEventList->GetEvent(iOffset-1, csEvent, csDes);
+		__EventSize = _CString2UcHex(csEvent, __Event);
+
+		__Pre = __Event[0];
+
+		m_hEventList->GetEvent(iOffset, csEvent, csDes);
+		__EventSize = _CString2UcHex(csEvent, __Event);
+
+
+		if (!GeneratePrePoint(__Event, __EventSize, __Pre, &pOriIO, &pOriVCC, &pOriRST))
+		{
+			AfxMessageBox("EVENTData is wrong　");
+			return;
+		}
+	}
+
+	
+	//生成第一个网格线之前的图形
+	if (!GenerateStartPoint(__Event, __EventSize, &pDesIO, &pDesVCC, &pDesRST))
 	{
 		AfxMessageBox("EVENTData is wrong　");
 		return;
 	}
-	
-	pDesIO = pOriIO;
-	pDesVCC = pOriVCC;
-	pDesRST = pOriRST;
-	for (int i = iOffset +1; i < __EventSum; i++)
+
+
+	//绘制起始位置之前的
+	int iLimit = rect.right - DEF_RIGHT_FRAME_INDENT;
+
+	DrawWave(pDC, pOriIO, &pDesIO, iLimit);
+	DrawWave(pDC, pOriVCC, &pDesVCC, iLimit);
+	DrawWave(pDC, pOriRST, &pDesRST, iLimit);
+
+	pOriIO = pDesIO;
+	pOriVCC = pDesVCC;
+	pOriRST = pDesRST;
+
+	//生成第一个事件
+	for (int i = iOffset+1; i < __EventSum; i++)
 	{
 
 		m_hEventList->GetEvent(i, csEvent, csDes);
 		__EventSize = _CString2UcHex(csEvent, __Event);
 		GeneratePoint(__Event, __EventSize, &pDesIO, &pDesVCC, &pDesRST);
 
-		if (pDesIO.y > rect.right)
+
+
+		DrawWave(pDC, pOriIO, &pDesIO, iLimit);
+		DrawWave(pDC, pOriVCC, &pDesVCC, iLimit);
+		DrawWave(pDC, pOriRST, &pDesRST, iLimit);
+
+		if (pDesIO.x >= iLimit)
 		{
 			return;
-
 		}
-
-		DrawWave(pDC, pOriIO, pDesIO);
-		DrawWave(pDC, pOriVCC, pDesVCC);
-		DrawWave(pDC, pOriRST, pDesRST);
 
 		pOriIO = pDesIO;
 		pOriVCC = pDesVCC;
@@ -384,8 +468,8 @@ void CWaveForm::GeneratePoint(int* BitsOffset, POINT* pIO, POINT* pVCC, POINT* p
 	if (iDetal == 0)
 		iDetal = 1;
 
-	if (iDetal > 40*8)
-		iDetal = 320;
+	//if (iDetal > 40*8)
+	//	iDetal = 320;
 
 
 	pIO ->x = pIO ->x + iDetal;
@@ -442,8 +526,8 @@ int  CWaveForm::SetPos(int iPos)
 {
 
 #if DEF_EVENTLIST_DATA
-	iStartPos = iPos;
-	return iStartPos;
+	iStartPos = iPos -1;
+	return iPos;
 #else
 	int iOffset = 0;
 	int __Len;
@@ -464,32 +548,87 @@ int  CWaveForm::SetPos(int iPos)
 
 }
 
-int  CWaveForm::GenerateStartPoint(BYTE* bits,int bitSize, POINT* pIO, POINT* pVCC, POINT* pRST)
+
+
+int  CWaveForm::GeneratePrePoint(BYTE* bits, int bitSize,BYTE prebits0,
+	POINT* pIO, POINT* pVCC, POINT* pRST)
 {
 
-	int iCLKNum = 0;
-	int iCLKTEMP = 0;
+	ULONG iCLKNum = 0;
+	ULONG iCLKTEMP = 0;
 
-	if ((bits[0]&7) != (bitSize-1))
+	if ((bits[0] & 7) != (bitSize - 1))
 		return FALSE;
 
 	for (int i = 0; i < (bits[0] & 0x7); i++)
 	{
-		iCLKTEMP = bits[ 1 + i];
+		iCLKTEMP = bits[1 + i];
 		iCLKTEMP = (iCLKTEMP << (i * 8));
 		iCLKNum += iCLKTEMP;
 	}
 
-	int iDetal = iCLKNum * 40 / iGroupCLK;
+	ULONG iDetal = iCLKNum * 40 / iGroupCLK;
 	if (iDetal == 0)
 		iDetal = 1;
 
-	if (iDetal > 40)
+	if ((iDetal > 40) || (iDetal < 0))
 		iDetal = 40;
 
-	pIO->x = iStartX - iDetal;
+	pIO->x  = iStartX - iDetal;
 	pVCC->x = iStartX - iDetal;
 	pRST->x = iStartX - iDetal;
+
+	if ((prebits0 & DEF_IO_PIN) == DEF_IO_PIN)
+		pIO->y = iIOUP;
+	else
+		pIO->y = iIODOWN;
+
+
+	if ((prebits0 & DEF_VCC_PIN) == DEF_VCC_PIN)
+		pVCC->y = iVCCUP;
+	else
+		pVCC->y = iVCCDOWN;
+
+
+	if ((prebits0 & DEF_RST_PIN) == DEF_RST_PIN)
+		pRST->y = iRSTUP;
+	else
+		pRST->y = iRSTDOWN;
+
+	return TRUE;
+}
+
+
+int  CWaveForm::GenerateStartPoint(BYTE* bits,int bitSize, 
+	POINT* pIO, POINT* pVCC, POINT* pRST)
+{
+
+	//int iCLKNum = 0;
+	//int iCLKTEMP = 0;
+
+	//if ((bits[0]&7) != (bitSize-1))
+	//	return FALSE;
+
+	//for (int i = 0; i < (bits[0] & 0x7); i++)
+	//{
+	//	iCLKTEMP = bits[ 1 + i];
+	//	iCLKTEMP = (iCLKTEMP << (i * 8));
+	//	iCLKNum += iCLKTEMP;
+	//}
+
+	//int iDetal = iCLKNum * 40 / iGroupCLK;
+	//if (iDetal == 0)
+	//	iDetal = 1;
+
+	//if ((iDetal > 40)||(iDetal <0))
+	//	iDetal = 40;
+
+
+
+
+	pIO->x  = iStartX ;
+	pVCC->x = iStartX ;
+	pRST->x = iStartX ;
 
 	if ((bits[0] & DEF_IO_PIN) == DEF_IO_PIN)
 		pIO->y = iIOUP;
@@ -525,12 +664,12 @@ int CWaveForm::GeneratePoint(BYTE* bits, int bitSize, POINT* pIO, POINT* pVCC, P
 		iCLKTEMP = (iCLKTEMP << (i * 8));
 		iCLKNum += iCLKTEMP;
 	}
-	int iDetal = iCLKNum * 40 / iGroupCLK;
+	long iDetal = iCLKNum * 40 / iGroupCLK;
 	if (iDetal == 0)
 		iDetal = 1;
 
-	if (iDetal > 40 * 8)
-		iDetal = 320;
+	//if ((iDetal > 40 * 8)||(iDetal< 0))
+	//	iDetal = 400;
 
 
 	pIO->x = pIO->x + iDetal;
@@ -562,6 +701,16 @@ int CWaveForm::InputEventWnd(CWnd* EventWnd)
 	m_hEventList = (CEventList*)EventWnd;
 	return TRUE;
 }
+
+int CWaveForm::InputPrescale(int iPrescale)
+{
+
+	iGroupCLK = iPrescale;
+
+	return iPrescale;
+
+}
+
 BEGIN_MESSAGE_MAP(CWaveForm, CStatic)
 
 	ON_WM_PAINT()
@@ -679,8 +828,8 @@ void CWaveView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	//}
 
 
-	do
-	{
+//	do
+//	{
 		switch (nSBCode)
 		{
 			// 如果向左滚动一列，则pos减1  
@@ -694,6 +843,14 @@ void CWaveView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 			__pos += 1;
 			break;
 			// 如果拖动滚动块滚动到指定位置，则pos赋值为nPos的值  
+			// 如果向左滚动一页，则pos减10  
+		case SB_PAGELEFT:
+			__pos -= 20;
+			break;
+			// 如果向右滚动一页，则pos加20  
+		case SB_PAGERIGHT:
+			__pos += 20;
+			break;
 		case SB_THUMBPOSITION:
 			__pos = nPos;
 			break;
@@ -704,7 +861,7 @@ void CWaveView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 
 
-	} while (__Newpos == __Oripos);
+//	} while (__Newpos == __Oripos);
 
 
 	m_pWaveForm.OnPaint();
@@ -716,4 +873,12 @@ void CWaveView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 int CWaveView ::InputEventWnd(CWnd* EventWnd)
 {
 	return m_pWaveForm.InputEventWnd(EventWnd);
+}
+
+int CWaveView::InputPrescale(int iPrescale)
+{
+
+
+	return m_pWaveForm.InputPrescale(iPrescale);
+	
 }

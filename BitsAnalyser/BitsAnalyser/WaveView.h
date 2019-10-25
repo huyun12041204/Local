@@ -72,7 +72,7 @@ public:
 public:
 	void DrawBackGround(CDC* pDC, CRect& rect);
 	void DrawLine(CDC* pDC, CRect& rect);
-	void DrawWave(CDC* pDC, POINT pStart, POINT pEnd);
+	void DrawWave(CDC* pDC, POINT pStart, POINT* pEnd,int iLimit = 0,int iSighLimit = 480);
 	void InputBitsDatas(BYTE* Bits, int iBitsLen);
 	void GenerateStartPoint(int* BitsOffset, POINT* pIO, POINT* pVCC, POINT* pRST);
 	void GeneratePoint     (int* BitsOffset, POINT* pIO, POINT* pVCC, POINT* pRST);
@@ -80,10 +80,15 @@ public:
 	int  SetPos(int iPos);
 
 	//会从EventList里面获取数据的
+
+	
+	int GeneratePrePoint(BYTE* bits, int bitSize, BYTE prebits0, POINT* pIO, POINT* pVCC, POINT* pRST);
+
 	int GenerateStartPoint(BYTE* bits, int bitSize, POINT* pIO, POINT* pVCC, POINT* pRST);
 	int GeneratePoint(BYTE* bits, int bitSize, POINT* pIO, POINT* pVCC, POINT* pRST);
 
 	int InputEventWnd(CWnd* EventWnd);
+	int InputPrescale(int iPrescale);
 
 };
 
@@ -109,6 +114,7 @@ public:
 	int GetBitsEvenSum();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	int InputEventWnd(CWnd* EventWnd);
+	int InputPrescale(int iPrescale);
 };
 
 
