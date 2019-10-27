@@ -20,7 +20,7 @@
 #endif
 
 #include "BitsAnalyserDoc.h"
-
+#include "MainFrm.h"
 #include <propkey.h>
 
 #ifdef _DEBUG
@@ -65,12 +65,48 @@ BOOL CBitsAnalyserDoc::OnNewDocument()
 
 void CBitsAnalyserDoc::Serialize(CArchive& ar)
 {
+	CMainFrame*       _pMain = (CMainFrame*)AfxGetApp()->GetMainWnd();
+	CBitsAnalyserView* pView = (CBitsAnalyserView*)(_pMain->GetActiveView());
+	CString _Event,_EventDes;
+	BYTE* _Bits;
+	int _EventCount;
+	int _ViewCount;
 	if (ar.IsStoring())
 	{
-		// TODO: 在此添加存储代码
+		_EventCount = _pMain->m_wndEventList.GetEventCount();
+
+		for (int i = 0 ; i < _EventCount ; i++)
+		{
+			_Event.Empty();
+			if (_pMain->m_wndEventList.GetEvent(i, _Event, _EventDes)<=0)
+			{
+				AfxMessageBox("获取事件失败，此处将直接退出！");
+				return;
+			}
+			ar.WriteString(_Event);
+		}
+
+		
 	}
 	else
 	{
+		_EventDes.Empty();
+		while (ar.ReadString(_Event))
+			_EventDes += _Event;
+		_Bits = new BYTE[_EventDes.GetLength()/2];
+		_EventCount =  _CString2UcHex(_EventDes, _Bits);
+
+		for (int i = 0; i < _EventCount; i+= 256)
+		{
+			_ViewCount = _EventCount - i;
+
+			pView->ViewAPDU(_Bits + i, (_ViewCount > 256) ? 256 : _ViewCount);
+
+		}
+
+
+
+			//CurMainFrm->csCard += csTemp;
 		// TODO: 在此添加加载代码
 	}
 }
