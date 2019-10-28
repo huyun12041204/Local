@@ -26,6 +26,8 @@ public:
 	int GetEventCount();
 	int GetEvent(int iIndex, CString& csEvent, CString& csDescription);
 	int AddEvent(CString csText);
+	int SeteEventDes(int iEventIndex, CString csDes);
+	int RemoveAllEvent(void);
 };
 
 

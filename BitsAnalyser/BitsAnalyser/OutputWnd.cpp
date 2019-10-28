@@ -237,7 +237,8 @@ void COutputList::OnEditClear()
 	//if (pWnd == (pMain->GetOutputWnd()))
 	//	((COutputWnd*)pWnd) ->ResetContent();
 	//else
-		ResetContent();
+	
+	ResetContent();
 
 
 	MessageBox(_T("Çå³ıÍê³É"));

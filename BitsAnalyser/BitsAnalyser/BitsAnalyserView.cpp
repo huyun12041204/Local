@@ -135,7 +135,7 @@ int _CLKDiffData2Byte_2(BYTE* bBit,UINT bBitLen, BYTE *bByte)
 		if (iBitStatue < 11)
 		{
 			
-			bBitt[iBitStatue] = (bool)(( bPreBit0 >>6));
+			bBitt[iBitStatue] = (bool)(( (bPreBit0&0x40) >>6));
 			
 			iBitStatue += 1;
 			
@@ -650,8 +650,8 @@ int CBitsAnalyserView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	const DWORD dwStyle = LBS_NOINTEGRALHEIGHT |LBS_MULTIPLESEL|
 		WS_CHILD|WS_VISIBLE|WS_HSCROLL| 
 		WS_VSCROLL|WS_CLIPSIBLINGS|WS_CLIPCHILDREN;
-	m_APDUList.Create(dwStyle,rectDummy,this,2);
-	m_APDUList.ShowWindow(TRUE);
+	m_pAPDU.Create(dwStyle,rectDummy,this,2);
+	m_pAPDU.ShowWindow(TRUE);
 	//m_APDUList.AddString("TEST");
 
 	UpdateFonts();
@@ -680,7 +680,7 @@ void CBitsAnalyserView::OnSize(UINT nType, int cx, int cy)
 
 
 	m_wndEdit.SetWindowPos (NULL, -1, -1, cx, cy, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
-	m_APDUList.SetWindowPos (NULL, -1, -1, cx, cy, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
+	m_pAPDU.SetWindowPos (NULL, -1, -1, cx, cy, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
 	// TODO: 在此处添加消息处理程序代码
 }
 
@@ -690,6 +690,8 @@ void CBitsAnalyserView::OnSize(UINT nType, int cx, int cy)
 
 int CBitsAnalyserView::ViewAPDU(BYTE* ucBits , UINT BitsLen)
 {	BYTE bBYTE;
+
+
 
 	for (UINT k = 0 ; k< BitsLen; k++)
 	{
@@ -703,9 +705,13 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits , UINT BitsLen)
 		if (bbitsLen  == bdiflen)
 		{
 			AddEvent(bbits, bbitsLen);
+
 	
 			if (_CLKDiffData2Byte_2(bbits,bbitsLen,&bBYTE) == _BYTE_Success)
 			{
+				//此处 提前添加
+				//__SetDes(bBYTE);
+
 
 				BYTE bBYTES[300];
 				UINT iLen = 0;
@@ -724,13 +730,13 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits , UINT BitsLen)
 						if (ExplainATR(csData,csInfomation))
 						{
 							for (int i = 0 ; i < csInfomation.GetCount(); i++)
-								m_APDUList.FomatAddString(csInfomation.GetAt(i));
-							m_APDUList.FomatAddString(csData,_DEF_APDU_ATR);
+								m_pAPDU.FomatAddString(csInfomation.GetAt(i));
+							m_pAPDU.FomatAddString(csData,_DEF_APDU_ATR);
 						}
 						///m_APDUList.FomatAddString(csData,_DEF_APDU_ATR);
 						break;
 					case _TPDU_PPS:
-						m_APDUList.FomatAddString(csSend+csData,_DEF_APDU_PPS);
+						m_pAPDU.FomatAddString(csSend+csData,_DEF_APDU_PPS);
 						break;
 
 					case _TPDU_TPDU:
@@ -744,18 +750,18 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits , UINT BitsLen)
 						//for (int i = 0 ; i < csInfomation.GetCount(); i++)
 						//	m_APDUList.FomatAddString(csInfomation.GetAt(i));
 
-						m_APDUList.FomatAddString(csSend,_DEF_APDU_HEAD);
-						m_APDUList.FomatAddString(csPro ,_DEF_APDU_NULL);
-						m_APDUList.FomatAddString(csACK,_DEF_APDU_ACK);
-						m_APDUList.FomatAddString(csData,_DEF_APDU_DATA);
-						m_APDUList.FomatAddString(csLPro,_DEF_APDU_NULL);
-						m_APDUList.FomatAddString(csSW,_DEF_APDU_SW);
+						m_pAPDU.FomatAddString(csSend,_DEF_APDU_HEAD);
+						m_pAPDU.FomatAddString(csPro ,_DEF_APDU_NULL);
+						m_pAPDU.FomatAddString(csACK,_DEF_APDU_ACK);
+						m_pAPDU.FomatAddString(csData,_DEF_APDU_DATA);
+						m_pAPDU.FomatAddString(csLPro,_DEF_APDU_NULL);
+						m_pAPDU.FomatAddString(csSW,_DEF_APDU_SW);
 
 						break;
 
 					default:
 						_UcHex2CString(bBYTES,iLen,csTPDU);
-						m_APDUList.AddString(csTPDU);break;
+						m_pAPDU.AddString(csTPDU);break;
 
 
 					}
@@ -766,7 +772,7 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits , UINT BitsLen)
 
 					//KillForc
 				//	m_APDUList.SetSel(index,FALSE);
-					m_APDUList.SetCaretIndex(m_APDUList.GetCount()-1);
+					m_pAPDU.SetCaretIndex(m_pAPDU.GetCount()-1);
 					//CString csTPDU;
 					//_UcHex2CString(bBYTES,iLen,csTPDU);
 					//m_APDUList.AddString(csTPDU);
@@ -791,10 +797,10 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits , UINT BitsLen)
 
 
 				
-
+				
 			}
 
-
+			AddEvent(bbits, bbitsLen);
 			//此处为Reset
 			if ((bbits[0]&0x30) != 0x30) 
 			{
@@ -820,7 +826,7 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits , UINT BitsLen)
 
 void CBitsAnalyserView::UpdateFonts()
 {
-	m_APDUList.SetFont(&afxGlobalData.fontRegular);
+	m_pAPDU.SetFont(&afxGlobalData.fontRegular);
 	m_wndEdit.SetFont(&afxGlobalData.fontRegular);
 
 }
@@ -829,13 +835,38 @@ int CBitsAnalyserView::AddEvent(BYTE* ucbits, int ibitslen)
 {
 	// TODO: 在此处添加实现代码.
 	CString csEvent;
-	CMainFrame* MainFrm;
 
 	_UcHex2CString(ucbits, ibitslen, csEvent);
 
-	CMainFrame* CurMainFrm;
-	CurMainFrm = (CMainFrame*)AfxGetApp()->GetMainWnd();
-	CurMainFrm->m_wndEventList.AddEvent(csEvent);
+	CMainFrame* _pMain;
+	_pMain = (CMainFrame*)AfxGetApp()->GetMainWnd();
+	_pMain->m_wndEventList.AddEvent(csEvent);
 
+	return TRUE;
+}
+
+int CBitsAnalyserView::__SetDes(BYTE  __BYTE)
+{
+	CString __DES;
+	CMainFrame* _pMain;
+	_pMain = (CMainFrame*)AfxGetApp()->GetMainWnd();
+
+	_UcHex2CString(&__BYTE, 1, __DES);
+	__DES = __DES;
+
+	return _pMain->m_wndEventList.SeteEventDes(_pMain->m_wndEventList.GetEventCount() - 1, __DES);
+	//CurMainFrm->m_wndEventList.get
+
+
+
+
+}
+
+
+
+int CBitsAnalyserView::RemoveAllAPDU(void)
+{
+
+	m_pAPDU.ResetContent();
 	return TRUE;
 }

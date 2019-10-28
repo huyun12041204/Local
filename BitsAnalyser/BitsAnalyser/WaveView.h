@@ -16,7 +16,7 @@
 
 #define DEF_LINE_Y_OFFSET   10
 
-
+#define DEF_CLK_PIN 0x80
 #define DEF_IO_PIN  0x40
 #define DEF_VCC_PIN 0x20
 #define DEF_RST_PIN 0x10
@@ -52,6 +52,9 @@ protected:
 	int iRSTUP;
 	int iRSTDOWN;
 
+	int iCLKUP;
+	int iCLKDOWN;
+
 	int iStartX;
 
 	//保存当前显示的POS
@@ -71,21 +74,23 @@ public:
 
 public:
 	void DrawBackGround(CDC* pDC, CRect& rect);
+	void DrawDes(CDC* pDC, int iTextX, CString csText);
 	void DrawLine(CDC* pDC, CRect& rect);
-	void DrawWave(CDC* pDC, POINT pStart, POINT* pEnd,int iLimit = 0,int iSighLimit = 480);
+	void DrawWave(CDC* pDC, POINT pStart, POINT* pEnd, int iType = DEF_IO_PIN, int iLimit = 0, int iSighLimit = 480);
 	void InputBitsDatas(BYTE* Bits, int iBitsLen);
-	void GenerateStartPoint(int* BitsOffset, POINT* pIO, POINT* pVCC, POINT* pRST);
-	void GeneratePoint     (int* BitsOffset, POINT* pIO, POINT* pVCC, POINT* pRST);
+	//void GenerateStartPoint(int* BitsOffset, POINT* pIO, POINT* pVCC, POINT* pRST);
+	//void GeneratePoint     (int* BitsOffset, POINT* pIO, POINT* pVCC, POINT* pRST);
 	int  GetBits(BYTE* ucBitss = NULL);
 	int  SetPos(int iPos);
 
 	//会从EventList里面获取数据的
 
 	
-	int GeneratePrePoint(BYTE* bits, int bitSize, BYTE prebits0, POINT* pIO, POINT* pVCC, POINT* pRST);
+	int GeneratePrePoint(BYTE* bits, int bitSize, BYTE prebits0, POINT* pIO, POINT* pVCC, POINT* pRST, POINT* pCLK);
 
-	int GenerateStartPoint(BYTE* bits, int bitSize, POINT* pIO, POINT* pVCC, POINT* pRST);
-	int GeneratePoint(BYTE* bits, int bitSize, POINT* pIO, POINT* pVCC, POINT* pRST);
+	int GenerateStartPoint(BYTE* bits, int bitSize, POINT* pIO, POINT* pVCC, POINT* pRST, POINT* pCLK);
+
+	int GeneratePoint(BYTE* bits, int bitSize, POINT* pIO, POINT* pVCC, POINT* pRST, POINT* pCLK);
 
 	int InputEventWnd(CWnd* EventWnd);
 	int InputPrescale(int iPrescale);

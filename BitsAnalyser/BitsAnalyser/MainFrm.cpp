@@ -487,7 +487,7 @@ BOOL CMainFrame::CreateDockingWindows()
 		return FALSE; // Î´ÄÜ´´½¨
 	}
 
-	
+	m_wndEventList.UpdateFonts();
 
 	strOutputWnd = "WaveForm";
 	if (!m_wndWaveView.Create(strOutputWnd, this, CRect(0, 0, 100, 100),

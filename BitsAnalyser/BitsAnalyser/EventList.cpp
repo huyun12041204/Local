@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "BitsAnalyser.h"
 #include "EventList.h"
+#include "..\..\AllUsedSource\BasicConvert\BasicConvert\BasicConvert.h"
 
 
 // CEventList
@@ -51,6 +52,7 @@ int CEventList::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 void CEventList::UpdateFonts()
 {
+	
 	m_pEventList.SetFont(&afxGlobalData.fontRegular);
 
 }
@@ -81,12 +83,14 @@ int CEventList::GetEvent(int iIndex, CString& csEvent, CString& csDescription)
 	if (iIndex > m_pEventList.GetCount())
 		return DEF_EVENT_OVER;
 
+	_DeleteEnterSpace(csEvent);
+		;
 	m_pEventList.GetText(iIndex, csEvent);
 
 	if (csEvent.IsEmpty())
 		return DEF_EVENT_EMPTY;
 
-	int iDes = csEvent.Find(_T("-->"));
+	int iDes = csEvent.Find(_T("["));
 
 	if (iDes <=0)
 	{
@@ -95,8 +99,10 @@ int CEventList::GetEvent(int iIndex, CString& csEvent, CString& csDescription)
 	}
 	else
 	{
-		csDescription = csEvent.Mid(iDes + 3);
+		csDescription = csEvent.Mid(iDes + 1);
+		csDescription = csDescription.Left(csDescription.GetLength() - 1);
 		csEvent = csEvent.Mid(0, iDes);
+
 	}
 
 	return DEF_EVENT_SUCCESS_EXT;
@@ -107,4 +113,39 @@ int CEventList::AddEvent(CString csText)
 {
 	// TODO: 在此处添加实现代码.	
 	return m_pEventList.AddString(csText);
+}
+
+
+#define DEF_Des_Exsited 2
+
+int CEventList::SeteEventDes(int iEventIndex, CString csDes)
+{
+	CString csEvent,csEventDes;
+	int iRet = GetEvent(iEventIndex, csEvent, csEventDes);
+	if (iRet != DEF_EVENT_SUCCESS)
+		return iRet;
+
+	//EventDes.Empty();
+	//csEventDes = csEvent + _T("                    ");
+	//csEventDes = csEventDes.Left(20);
+	csDes = _T("[") + csDes + _T("]");
+
+	csEvent = csEvent + csDes;
+
+
+
+	m_pEventList.DeleteString(iEventIndex);
+	m_pEventList.InsertString(iEventIndex, csEvent);
+
+
+
+	return 1;
+
+
+}
+
+int CEventList::RemoveAllEvent(void)
+{
+	m_pEventList.ResetContent();
+	return TRUE;
 }

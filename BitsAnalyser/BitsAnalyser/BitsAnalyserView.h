@@ -46,7 +46,7 @@ public:
 protected:
 
 	CRichEditCtrl m_wndEdit;
-	COutputList   m_APDUList;    
+	COutputList   m_pAPDU;    
 	int bbitsLen ;
 	int bdiflen  ;
 	BYTE bbits[10];
@@ -66,6 +66,8 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	int ViewAPDU(BYTE* ucBits , UINT BitsLen);
 	int AddEvent(BYTE* ucbits, int ibitslen);
+	int __SetDes(BYTE  __BYTE);
+	int RemoveAllAPDU(void);
 };
 
 #ifndef _DEBUG  // BitsAnalyserView.cpp 中的调试版本

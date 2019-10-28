@@ -75,6 +75,7 @@ void CBitsAnalyserDoc::Serialize(CArchive& ar)
 	{
 		_EventCount = _pMain->m_wndEventList.GetEventCount();
 
+		_Bits = new BYTE[256];
 		for (int i = 0 ; i < _EventCount ; i++)
 		{
 			_Event.Empty();
@@ -83,26 +84,68 @@ void CBitsAnalyserDoc::Serialize(CArchive& ar)
 				AfxMessageBox("获取事件失败，此处将直接退出！");
 				return;
 			}
-			ar.WriteString(_Event);
+			//ar.WriteString(_Event);
+			
+			_ViewCount = _CString2UcHex(_Event, _Bits);
+			ar.Write(_Bits, _ViewCount);
+			
+
 		}
+
+		delete _Bits;
+		//for (int i = 0 ; i < _EventCount ; i++)
+		//{
+		//	_Event.Empty();
+		//	if (_pMain->m_wndEventList.GetEvent(i, _Event, _EventDes)<=0)
+		//	{
+		//		AfxMessageBox("获取事件失败，此处将直接退出！");
+		//		return;
+		//	}
+		//	//ar.WriteString(_Event);
+		//	_Bits = new BYTE[_Event.GetLength() / 2];
+		//	ar.Write(_Bits, _Event.GetLength() / 2);
+		//	delete _Bits;
+
+		//}
 
 		
 	}
 	else
 	{
-		_EventDes.Empty();
-		while (ar.ReadString(_Event))
-			_EventDes += _Event;
-		_Bits = new BYTE[_EventDes.GetLength()/2];
-		_EventCount =  _CString2UcHex(_EventDes, _Bits);
+		//_EventDes.Empty();
+		//while (ar.ReadString(_Event))
+		//	_EventDes += _Event;
+		//_Bits = new BYTE[_EventDes.GetLength()/2];
+		//_EventCount =  _CString2UcHex(_EventDes, _Bits);
 
-		for (int i = 0; i < _EventCount; i+= 256)
+
+
+		//for (int i = 0; i < _EventCount; i+= 256)
+		//{
+		//	_ViewCount = _EventCount - i;
+
+		//	pView->ViewAPDU(_Bits + i, (_ViewCount > 256) ? 256 : _ViewCount);
+
+		//}
+
+
+		_pMain->m_wndEventList.RemoveAllEvent();
+		pView->RemoveAllAPDU();
+
+		_Bits = new BYTE[256];
+		_ViewCount = ar.Read(_Bits, 256);
+
+
+		while (_ViewCount>0)
 		{
-			_ViewCount = _EventCount - i;
 
-			pView->ViewAPDU(_Bits + i, (_ViewCount > 256) ? 256 : _ViewCount);
-
+			pView->ViewAPDU(_Bits, (_ViewCount > 256) ? 256 : _ViewCount);
+			_ViewCount = ar.Read(_Bits, 256);
+			_pMain->SendMessage(ID_MESSAGE_UPDATE_EVENT, 0, 0);
 		}
+
+
+		delete _Bits;
 
 
 
