@@ -232,6 +232,7 @@ UINT ViewBits(LPVOID pParam)
 
 
 	UINT uiTEmp;
+	BOOL bShow = FALSE;
 	
 	CMainFrame* pFrame       =  (CMainFrame*)   AfxGetApp()->GetMainWnd();
 	CBitsAnalyserView* pView =  (CBitsAnalyserView*)(pFrame->GetActiveView());
@@ -252,25 +253,19 @@ UINT ViewBits(LPVOID pParam)
 			//pView->PrintEdit(__Bits+uiPrinLen,uiTEmp );
 			pView->ViewAPDU ((BYTE*)__Bits+uiPrinLen,uiTEmp );
 			uiPrinLen = (uiPrinLen+uiTEmp);
-			pFrame->SendMessage(ID_MESSAGE_UPDATE_PROGRESS,0,0 );
-			pFrame->SendMessage(ID_MESSAGE_UPDATE_EVENT, 0, 0);
-	
-		
-		}
-		//else if (uiPrinLen > uiRecvLen)
-		//{
-		//	 Sleep(10000);
-		//}else
-		// Sleep(1000);
-		/*if(dev)
-		{
-		ret = usb_bulk_read(dev, EP_IN, _recv+uiRecvLen,BUF_SIZE, 5000);
-		if (ret>0)
-		{
-		uiRecvLen += ret;
-		}
+			pFrame->SendMessage(ID_MESSAGE_UPDATE_PROGRESS, uiPrinLen, uiRecvLen);
+			pFrame->SendMessage(ID_MESSAGE_UPDATE_EVENT, ((uiRecvLen - uiPrinLen)<= 256), 0);
 
-		}*/
+			bShow = TRUE;
+			
+		}
+		//else if (bShow)
+		//{
+		//	pFrame->SendMessage(ID_MESSAGE_UPDATE_EVENT, 0, 1);
+		//	bShow = FALSE;
+		//}
+
+
 	}
 
 	return 0;
@@ -815,19 +810,19 @@ void CMainFrame::OnDisconnectButton()
 
  }
 
- LRESULT CMainFrame::OnUpdateProgress(WPARAM /* wParam*/,LPARAM /* LParam*/)
+ LRESULT CMainFrame::OnUpdateProgress(WPARAM  wParam,LPARAM  LParam)
  {
 	// UINT iPos = uiPrinLen*100/uiRecvLen;
 	 CString csText;
 	 if (uiBitsLen!= 0)
 	 {
-		 UINT iPos = uiRecvLen*300/uiBitsLen;
+		 UINT iPos = wParam *300/ LParam;
 		 m_Progress->SetPos(iPos);
 
 
 	 }
 
-	 csText.Format("%d/%d",uiRecvLen,uiBitsLen);
+	 csText.Format("%d/%d", wParam, LParam);
 	 m_ProgressData->SetText(csText);
 
 	 m_wndStatusBar.RedrawWindow();
@@ -836,7 +831,7 @@ void CMainFrame::OnDisconnectButton()
 	 return 1;
  }
 
- LRESULT CMainFrame::OnUpdateEvent(WPARAM /* wParam*/, LPARAM /* LParam*/)
+ LRESULT CMainFrame::OnUpdateEvent(WPARAM  wParam, LPARAM  LParam)
  {
 
 	int iCount = m_wndEventList.GetEventCount();
@@ -847,7 +842,14 @@ void CMainFrame::OnDisconnectButton()
 
 	m_wndWaveView.m_pScrollBar.SetScrollRange(1, iCount);
 
-	m_wndWaveView.m_pWaveForm.OnPaint();
+	if (wParam != 0)
+	{
+		m_wndWaveView.m_pWaveForm.OnPaint();
+	}
+	if (LParam != 0)
+	{
+		m_wndEventList.UpdateEventList();
+	}
 
 	m_wndWaveView.m_pScrollBar.SetScrollPos(m_wndWaveView.m_pScrollBar.GetScrollPos());
 
@@ -876,5 +878,5 @@ void CMainFrame::OnDisconnectButton()
 	 m_wndWaveView.InputPrescale(iPrescale);
 
 	 //通知更新绘制 WaveView
-	 OnUpdateEvent(NULL, NULL);
+	 OnUpdateEvent(1, NULL);
  }

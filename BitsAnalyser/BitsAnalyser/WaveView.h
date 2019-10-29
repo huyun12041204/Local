@@ -9,7 +9,7 @@
 #define DEF_TEXT_WIDE   40
 #define DEF_TEXT_INDENT 10
 #define DEF_FRAME_INDENT 2
-#define DEF_TOP_FRAME_INDENT   20
+#define DEF_TOP_FRAME_INDENT   30
 #define DEF_LEFT_FRAME_INDENT     DEF_FRAME_INDENT
 #define DEF_RIGHT_FRAME_INDENT    DEF_FRAME_INDENT
 #define DEF_BOTTON_FRAME_INDENT   DEF_FRAME_INDENT
@@ -22,6 +22,7 @@
 #define DEF_RST_PIN 0x10
 #define  DEF_EVENTLIST_DATA 1
 
+#define DEF_SIGHT_LIMIT 480
 
 
 #if DEF_EVENTLIST_DATA
@@ -59,6 +60,10 @@ protected:
 
 	//保存当前显示的POS
 	int iStartPos;
+	int iEndPos;
+
+
+
 
 #if DEF_EVENTLIST_DATA
 
@@ -74,9 +79,9 @@ public:
 
 public:
 	void DrawBackGround(CDC* pDC, CRect& rect);
-	void DrawDes(CDC* pDC, int iTextX, CString csText);
-	void DrawLine(CDC* pDC, CRect& rect);
-	void DrawWave(CDC* pDC, POINT pStart, POINT* pEnd, int iType = DEF_IO_PIN, int iLimit = 0, int iSighLimit = 480);
+	void DrawDescription(CDC* pDC, int iTextX, CString csText);
+	void DrawLine(CDC* pDC, CRect& rect, POINT* pSelect = NULL);
+	void DrawWave(CDC* pDC, POINT pStart, POINT* pEnd, int iType = DEF_IO_PIN, int iLimit = 0, int iSighLimit = DEF_SIGHT_LIMIT);
 	void InputBitsDatas(BYTE* Bits, int iBitsLen);
 	//void GenerateStartPoint(int* BitsOffset, POINT* pIO, POINT* pVCC, POINT* pRST);
 	//void GeneratePoint     (int* BitsOffset, POINT* pIO, POINT* pVCC, POINT* pRST);
@@ -95,6 +100,10 @@ public:
 	int InputEventWnd(CWnd* EventWnd);
 	int InputPrescale(int iPrescale);
 
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+
+	void DrawSignLine(CDC* pDC, int x, int StartY, int EndY);
+	void DrawEventCLK(CDC* pDC, CString csEent, POINT pEventCLK);
 };
 
 
@@ -120,6 +129,7 @@ public:
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	int InputEventWnd(CWnd* EventWnd);
 	int InputPrescale(int iPrescale);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 };
 
 

@@ -31,7 +31,7 @@ END_MESSAGE_MAP()
 
 // CEventList 消息处理程序
 
-
+//#define VIEW__MODE 
 
 
 int CEventList::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -69,7 +69,13 @@ void CEventList::OnSize(UINT nType, int cx, int cy)
 int CEventList::GetEventCount()
 {
 	// TODO: 在此处添加实现代码.
+
+#ifdef VIEW__MODE
 	return m_pEventList.GetCount();
+#else
+	return ___EentList.GetCount();
+#endif // VIEW__MODE
+	
 }
 
 #define DEF_EVENT_OVER  -1
@@ -80,11 +86,13 @@ int CEventList::GetEvent(int iIndex, CString& csEvent, CString& csDescription)
 {
 	// TODO: 在此处添加实现代码.
 
+
+#ifdef VIEW__MODE
 	if (iIndex > m_pEventList.GetCount())
 		return DEF_EVENT_OVER;
 
 	_DeleteEnterSpace(csEvent);
-		;
+	;
 	m_pEventList.GetText(iIndex, csEvent);
 
 	if (csEvent.IsEmpty())
@@ -92,7 +100,7 @@ int CEventList::GetEvent(int iIndex, CString& csEvent, CString& csDescription)
 
 	int iDes = csEvent.Find(_T("["));
 
-	if (iDes <=0)
+	if (iDes <= 0)
 	{
 		csDescription.Empty();
 		return DEF_EVENT_SUCCESS;
@@ -106,13 +114,48 @@ int CEventList::GetEvent(int iIndex, CString& csEvent, CString& csDescription)
 	}
 
 	return DEF_EVENT_SUCCESS_EXT;
+#else
+	if (iIndex >= ___EentList.GetCount())
+		return DEF_EVENT_OVER;
+
+	_DeleteEnterSpace(csEvent);
+
+	csEvent = ___EentList.GetAt(iIndex);
+
+	if (csEvent.IsEmpty())
+		return DEF_EVENT_EMPTY;
+
+	int iDes = csEvent.Find(_T("["));
+
+	if (iDes <= 0)
+	{
+		csDescription.Empty();
+		return DEF_EVENT_SUCCESS;
+	}
+	else
+	{
+		csDescription = csEvent.Mid(iDes + 1);
+		csDescription = csDescription.Left(csDescription.GetLength() - 1);
+		csEvent = csEvent.Mid(0, iDes);
+
+	}
+
+	return DEF_EVENT_SUCCESS_EXT;
+#endif // VIEW__MODE
 }
 
 
 int CEventList::AddEvent(CString csText)
 {
 	// TODO: 在此处添加实现代码.	
+	
+
+#ifdef VIEW__MODE
 	return m_pEventList.AddString(csText);
+#else
+	return ___EentList.Add(csText);
+#endif // VIEW__MODE
+
 }
 
 
@@ -120,7 +163,10 @@ int CEventList::AddEvent(CString csText)
 
 int CEventList::SeteEventDes(int iEventIndex, CString csDes)
 {
-	CString csEvent,csEventDes;
+
+
+#ifdef VIEW__MODE
+	CString csEvent, csEventDes;
 	int iRet = GetEvent(iEventIndex, csEvent, csEventDes);
 	if (iRet != DEF_EVENT_SUCCESS)
 		return iRet;
@@ -137,15 +183,57 @@ int CEventList::SeteEventDes(int iEventIndex, CString csDes)
 	m_pEventList.DeleteString(iEventIndex);
 	m_pEventList.InsertString(iEventIndex, csEvent);
 
+	return 1;
+#else
+	CString csEvent, csEventDes;
+	int iRet = GetEvent(iEventIndex, csEvent, csEventDes);
+	if (iRet != DEF_EVENT_SUCCESS)
+		return iRet;
 
+	csDes = _T("[") + csDes + _T("]");
+
+	csEvent = csEvent + csDes;
+
+	___EentList.RemoveAt(iEventIndex);
+	___EentList.InsertAt(iEventIndex, csEvent);
 
 	return 1;
+
+
+#endif // VIEW__MODE
 
 
 }
 
 int CEventList::RemoveAllEvent(void)
 {
+#ifdef VIEW__MODE
 	m_pEventList.ResetContent();
+#else
+	m_pEventList.ResetContent();
+    ___EentList.RemoveAll();
+#endif // VIEW__MODE
+
+	
+	return TRUE;
+}
+
+int CEventList::UpdateEventList(void)
+{
+#ifdef VIEW__MODE
+	//m_pEventList.ResetContent();
+#else
+	
+	for ( int i = m_pEventList.GetCount(); i < ___EentList.GetCount(); i++)
+	{
+		m_pEventList.AddString(___EentList.GetAt(i));
+	}
+
+
+
+
+#endif // VIEW__MODE
+
+
 	return TRUE;
 }

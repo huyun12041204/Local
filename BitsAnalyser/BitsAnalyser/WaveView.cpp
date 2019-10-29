@@ -36,11 +36,22 @@ void CWaveForm::OnPaint()
 	CStatic::OnPaint();
 	CRect rect;
 	GetClientRect(&rect);//把picture的控件尺寸付给rectPicture对象，传递给以便DrawWave
-	DrawBackGround(GetDC(), rect);
+	//DrawBackGround(GetDC(), rect);
+	//DrawLine(GetDC(), rect);
+	CDC* pDC = GetDC();
+	CDC memDC;
+	memDC.CreateCompatibleDC(pDC);
+	CBitmap bitmap;
+	bitmap.CreateCompatibleBitmap(pDC, rect.Width(), rect.Height());
+	CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
+	memDC.FillSolidRect(&rect, RGB(255, 255, 255));
 
+	DrawBackGround(&memDC, rect);
+	DrawLine(&memDC, rect, NULL);
 
+	pDC->BitBlt(0, 0, rect.Width(), rect.Height(), &memDC, 0, 0, SRCCOPY);
+	memDC.SelectObject(pOldBitmap);
 
-	DrawLine(GetDC(), rect);
 
 
 
@@ -195,9 +206,6 @@ void CWaveForm::DrawWave(CDC* pDC, POINT pStart, POINT* pEnd, int iType,int iLim
 
 
 
- 
-
-
 	//此处表示超宽的波形此处需要省略
 	if ((pEnd->x - pStart.x) > iSighLimit )
 	{
@@ -239,10 +247,15 @@ void CWaveForm::DrawWave(CDC* pDC, POINT pStart, POINT* pEnd, int iType,int iLim
 
 	{
 
-		for (int i = pStart.x; i < iEndX; i+=3)
+		for (int i = pStart.x; i < iEndX; i++)
 		{
-			pDC->MoveTo(i, iCLKUP);
-			pDC->LineTo(i, iCLKDOWN);
+			if ((i%3) == 0)
+			{
+				pDC->MoveTo(i, iCLKUP);
+				pDC->LineTo(i, iCLKDOWN);
+
+			}
+
 		}
 		pDC->MoveTo(iEndX, pStart.y);
 	}
@@ -263,27 +276,10 @@ void CWaveForm::DrawWave(CDC* pDC, POINT pStart, POINT* pEnd, int iType,int iLim
 		}
 	}
 		
-		
-		
-
-
-
-
 	
-
-
-
-
-
-
-
-
-
-
-
 }
 
-void CWaveForm::DrawDes(CDC* pDC, int iTextX,CString csText)
+void CWaveForm::DrawDescription(CDC* pDC, int iTextX,CString csText)
 {
 	//开始写 分割线 标识 
 	int nX, nY;
@@ -323,8 +319,32 @@ void CWaveForm::DrawDes(CDC* pDC, int iTextX,CString csText)
 
 }
 
+CString  GenerateEventText(CString csEvent,  BYTE ___Pre)
+{
+	CString csText;
+	BYTE* __Event;
+	__Event = new BYTE[csEvent.GetLength() / 2];
+	int Len = _CString2UcHex(csEvent, __Event);
+	int CLK = 0;
+	for (int i = 1; i < Len; i++)
+	{
+		CLK += (__Event[i] << (i - 1) * 8);
+	}
 
-void CWaveForm::DrawLine(CDC* pDC, CRect& rect)
+
+
+	csText.Format("%d", CLK);
+	if ((___Pre & 0x80) == 0x80)
+		csText = _T("TIME : ") + csText + _T(" CLK");
+	else
+		csText = _T("TIME : ") + csText + _T(" us");
+
+	return csText;
+
+
+}
+
+void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 {
 
 	CPen newPen;       // 用于创建新画笔   
@@ -334,7 +354,7 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect)
 	POINT pOriIO, pOriVCC, pOriRST,pOriCLK;
 
 	int iOffset = iStartPos;
-
+	iEndPos = iStartPos;
 
 	newPen.CreatePen(PS_SOLID, 1, RGB(0, 255, 0));    // 创建实心画笔，粗度为1，颜色为绿色
 	pOldPen = pDC->SelectObject(&newPen);    // 选择新画笔，并将旧画笔的指针保存到pOldPen
@@ -347,12 +367,16 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect)
 	BYTE __Pre;
 
 
-
+	
 
 	if (iOffset == 0)
 	{
 
-		m_hEventList->GetEvent(iOffset, csEvent, csDes);
+		if (m_hEventList->GetEvent(0, csEvent, csDes)<=0)
+		{
+			return;
+		}
+
 		__EventSize = _CString2UcHex(csEvent, __Event);
 
 		if (!GeneratePrePoint(__Event, __EventSize, __Event[0],&pOriIO, &pOriVCC, &pOriRST, &pOriCLK))
@@ -405,10 +429,12 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect)
 	//生成第一个事件
 	for (int i = iOffset+1; i < __EventSum; i++)
 	{
-
+		iEndPos = i;
+		__Pre = __Event[0];
 		m_hEventList->GetEvent(i, csEvent, csDes);
 		__EventSize = _CString2UcHex(csEvent, __Event);
 		GeneratePoint(__Event, __EventSize, &pDesIO, &pDesVCC, &pDesRST, &pDesCLK);
+
 
 
 
@@ -421,7 +447,21 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect)
 		DrawWave(pDC, pOriRST, &pDesRST, DEF_RST_PIN, iLimit);
 		DrawWave(pDC, pOriCLK, &pDesCLK, DEF_CLK_PIN, iLimit);
 
-		DrawDes(pDC, pOriIO.x, csDes);
+		DrawDescription(pDC, pOriIO.x, csDes);
+
+		if (pSelect != NULL)
+		{
+			if ((pSelect->x >= pOriIO.x) &&
+				(pSelect->x < pDesIO.x))
+
+			{
+				DrawSignLine(pDC, pOriIO.x, rect.top + DEF_TOP_FRAME_INDENT, rect.bottom - DEF_BOTTON_FRAME_INDENT);
+				POINT pCLKText;
+				pCLKText.x =  rect.left + 85;
+				pCLKText.y =  rect.top + 5;
+				DrawEventCLK(pDC, GenerateEventText(csEvent, __Pre) , pCLKText);
+			}
+		}
 
 
 		if (pDesIO.x >= iLimit)
@@ -429,7 +469,7 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect)
 			return;
 		}
 
-		pOriIO = pDesIO;
+		pOriIO  = pDesIO;
 		pOriVCC = pDesVCC;
 		pOriRST = pDesRST;
 		pOriCLK = pDesCLK;
@@ -843,11 +883,90 @@ int CWaveForm::InputPrescale(int iPrescale)
 
 }
 
+
+void CWaveForm::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	CRect rect;
+	CDC* pDC = GetDC();
+	//Invalidate();
+
+	GetClientRect(&rect);
+	//DrawBackGround(pDC, rect);
+	//DrawLine(pDC, rect, &point);
+
+	CDC memDC;
+	memDC.CreateCompatibleDC(pDC);
+	CBitmap bitmap;
+	bitmap.CreateCompatibleBitmap(pDC, rect.Width(), rect.Height());
+	CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
+	memDC.FillSolidRect(&rect, RGB(255, 255, 255));
+
+	DrawBackGround(&memDC, rect);
+	DrawLine(&memDC, rect, &point);
+
+	pDC->BitBlt(0, 0, rect.Width(), rect.Height(), &memDC, 0, 0, SRCCOPY);
+	memDC.SelectObject(pOldBitmap);
+
+}
+
+void CWaveForm::DrawSignLine(CDC* pDC,int x,int StartY,int EndY)
+{
+	CPen  newPen;         // 用于创建新画笔   
+	CPen* pOldPen = NULL;     // 用于存放旧画笔   
+
+	newPen.CreatePen(PS_SOLID, 1, RGB(255, 255, 100));    // 创建实心画笔，粗度为2，颜色为暗红色 
+	pOldPen = pDC->SelectObject(&newPen);    // 选择新画笔，并将旧画笔的指针保存到pOldPen
+	pDC->MoveTo(x, StartY);
+	pDC->LineTo(x, EndY);
+	pDC->SelectObject(pOldPen);    // 恢复旧画笔   
+	newPen.DeleteObject();         // 删除新画笔  
+}
+
+
+void CWaveForm::DrawEventCLK(CDC* pDC, CString csEvent,POINT pEventCLK)
+{
+	CFont* Oldfont;
+	CFont font;
+	font.CreateFont(12,                                    //   字体的高度   
+		0,                                          //   字体的宽度  
+		0,                                          //  nEscapement 
+		0,                                          //  nOrientation   
+		FW_NORMAL,                                  //   nWeight   
+		FALSE,                                      //   bItalic   
+		FALSE,                                      //   bUnderline   
+		0,                                                   //   cStrikeOut   
+		ANSI_CHARSET,                             //   nCharSet   
+		OUT_DEFAULT_PRECIS,                 //   nOutPrecision   
+		CLIP_DEFAULT_PRECIS,               //   nClipPrecision   
+		DEFAULT_QUALITY,                       //   nQuality   
+		DEFAULT_PITCH | FF_SWISS,     //   nPitchAndFamily     
+		_T("宋体"));
+
+	Oldfont = pDC->SelectObject(&font);
+
+	pDC->SetTextColor(RGB(0, 255, 0));
+	pDC->SetBkColor(RGB(0, 0, 0));
+
+	CRect* cTextRect;
+
+	cTextRect = new CRect(pEventCLK.x, pEventCLK.y, pEventCLK.x + 200, pEventCLK.y + DEF_TEXT_HEIGHT);
+
+
+	pDC->DrawText(csEvent, cTextRect, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_WORDBREAK);
+
+	pDC->SelectObject(Oldfont);
+
+}
+
+
+
 BEGIN_MESSAGE_MAP(CWaveForm, CStatic)
 
 	ON_WM_PAINT()
 	ON_WM_SIZE()
 	ON_WM_CREATE()
+	ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
 
@@ -874,6 +993,7 @@ BEGIN_MESSAGE_MAP(CWaveView, CDockablePane)
 	ON_WM_PAINTCLIPBOARD()
 	ON_WM_MOVE()
 	ON_WM_HSCROLL()
+	ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
 
@@ -963,6 +1083,9 @@ void CWaveView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 	//}
 
 
+	SCROLLINFO   info;
+	pScrollBar->GetScrollInfo(&info, SIF_ALL);
+
 //	do
 //	{
 		switch (nSBCode)
@@ -986,8 +1109,10 @@ void CWaveView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		case SB_PAGERIGHT:
 			__pos += 20;
 			break;
+
 		case SB_THUMBPOSITION:
-			__pos = nPos;
+			//npos 只有16位 ,此处不够
+			__pos = info.nTrackPos;
 			break;
 		default:return;
 		}
@@ -1021,4 +1146,16 @@ int CWaveView::InputPrescale(int iPrescale)
 
 	return m_pWaveForm.InputPrescale(iPrescale);
 	
+}
+
+
+
+
+void CWaveView::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+
+	m_pWaveForm.OnLButtonDown(nFlags, point);
+
+	CDockablePane::OnLButtonDown(nFlags, point);
 }

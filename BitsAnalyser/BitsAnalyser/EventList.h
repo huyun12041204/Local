@@ -14,11 +14,13 @@ public:
 protected:
 	DECLARE_MESSAGE_MAP()
 
-	CListBox m_pEventList;
+
+	CStringArray ___EentList;
 
 
 
 public:
+	CListBox m_pEventList;
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	void UpdateFonts();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
@@ -28,6 +30,7 @@ public:
 	int AddEvent(CString csText);
 	int SeteEventDes(int iEventIndex, CString csDes);
 	int RemoveAllEvent(void);
+	int UpdateEventList(void);
 };
 
 

@@ -704,13 +704,13 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits , UINT BitsLen)
 
 		if (bbitsLen  == bdiflen)
 		{
-			AddEvent(bbits, bbitsLen);
+			//AddEvent(bbits, bbitsLen);
 
 	
 			if (_CLKDiffData2Byte_2(bbits,bbitsLen,&bBYTE) == _BYTE_Success)
 			{
 				//此处 提前添加
-				//__SetDes(bBYTE);
+				ModifyDescription(bBYTE);
 
 
 				BYTE bBYTES[300];
@@ -845,7 +845,7 @@ int CBitsAnalyserView::AddEvent(BYTE* ucbits, int ibitslen)
 	return TRUE;
 }
 
-int CBitsAnalyserView::__SetDes(BYTE  __BYTE)
+int CBitsAnalyserView::ModifyDescription(BYTE  __BYTE)
 {
 	CString __DES;
 	CMainFrame* _pMain;

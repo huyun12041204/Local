@@ -66,7 +66,7 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	int ViewAPDU(BYTE* ucBits , UINT BitsLen);
 	int AddEvent(BYTE* ucbits, int ibitslen);
-	int __SetDes(BYTE  __BYTE);
+	int ModifyDescription(BYTE  __BYTE);
 	int RemoveAllAPDU(void);
 };
 
