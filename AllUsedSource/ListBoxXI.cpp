@@ -523,6 +523,24 @@ void CListBoxXI::OnPaint()
 	//CPaintDC dc(this); // device context for painting
 					   // TODO: 在此处添加消息处理程序代码
 					   // 不为绘图消息调用 CListBox::OnPaint()
+
+	CDC* pDC = GetDC();
+	CRect rc;    
+	GetWindowRect(&rc);    
+	CDC CMDC;  
+	CMDC.CreateCompatibleDC(pDC);
+	CBitmap bmp;  
+	bmp.CreateCompatibleBitmap(pDC, rc.Width(), rc.Height());
+	CBitmap* oldbmp = CMDC.SelectObject(&bmp);  
+	BITMAP bm;  
+	bmp.GetBitmap(&bm); 
+	//COLORREF m_refdefbkColor;
+	CMDC.FillSolidRect(0, 0, rc.Width(), rc.Height(),RGB(255,255,255));  
+	// pDC为前端DC    
+	pDC->BitBlt(rc.top, rc.left,rc.Width(),rc.Height(),&CMDC,0,0,SRCCOPY);
+	CMDC.SelectObject(oldbmp);  
+	bmp.DeleteObject();
+	CMDC.DeleteDC();
 	CListBox::OnPaint();
 }
 
