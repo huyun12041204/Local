@@ -3270,7 +3270,7 @@ void CMainFrame ::InsatllFile2ClassTree(CString csFile,CString csDes,int iDir ,H
 	HTREEITEM hSelFile;
 
 	//当加入为空是，则选择当前选中ITEM
-	if (hParen == NULL)
+	if ((hParen == NULL)||(hParen == TVI_ROOT))
 		hParen = m_wndClassView->GetSelectedItem();
 
 	//判断ITEM 是否为DF
@@ -3399,6 +3399,10 @@ int CMainFrame::_MapTeleApplicaiton()
 void CMainFrame::__GetFileThread()
 {
 	HTREEITEM hMFItem,hTeleItem;
+
+	hMFItem   = NULL;
+	hTeleItem = NULL;
+
 	if (!bIsUICC)
 		return ;
 	m_wndClassView->DeleteAllItems();
