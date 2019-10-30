@@ -112,25 +112,8 @@ void CBitsAnalyserDoc::Serialize(CArchive& ar)
 	}
 	else
 	{
-		//_EventDes.Empty();
-		//while (ar.ReadString(_Event))
-		//	_EventDes += _Event;
-		//_Bits = new BYTE[_EventDes.GetLength()/2];
-		//_EventCount =  _CString2UcHex(_EventDes, _Bits);
 
-
-
-		//for (int i = 0; i < _EventCount; i+= 256)
-		//{
-		//	_ViewCount = _EventCount - i;
-
-		//	pView->ViewAPDU(_Bits + i, (_ViewCount > 256) ? 256 : _ViewCount);
-
-		//}
-
-
-		_pMain->m_wndEventList.RemoveAllEvent();
-		pView->RemoveAllAPDU();
+		_pMain -> RemoveAllBitsData();
 
 		_Bits = new BYTE[256];
 		_ViewCount = ar.Read(_Bits, 256);
@@ -145,7 +128,7 @@ void CBitsAnalyserDoc::Serialize(CArchive& ar)
 		while (_ViewCount>0)
 		{
 			_pMain->SendMessage(ID_MESSAGE_UPDATE_PROGRESS, iReadSum, iSize);
-			_ViewCount   = ((_ViewCount > 256) ? 256: _ViewCount);
+ 			_ViewCount   = ((_ViewCount > 256) ? 256: _ViewCount);
 			iReadSum    += _ViewCount;
 			pView->ViewAPDU(_Bits, _ViewCount);
 			_ViewCount   = ar.Read(_Bits, 256);
@@ -235,3 +218,14 @@ void CBitsAnalyserDoc::Dump(CDumpContext& dc) const
 
 
 // CBitsAnalyserDoc 命令
+
+
+BOOL CBitsAnalyserDoc::OnOpenDocument(LPCTSTR lpszPathName)
+{
+	if (!CDocument::OnOpenDocument(lpszPathName))
+		return FALSE;
+
+	// TODO:  在此添加您专用的创建代码
+
+	return TRUE;
+}

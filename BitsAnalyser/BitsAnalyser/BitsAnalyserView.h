@@ -16,6 +16,12 @@
 #include "OutputWnd.h"
 #include "BasicConvert\BasicConvert\BasicConvert.h"
 
+
+//ViewAPDU 
+//P3 iVirtualEvent
+#define DEF_Virtual_Event 0
+#define DEF_TRUE_Event    1
+
 class CBitsAnalyserView : public CView
 {
 protected: // 仅从序列化创建
@@ -56,15 +62,27 @@ protected:
 	afx_msg void OnFilePrintPreview();
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 
 	DECLARE_MESSAGE_MAP()
 public:
 	void UpdateFonts();
-//	virtual BOOL Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT& rect, CWnd* pParentWnd, UINT nID, CCreateContext* pContext = NULL);
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	int PrintEdit(BYTE* bInput, UINT uiLen);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	int ViewAPDU(BYTE* ucBits , UINT BitsLen);
+
+
+
+	//************************************
+	// Method:    ViewAPDU
+	// FullName:  CBitsAnalyserView::ViewAPDU
+	// Access:    public 
+	// Returns:   int
+	// Qualifier:
+	// Parameter: BYTE * ucBits
+	// Parameter: UINT BitsLen
+	// Parameter: int iVirtualEvent 
+	//************************************
+
+	int ViewAPDU(BYTE* ucBits, UINT BitsLen, int iVirtualEvent = DEF_Virtual_Event);
 	int AddEvent(BYTE* ucbits, int ibitslen);
 	int ModifyDescription(BYTE  __BYTE);
 	int RemoveAllAPDU(void);

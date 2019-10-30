@@ -237,3 +237,15 @@ int CEventList::UpdateEventList(void)
 
 	return TRUE;
 }
+
+int CEventList::ShowEventList()
+{
+	m_pEventList.ResetContent();
+
+	int iCount = ___EentList.GetCount();
+
+	for (int i = 0 ; i< iCount; i++ )
+		m_pEventList.AddString(___EentList.GetAt(i));
+
+	return iCount;
+}

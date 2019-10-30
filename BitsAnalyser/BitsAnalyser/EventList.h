@@ -31,6 +31,7 @@ public:
 	int SeteEventDes(int iEventIndex, CString csDes);
 	int RemoveAllEvent(void);
 	int UpdateEventList(void);
+	int ShowEventList();
 };
 
 

@@ -113,33 +113,38 @@ protected:
 	afx_msg void OnApplicationLook(UINT id);
 	afx_msg void OnUpdateApplicationLook(CCmdUI* pCmdUI);
 	afx_msg void OnSettingChange(UINT uFlags, LPCTSTR lpszSection);
-
+	// //打开USB设备
+	usb_dev_handle* Open_Dev(void);
 	afx_msg void OnConnectButton();
 	afx_msg void OnDisconnectButton();
-
+	afx_msg void OnComboPrescale();
+	afx_msg void OnEventButton();
 
 	afx_msg void OnUpdateConnected(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateDockablePane(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateComboPrescale(CCmdUI* pCmdUI);
 	afx_msg void OnDockablePane(UINT iID);
 	afx_msg LRESULT OnUpdateProgress(WPARAM  wParam,LPARAM  LParam);
 	afx_msg LRESULT OnUpdateEvent(WPARAM  wParam, LPARAM  LParam);
-	DECLARE_MESSAGE_MAP()
 
-	
+	DECLARE_MESSAGE_MAP()
+protected:
+
 	BOOL CreateRibbon();
 	BOOL Initialize_Ribbon();
-	afx_msg void OnUpdateComboPrescale(CCmdUI* pCmdUI);
+
 	BOOL CreateStatueBar();
 	BOOL CreateDockingWindows();
 	void SetDockingWindowIcons(BOOL bHiColorIcons);
-public:
 
-	// //打开USB设备
-	usb_dev_handle * Open_Dev(void);
+
 	void __Init(void);
 
 
-	afx_msg void OnComboPrescale();
+
+public:
+
+	void RemoveAllBitsData();
 };
 
 

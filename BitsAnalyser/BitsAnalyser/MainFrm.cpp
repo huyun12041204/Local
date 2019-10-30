@@ -273,7 +273,7 @@ UINT ViewBits(LPVOID pParam)
 				
 				WaitByte[0] = (bPreBit0 & 0xF0) + 2;
 
-				pView->ViewAPDU(WaitByte, 3);
+				pView->ViewAPDU(WaitByte, 3,1);
 				bEmpty = FALSE;
 				iWait = 0;
 
@@ -317,6 +317,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	
 	ON_UPDATE_COMMAND_UI(ID_COMBO_PRESCALE, &CMainFrame::OnUpdateComboPrescale)
 	ON_COMMAND(ID_COMBO_PRESCALE, &CMainFrame::OnComboPrescale)
+	ON_COMMAND(ID_Event_Button, &CMainFrame::OnEventButton)
 END_MESSAGE_MAP()
 
 // CMainFrame 构造/析构
@@ -391,8 +392,6 @@ BOOL CMainFrame::CreateRibbon(void)
 	return TRUE;
 }
 
-
-
 BOOL CMainFrame::Initialize_Ribbon(void)
 {
 
@@ -420,28 +419,6 @@ BOOL CMainFrame::Initialize_Ribbon(void)
 
 	return TRUE;
 }
-
-void CMainFrame::OnUpdateComboPrescale(CCmdUI* pCmdUI)
-{
-	// TODO: 在此添加命令更新用户界面处理程序代码
-	//CString csPrescale;
-	//CMFCRibbonComboBox* pFontComboBox = DYNAMIC_DOWNCAST(
-	//	CMFCRibbonComboBox, m_wndRibbonBar.FindByID(ID_COMBO_PRESCALE));
-	//csPrescale = pFontComboBox->GetText();
-
-	//int iPrescale = _CString2IntDecimal(csPrescale);
-	//if (iPrescale <= 0)
-	//	return;
-
-
-	//m_wndWaveView.InputPrescale(iPrescale);
-
-	////通知更新绘制 WaveView
-	//OnUpdateEvent(NULL, NULL);
-
-
-}
-
 
 BOOL CMainFrame::CreateStatueBar()
 {
@@ -644,7 +621,250 @@ void CMainFrame::OnSettingChange(UINT uFlags, LPCTSTR lpszSection)
 	m_wndEventList.UpdateFonts();
 }
 
+void CMainFrame::OnConnectButton()
+{
+	UINT PreBits, PreSend;
+	if (ConnectState == 0)
+	{
+		usb_init(); /* initialize the library */
+		usb_find_busses(); /* find all busses */
+		usb_find_devices(); /* find all connected devices */
 
+		if (!(dev = Open_Dev()))
+		{
+			AfxMessageBox("connect fail!");
+			return;
+		}
+
+		if (usb_set_configuration(dev, MY_CONFIG) < 0)
+		{
+			usb_close(dev);
+			AfxMessageBox("set config fail!");
+			return;
+		}
+
+		if (usb_claim_interface(dev, 0) < 0)
+		{
+			usb_close(dev);
+			AfxMessageBox("set interface fail!");
+			return;
+		}
+
+		ConnectState = 1;
+
+		_InitBits();
+
+
+		if (GetBitsSize(&PreBits, &PreSend))
+		{
+			uiRecvLen = PreSend;
+			uiPrinLen = PreSend;
+		}
+
+
+		if (GetBitThread == NULL)
+			GetBitThread = AfxBeginThread(GetBits, _T("GetBits"));
+		if (ViewBitThread == NULL)
+			ViewBitThread = AfxBeginThread(ViewBits, _T("ViewBits"));
+		//GetDlgItem(IDC_ComConnect_Button)->SetWindowText("Disconnect");
+		RemoveAllBitsData();
+	}
+	else
+	{
+		if (dev)
+		{
+			usb_release_interface(dev, 0);
+			usb_close(dev);
+			dev = NULL;
+		}
+
+		ConnectState = 0;
+	}
+}
+
+// //打开USB设备
+usb_dev_handle* CMainFrame::Open_Dev(void)
+{
+	struct usb_bus* bus;
+	struct usb_device* dev;
+
+	for (bus = usb_get_busses(); bus; bus = bus->next)
+	{
+		for (dev = bus->devices; dev; dev = dev->next)
+		{
+			if (dev->descriptor.idVendor == MY_VID
+				&& dev->descriptor.idProduct == MY_PID)
+			{
+				return usb_open(dev);
+			}
+		}
+	}
+	return NULL;
+}
+
+void CMainFrame::OnDisconnectButton()
+{
+
+	if (ConnectState == 1)
+	{
+		if (dev)
+		{
+			usb_release_interface(dev, 0);
+			usb_close(dev);
+			dev = NULL;
+		}
+		ConnectState = 0;
+	}
+}
+
+void CMainFrame::OnEventButton()
+{
+	// TODO: 在此添加命令处理程序代码
+	m_wndEventList.ShowEventList();
+
+}
+
+void CMainFrame::OnComboPrescale()
+{
+	// TODO: 在此添加命令处理程序代码
+
+	CString csPrescale;
+	CMFCRibbonComboBox* pFontComboBox = DYNAMIC_DOWNCAST(
+		CMFCRibbonComboBox, m_wndRibbonBar.FindByID(ID_COMBO_PRESCALE));
+	csPrescale = pFontComboBox->GetEditText();
+
+
+
+	int iPrescale = _CString2IntDecimal(csPrescale);
+	if (iPrescale <= 0)
+		return;
+
+
+	m_wndWaveView.InputPrescale(iPrescale);
+
+	//通知更新绘制 WaveView
+	OnUpdateEvent(1, NULL);
+}
+
+void CMainFrame::OnUpdateComboPrescale(CCmdUI* pCmdUI)
+{
+	// TODO: 在此添加命令更新用户界面处理程序代码
+	//CString csPrescale;
+	//CMFCRibbonComboBox* pFontComboBox = DYNAMIC_DOWNCAST(
+	//	CMFCRibbonComboBox, m_wndRibbonBar.FindByID(ID_COMBO_PRESCALE));
+	//csPrescale = pFontComboBox->GetText();
+
+	//int iPrescale = _CString2IntDecimal(csPrescale);
+	//if (iPrescale <= 0)
+	//	return;
+
+
+	//m_wndWaveView.InputPrescale(iPrescale);
+
+	////通知更新绘制 WaveView
+	//OnUpdateEvent(NULL, NULL);
+
+
+}
+
+void CMainFrame::OnUpdateConnected(CCmdUI* pCmdUI)
+{
+	switch (pCmdUI->m_nID)
+	{
+	case ID_Connect_BUTTON:     pCmdUI->Enable(!ConnectState); break;
+	case ID_Disconnect_BUTTON:   pCmdUI->Enable(ConnectState); break;
+	default:break;
+	}
+}
+
+void CMainFrame::OnUpdateDockablePane(CCmdUI* pCmdUI)
+{
+
+	BOOL bShow;
+
+	switch (pCmdUI->m_nID)
+	{
+	case ID_VIEW_CHECK_EVENTLIST:bShow = m_wndEventList.IsVisible(); break;
+	case ID_VIEW_CHECK_WAVEFORM:bShow = m_wndWaveView.IsVisible(); break;
+	default:break;
+	}
+
+	pCmdUI->SetCheck(bShow);
+
+
+}
+
+void CMainFrame::OnDockablePane(UINT iID)
+{
+
+	switch (iID)
+	{
+	case ID_VIEW_CHECK_EVENTLIST:
+		if (m_wndEventList.IsVisible())
+			m_wndEventList.ShowPane(FALSE, FALSE, TRUE);
+		else
+		{
+			m_wndEventList.SetAutoHideMode(FALSE, CBRS_ALIGN_ANY);
+			m_wndEventList.ShowPane(TRUE, FALSE, TRUE);
+		}
+		break;
+	case ID_VIEW_CHECK_WAVEFORM:
+		if (m_wndWaveView.IsVisible())
+			m_wndWaveView.ShowPane(FALSE, FALSE, TRUE);
+		else
+		{
+			m_wndWaveView.SetAutoHideMode(FALSE, CBRS_ALIGN_ANY);
+			m_wndWaveView.ShowPane(TRUE, FALSE, TRUE);
+		}
+		break;
+	}
+}
+
+LRESULT CMainFrame::OnUpdateProgress(WPARAM  wParam, LPARAM  LParam)
+{
+	// UINT iPos = uiPrinLen*100/uiRecvLen;
+	CString csText;
+	if (LParam != 0)
+	{
+		UINT iPos = wParam * 300 / LParam;
+		m_Progress->SetPos(iPos);
+
+
+	}
+
+	csText.Format("%d/%d", wParam, LParam);
+	m_ProgressData->SetText(csText);
+
+	m_wndStatusBar.RedrawWindow();
+
+
+	return 1;
+}
+
+LRESULT CMainFrame::OnUpdateEvent(WPARAM  wParam, LPARAM  LParam)
+{
+
+	int iCount = m_wndEventList.GetEventCount();
+
+	if (iCount < 1)
+		return 0;
+
+
+	m_wndWaveView.m_pScrollBar.SetScrollRange(1, iCount);
+
+	if (wParam != 0)
+	{
+		m_wndWaveView.m_pWaveForm.OnPaint();
+	}
+	if (LParam != 0)
+	{
+		m_wndEventList.UpdateEventList();
+	}
+
+	m_wndWaveView.m_pScrollBar.SetScrollPos(m_wndWaveView.m_pScrollBar.GetScrollPos());
+
+	return 1;
+}
 
 
 void CMainFrame::__Init(void)
@@ -686,222 +906,15 @@ void CMainFrame::__Init(void)
 	//*************************
 
 }
-void CMainFrame::OnConnectButton()
-{
-	UINT PreBits, PreSend;
-	if(ConnectState == 0)
-	{
-		usb_init(); /* initialize the library */
-		usb_find_busses(); /* find all busses */
-		usb_find_devices(); /* find all connected devices */
-
-		if (!(dev = Open_Dev()))
-		{
-			AfxMessageBox("connect fail!");
-			return;
-		}
-
-		if (usb_set_configuration(dev, MY_CONFIG) < 0)
-		{
-			usb_close(dev);
-			AfxMessageBox("set config fail!");
-			return;
-		}
-
-		if (usb_claim_interface(dev, 0) < 0)
-		{
-			usb_close(dev);
-			AfxMessageBox("set interface fail!");
-			return;
-		}
-
-		ConnectState = 1;
-
-		_InitBits();
 
 
-		if (GetBitsSize(&PreBits,&PreSend))
-		{
-			uiRecvLen = PreSend;
-			uiPrinLen = PreSend;
-		}
-
-
-		if (GetBitThread == NULL)
-			GetBitThread = AfxBeginThread(GetBits, _T("GetBits")); 	
-		if (ViewBitThread == NULL)
-			ViewBitThread = AfxBeginThread(ViewBits, _T("ViewBits")); 	
-		//GetDlgItem(IDC_ComConnect_Button)->SetWindowText("Disconnect");
-	}
-	else
-	{
-		if (dev)
-		{
-			usb_release_interface(dev, 0);
-			usb_close(dev);
-			dev = NULL;
-		}
-
-		ConnectState = 0;
-	}
-}
-
-
-
-
-// //打开USB设备
-usb_dev_handle * CMainFrame::Open_Dev(void)
-{
-	struct usb_bus *bus;
-	struct usb_device *dev;
-
-	for (bus = usb_get_busses(); bus; bus = bus->next)
-	{
-		for (dev = bus->devices; dev; dev = dev->next)
-		{
-			if (dev->descriptor.idVendor == MY_VID
-				&& dev->descriptor.idProduct == MY_PID)
-			{
-				return usb_open(dev);
-			}
-		}
-	}
-	return NULL;
-}
-
-void CMainFrame::OnDisconnectButton()
-{
-
-	if (ConnectState == 1)
-	{	if (dev)
-		{
-			usb_release_interface(dev, 0);
-			usb_close(dev);
-			dev = NULL;
-		}
-		ConnectState = 0;
-	}
-}
-
- void CMainFrame::OnUpdateConnected(CCmdUI* pCmdUI)
-{
-	switch(pCmdUI->m_nID)
-	{
-	case ID_Connect_BUTTON:     pCmdUI->Enable(!ConnectState);break;
-	case ID_Disconnect_BUTTON:   pCmdUI->Enable(ConnectState);break;
-	default:break;
-	}
-}
- void CMainFrame::OnDockablePane(UINT iID)
+void CMainFrame::RemoveAllBitsData()
  {
-	 
-	 switch (iID)
-	 {
-	 case ID_VIEW_CHECK_EVENTLIST:
-		 if (m_wndEventList.IsVisible())
-			 m_wndEventList.ShowPane(FALSE, FALSE, TRUE);
-		 else
-		 { 
-			 m_wndEventList.SetAutoHideMode(FALSE, CBRS_ALIGN_ANY);
-			 m_wndEventList.ShowPane(TRUE, FALSE, TRUE);
-		 }
-		 break;
-	 case ID_VIEW_CHECK_WAVEFORM: 
-		 if (m_wndWaveView.IsVisible())
-			 m_wndWaveView.ShowPane(FALSE, FALSE, TRUE);
-		 else
-		 { 
-			 m_wndWaveView.SetAutoHideMode(FALSE, CBRS_ALIGN_ANY);
-			 m_wndWaveView.ShowPane(TRUE, FALSE, TRUE);
-		 }
-		 break;
-	 }
- }
+	
+	CView* pView = GetActiveView();
 
- void CMainFrame::OnUpdateDockablePane(CCmdUI* pCmdUI)
- {
+	ASSERT(pView->IsKindOf(RUNTIME_CLASS(CBitsAnalyserView)));
+	((CBitsAnalyserView*)pView)->RemoveAllAPDU();
+	m_wndEventList.RemoveAllEvent();
 
-	 BOOL bShow;
-
-	 switch (pCmdUI->m_nID)
-	 {
-	 case ID_VIEW_CHECK_EVENTLIST:bShow = m_wndEventList.IsVisible(); break;
-	 case ID_VIEW_CHECK_WAVEFORM:bShow  = m_wndWaveView.IsVisible(); break;
-	 default:break;
-	 }
-
-	 pCmdUI->SetCheck(bShow);
-
-
- }
-
- LRESULT CMainFrame::OnUpdateProgress(WPARAM  wParam,LPARAM  LParam)
- {
-	// UINT iPos = uiPrinLen*100/uiRecvLen;
-	 CString csText;
-	 if (LParam != 0)
-	 {
-		 UINT iPos = wParam *300/ LParam;
-		 m_Progress->SetPos(iPos);
-
-
-	 }
-
-	 csText.Format("%d/%d", wParam, LParam);
-	 m_ProgressData->SetText(csText);
-
-	 m_wndStatusBar.RedrawWindow();
-
-
-	 return 1;
- }
-
- LRESULT CMainFrame::OnUpdateEvent(WPARAM  wParam, LPARAM  LParam)
- {
-
-	int iCount = m_wndEventList.GetEventCount();
-
-	if (iCount < 1)
-		return 0;
-		 
-
-	m_wndWaveView.m_pScrollBar.SetScrollRange(1, iCount);
-
-	if (wParam != 0)
-	{
-		m_wndWaveView.m_pWaveForm.OnPaint();
-	}
-	if (LParam != 0)
-	{
-		m_wndEventList.UpdateEventList();
-	}
-
-	m_wndWaveView.m_pScrollBar.SetScrollPos(m_wndWaveView.m_pScrollBar.GetScrollPos());
-
-	return 1;
-  }
-
-
-
-
- void CMainFrame::OnComboPrescale()
- {
-	 // TODO: 在此添加命令处理程序代码
-
-	 CString csPrescale;
-	 CMFCRibbonComboBox* pFontComboBox = DYNAMIC_DOWNCAST(
-		 CMFCRibbonComboBox, m_wndRibbonBar.FindByID(ID_COMBO_PRESCALE));
-	 csPrescale = pFontComboBox->GetEditText();
-
-	 
-
-	 int iPrescale = _CString2IntDecimal(csPrescale);
-	 if (iPrescale <= 0)
-		 return;
-
-
-	 m_wndWaveView.InputPrescale(iPrescale);
-
-	 //通知更新绘制 WaveView
-	 OnUpdateEvent(1, NULL);
  }
