@@ -135,21 +135,25 @@ void CBitsAnalyserDoc::Serialize(CArchive& ar)
 		_Bits = new BYTE[256];
 		_ViewCount = ar.Read(_Bits, 256);
 
+	
+
 		int iCurrent = 0;
-		int iSum = 0;
+		int iReadSum = 0;
+		CFile* __File = ar.GetFile();
+		int iSize = __File->GetLength();
 
 		while (_ViewCount>0)
 		{
-			_pMain->SendMessage(ID_MESSAGE_UPDATE_PROGRESS, iSum, iSum + _ViewCount);
-			iCurrent = ((_ViewCount > 256) ? 256: _ViewCount);
-			iSum    += iCurrent;
-			pView->ViewAPDU(_Bits, iCurrent);
-			_ViewCount = ar.Read(_Bits, 256);
+			_pMain->SendMessage(ID_MESSAGE_UPDATE_PROGRESS, iReadSum, iSize);
+			_ViewCount   = ((_ViewCount > 256) ? 256: _ViewCount);
+			iReadSum    += _ViewCount;
+			pView->ViewAPDU(_Bits, _ViewCount);
+			_ViewCount   = ar.Read(_Bits, 256);
 		
 			
 		}
 
-		_pMain->SendMessage(ID_MESSAGE_UPDATE_PROGRESS, iSum, iSum);
+		_pMain->SendMessage(ID_MESSAGE_UPDATE_PROGRESS, iReadSum, iSize);
 		_pMain->SendMessage(ID_MESSAGE_UPDATE_EVENT, 1, 0);
 
 		delete _Bits;

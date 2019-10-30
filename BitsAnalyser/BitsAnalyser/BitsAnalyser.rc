@@ -53,11 +53,11 @@ BEGIN
     "\r\n"
     "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
     "LANGUAGE 4, 2\r\n"
-    "#include ""res\\BitsAnalyser.rc2""  // 闈?Microsoft Visual C++ 缂栬緫鐨勮祫婧?\n"
-    "#include ""l.CHS\\afxres.rc""      // 鏍囧噯缁勪欢\r\n"
+    "#include ""res\\BitsAnalyser.rc2""  // 闂?Microsoft Visual C++ 缂傛牞绶惃鍕カ濠?\n"
+    "#include ""l.CHS\\afxres.rc""      // 閺嶅洤鍣紒鍕\r\n"
     "#if !defined(_AFXDLL)\r\n"
-    "#include ""l.CHS\\afxprint.rc""        // 鎵撳嵃/鎵撳嵃棰勮璧勬簮\r\n"
-    "#include ""l.CHS\\afxribbon.rc""        // MFC 鍔熻兘鍖哄拰鎺т欢鏉¤祫婧?\n"
+    "#include ""l.CHS\\afxprint.rc""        // 閹垫挸宓?閹垫挸宓冩０鍕潔鐠у嫭绨?\n"
+    "#include ""l.CHS\\afxribbon.rc""        // MFC 閸旂喕鍏橀崠鍝勬嫲閹貉傛閺壜ょカ濠?\n"
     "#endif\r\n"
     "#endif\r\n"
     "\0"
@@ -486,11 +486,11 @@ END
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 LANGUAGE 4, 2
-#include "res\BitsAnalyser.rc2"  // 闈?Microsoft Visual C++ 缂栬緫鐨勮祫婧?
-#include "l.CHS\afxres.rc"      // 鏍囧噯缁勪欢
+#include "res\BitsAnalyser.rc2"  // 闂?Microsoft Visual C++ 缂傛牞绶惃鍕カ濠?
+#include "l.CHS\afxres.rc"      // 閺嶅洤鍣紒鍕
 #if !defined(_AFXDLL)
-#include "l.CHS\afxprint.rc"        // 鎵撳嵃/鎵撳嵃棰勮璧勬簮
-#include "l.CHS\afxribbon.rc"        // MFC 鍔熻兘鍖哄拰鎺т欢鏉¤祫婧?
+#include "l.CHS\afxprint.rc"        // 閹垫挸宓?閹垫挸宓冩０鍕潔鐠у嫭绨?
+#include "l.CHS\afxribbon.rc"        // MFC 閸旂喕鍏橀崠鍝勬嫲閹貉傛閺壜ょカ濠?
 #endif
 #endif
 

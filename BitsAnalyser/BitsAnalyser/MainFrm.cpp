@@ -447,7 +447,7 @@ BOOL CMainFrame::CreateStatueBar()
 	m_Progress->SetPos(0);
 	m_wndStatusBar.AddElement(m_Progress, _T("进度条"));
 
-	strTitlePane2 = _T("0/0             \1");
+	strTitlePane2 = _T("0/0                 \2");
 
 	m_ProgressData = new CMFCRibbonStatusBarPane(ID_STATUSBAR_PANE2, strTitlePane2, TRUE);
 	m_wndStatusBar.AddElement(m_ProgressData, _T("接受到/采集到"));
@@ -814,7 +814,7 @@ void CMainFrame::OnDisconnectButton()
  {
 	// UINT iPos = uiPrinLen*100/uiRecvLen;
 	 CString csText;
-	 if (uiBitsLen!= 0)
+	 if (LParam != 0)
 	 {
 		 UINT iPos = wParam *300/ LParam;
 		 m_Progress->SetPos(iPos);
