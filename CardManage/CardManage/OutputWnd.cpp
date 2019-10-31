@@ -162,7 +162,7 @@ void COutputWnd::ResetContent()
 }
 void COutputWnd::PrintAPDU(CString csSend,CString csResp)
 {
-
+	SetRedraw(FALSE);
 
 	if (!csSend.IsEmpty())
 	{
@@ -189,6 +189,9 @@ void COutputWnd::PrintAPDU(CString csSend,CString csResp)
 	iRet = m_wndOutputAll .SetCaretIndex(m_wndOutputAll .GetCount()-1);
 	iRet = m_wndOutputAPDU.SetCaretIndex(m_wndOutputAPDU.GetCount()-1);
 	iRet = m_wndOutputOper.SetCaretIndex(m_wndOutputOper.GetCount()-1);
+
+	SetRedraw(TRUE);
+	UpdateWindow();
 
 }
 void COutputWnd::PrintInformation( CString csSend,CString csResp )
