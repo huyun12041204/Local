@@ -82,6 +82,7 @@ public:
 	void DrawDescription(CDC* pDC, int iTextX, CString csText);
 	void DrawLine(CDC* pDC, CRect& rect, POINT* pSelect = NULL);
 	void DrawWave(CDC* pDC, POINT pStart, POINT* pEnd, int iType = DEF_IO_PIN, int iLimit = 0, int iSighLimit = DEF_SIGHT_LIMIT);
+	void CWaveForm::RemoveWave(void);
 	void InputBitsDatas(BYTE* Bits, int iBitsLen);
 	//void GenerateStartPoint(int* BitsOffset, POINT* pIO, POINT* pVCC, POINT* pRST);
 	//void GeneratePoint     (int* BitsOffset, POINT* pIO, POINT* pVCC, POINT* pRST);

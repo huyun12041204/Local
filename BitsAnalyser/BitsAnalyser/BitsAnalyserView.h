@@ -22,6 +22,15 @@
 #define DEF_Virtual_Event 0
 #define DEF_TRUE_Event    1
 
+#define DEF_CLK_BITS 0x80
+#define DEF_IO_BITS  0x40
+#define DEF_VCC_BITS 0x20
+#define DEF_RST_BITS 0x10
+
+#define DEF_WORK_BITS 0x30
+
+#define DEF_DFAULT_PRESCALE  372
+
 class CBitsAnalyserView : public CView
 {
 protected: // 仅从序列化创建
@@ -82,7 +91,7 @@ public:
 	// Parameter: int iVirtualEvent 
 	//************************************
 
-	int ViewAPDU(BYTE* ucBits, UINT BitsLen, int iVirtualEvent = DEF_Virtual_Event);
+	int ViewAPDU(BYTE* ucBits, UINT BitsLen, int iVirtualEvent = DEF_TRUE_Event);
 	int AddEvent(BYTE* ucbits, int ibitslen);
 	int ModifyDescription(BYTE  __BYTE);
 	int RemoveAllAPDU(void);

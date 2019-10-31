@@ -115,10 +115,14 @@ int CEventList::GetEvent(int iIndex, CString& csEvent, CString& csDescription)
 
 	return DEF_EVENT_SUCCESS_EXT;
 #else
+	if(iIndex<0)
+		return DEF_EVENT_OVER;
+
 	if (iIndex >= ___EentList.GetCount())
 		return DEF_EVENT_OVER;
 
 	_DeleteEnterSpace(csEvent);
+
 
 	csEvent = ___EentList.GetAt(iIndex);
 

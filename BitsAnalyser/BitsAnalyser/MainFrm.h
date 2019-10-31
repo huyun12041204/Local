@@ -125,6 +125,7 @@ protected:
 	afx_msg void OnUpdateComboPrescale(CCmdUI* pCmdUI);
 	afx_msg void OnDockablePane(UINT iID);
 	afx_msg LRESULT OnUpdateProgress(WPARAM  wParam,LPARAM  LParam);
+
 	afx_msg LRESULT OnUpdateEvent(WPARAM  wParam, LPARAM  LParam);
 
 	DECLARE_MESSAGE_MAP()

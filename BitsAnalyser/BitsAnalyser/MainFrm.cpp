@@ -273,7 +273,7 @@ UINT ViewBits(LPVOID pParam)
 				
 				WaitByte[0] = (bPreBit0 & 0xF0) + 2;
 
-				pView->ViewAPDU(WaitByte, 3,1);
+				pView->ViewAPDU(WaitByte, 3, DEF_Virtual_Event);
 				bEmpty = FALSE;
 				iWait = 0;
 
@@ -668,6 +668,8 @@ void CMainFrame::OnConnectButton()
 			ViewBitThread = AfxBeginThread(ViewBits, _T("ViewBits"));
 		//GetDlgItem(IDC_ComConnect_Button)->SetWindowText("Disconnect");
 		RemoveAllBitsData();
+		OnUpdateEvent(0, 0);
+		OnUpdateProgress(0, 0);
 	}
 	else
 	{
@@ -841,15 +843,21 @@ LRESULT CMainFrame::OnUpdateProgress(WPARAM  wParam, LPARAM  LParam)
 	return 1;
 }
 
+
+//wParam: 重绘波形图, LParam 是否重绘EventList
 LRESULT CMainFrame::OnUpdateEvent(WPARAM  wParam, LPARAM  LParam)
 {
 
+	
 	int iCount = m_wndEventList.GetEventCount();
-
+	//表明没有事件,此事应该为出错状态,或者初始状态
 	if (iCount < 1)
+	{
+		m_wndWaveView.m_pWaveForm.RemoveWave();
 		return 0;
-
-
+	}
+		
+	//设置滚轮数组;
 	m_wndWaveView.m_pScrollBar.SetScrollRange(1, iCount);
 
 	if (wParam != 0)

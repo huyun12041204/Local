@@ -550,6 +550,13 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 
 }
 
+void CWaveForm::RemoveWave()
+{
+
+	CRect rect;
+	GetClientRect(&rect);
+	DrawBackGround(GetDC(), rect);
+}
 
 
 //void  CWaveForm::GenerateStartPoint(int* BitsOffset, POINT* pIO, POINT* pVCC, POINT* pRST)
