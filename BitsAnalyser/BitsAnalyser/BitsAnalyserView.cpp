@@ -679,8 +679,7 @@ CBitsAnalyserDoc* CBitsAnalyserView::GetDocument() const // 非调试版本是内联的
 
 int CBitsAnalyserView::ViewAPDU(BYTE* ucBits, UINT BitsLen, int iVirtualEvent)
 {	BYTE bBYTE;
-
-
+    m_pAPDU.SetRedraw(FALSE);
 
 	for (UINT k = 0 ; k< BitsLen; k++)
 	{
@@ -693,39 +692,10 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits, UINT BitsLen, int iVirtualEvent)
 
 		if (bbitsLen  == bdiflen)
 		{
-
-			if (((bPreBit0& DEF_VCC_BITS) == 00)&&
-				((bbits[0]& DEF_VCC_BITS) == DEF_VCC_BITS))
-			{
-				m_pAPDU.FomatAddString(_T("Power On:"));
-			}
-			//此处为Reset
-			//有可能CLK 时钟为低电平
-			else if (((bbits[0] & DEF_VCC_BITS) != DEF_VCC_BITS) &&
-				((bPreBit0 & DEF_VCC_BITS) == DEF_VCC_BITS))
-			{
-				m_pAPDU.FomatAddString(_T("Power Down:"));
-			}
-			else if (((bbits[0] & DEF_WORK_BITS) == DEF_WORK_BITS) &&
-			  	    ((bPreBit0 & DEF_WORK_BITS) == DEF_VCC_BITS)&&
-				    (iTPDUStatue != NULL))
-			{
-				m_pAPDU.FomatAddString(_T("Warm Reset:"));
-
-			}
-
-
-			//在VCC 和 RST 都为高电平时 ,
-			if (((bPreBit0 & DEF_WORK_BITS)!= DEF_WORK_BITS)&&
-				((bbits[0] & DEF_WORK_BITS)== DEF_WORK_BITS))
-
-			{
-				iPrescale = DEF_DFAULT_PRESCALE;
-				iBitStatue = Def_Bit_S;
-				iTPDUStatue = _TPDU_NULL;
-				iByteLen = 0;
-			}
+			//m_pAPDU.LockWindowUpdate();
 			
+
+			_Handle_Pin_Bytes(bPreBit0, bbits[0]);
 
 	
 
@@ -749,12 +719,12 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits, UINT BitsLen, int iVirtualEvent)
 
 					case _TPDU_ATR:
 
-		/*				if (ExplainATR(csData,csInfomation))
+						if (ExplainATR(csData,csInfomation))
 						{
 							for (int i = 0 ; i < csInfomation.GetCount(); i++)
 								m_pAPDU.FomatAddString(csInfomation.GetAt(i));
-							m_pAPDU.FomatAddString(csData,_DEF_APDU_ATR);
-						}*/
+							//m_pAPDU.FomatAddString(csData,_DEF_APDU_ATR);
+						}
 						m_pAPDU.FomatAddString(csData,_DEF_APDU_ATR);
 						break;
 					case _TPDU_PPS:
@@ -762,12 +732,29 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits, UINT BitsLen, int iVirtualEvent)
 						break;
 
 					case _TPDU_TPDU:
+
+						//if (_ExplainAPDU(csSend,csData, csInfomation))
+						//{
+						//	for (int i = 0; i < csInfomation.GetCount(); i++)
+						//		m_pAPDU.FomatAddString(csInfomation.GetAt(i));
+						//}
+
+						
 						m_pAPDU.FomatAddString(csSend,_DEF_APDU_HEAD);
 						m_pAPDU.FomatAddString(csPro ,_DEF_APDU_NULL);
 						m_pAPDU.FomatAddString(csACK,_DEF_APDU_ACK);
 						m_pAPDU.FomatAddString(csData,_DEF_APDU_DATA);
 						m_pAPDU.FomatAddString(csLPro,_DEF_APDU_NULL);
 						m_pAPDU.FomatAddString(csSW,_DEF_APDU_SW);
+
+						if (__P3IsLe(csSend + csData + csSW))
+							_ExplainAPDU(csSend, csData + csSW, csInfomation);
+						else
+							_ExplainAPDU(csSend + csData, +csSW, csInfomation);
+
+						for (int i = 0; i < csInfomation.GetCount(); i++)
+							m_pAPDU.FomatAddString(csInfomation.GetAt(i));
+
 
 						break;
 
@@ -789,49 +776,12 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits, UINT BitsLen, int iVirtualEvent)
 			if (iVirtualEvent!= DEF_Virtual_Event)
 				AddEvent(bbits, bbitsLen);
 			
-			////此处为Reset
-			////有可能CLK 时钟为低电平
-			//if ((bbits[0]& DEF_WORK_BITS) != DEF_WORK_BITS)
-			//{
-
-			//	if (((bbits[0]& DEF_VCC_BITS) != DEF_VCC_BITS)&&
-			//		((bPreBit0& DEF_VCC_BITS) == DEF_VCC_BITS))
-			//	{
-			//		m_pAPDU.AddString(_T("------------------------------------ - "));
-			//		m_pAPDU.AddString(_T("Power Down:"));
-			//		m_pAPDU.AddString(_T("-------------------------------------"));
-			//	}
-			//	else if(((bPreBit0 & DEF_RST_BITS )== DEF_RST_BITS) &&
-			//		((bPreBit0 & DEF_RST_BITS) == DEF_RST_BITS))
-			//	{
-			//		m_pAPDU.AddString(_T("------------------------------------ - "));
-			//		m_pAPDU.AddString(_T("Warm Reset:"));
-			//		m_pAPDU.AddString(_T("-------------------------------------"));
-			//	}
-
-
-			//	iPrescale   = DEF_DFAULT_PRESCALE;
-			//	iBitStatue  = Def_Bit_S;
-			//	iTPDUStatue = _TPDU_NULL;
-			//	iByteLen = 0;
-			//}
-
-
-			//if ((bbits[0] & DEF_WORK_BITS) != DEF_WORK_BITS)
-			//{
-
-			//	iPrescale = DEF_DFAULT_PRESCALE;
-			//	iBitStatue = Def_Bit_S;
-			//	iTPDUStatue = _TPDU_NULL;
-			//	iByteLen = 0;
-
-			//}
-			
-
-
+		
+	
 			bbitsLen = 0;
 			bdiflen  = 0;
 
+;
 		}
 		else if (bdiflen == 0)
 		{
@@ -841,9 +791,48 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits, UINT BitsLen, int iVirtualEvent)
 		}
 
 	}
+
+	m_pAPDU.SetRedraw(TRUE);
+	m_pAPDU.UpdateWindow();
 	return 0;
 }
+void CBitsAnalyserView::_Handle_Pin_Bytes(BYTE ucPre, BYTE ucCur)
+{
 
+	
+	if (((ucPre & DEF_VCC_BITS) == DEF_POWEROFF_BITS) &&
+		((ucCur & DEF_VCC_BITS) == DEF_VCC_BITS))
+	{
+		m_pAPDU.AddString(_T("---------------------------------------------------------------------------------------"));
+		m_pAPDU.FomatAddString(_T("OPERATION:POWER ON"));
+	}
+	//此处为Reset
+	//有可能CLK 时钟为低电平
+	else if (((ucCur & DEF_VCC_BITS) != DEF_VCC_BITS) &&
+		((ucPre & DEF_VCC_BITS) == DEF_VCC_BITS))
+	{
+		m_pAPDU.AddString(_T("---------------------------------------------------------------------------------------"));
+		m_pAPDU.FomatAddString(_T("OPERATION:POWER OFF"));
+		_InitializeBits();
+	}
+	else if (((ucCur & DEF_WORK_BITS) == DEF_WORK_BITS) &&
+		((ucPre & DEF_WORK_BITS) == DEF_VCC_BITS) &&
+		(iTPDUStatue != NULL))
+	{
+		m_pAPDU.AddString(_T("---------------------------------------------------------------------------------------"));
+		m_pAPDU.FomatAddString(_T("OPERATION:RESET"));
+		_InitializeBits();
+	}
+
+
+}
+void CBitsAnalyserView::_InitializeBits()
+{
+	iPrescale   = DEF_DFAULT_PRESCALE;
+	iBitStatue  = Def_Bit_S;
+	iTPDUStatue = _TPDU_NULL;
+	iByteLen    = 0;
+}
 void CBitsAnalyserView::UpdateFonts()
 {
 	m_pAPDU.SetFont(&afxGlobalData.fontRegular);

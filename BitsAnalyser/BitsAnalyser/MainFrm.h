@@ -94,7 +94,6 @@ protected:  // 控件条嵌入成员
 	CMFCRibbonStatusBar  m_wndStatusBar;
 
 
-	COutputWnd           m_wndOutput;
 
 
 

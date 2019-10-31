@@ -115,8 +115,8 @@ void CBitsAnalyserDoc::Serialize(CArchive& ar)
 
 		_pMain -> RemoveAllBitsData();
 
-		_Bits = new BYTE[256];
-		_ViewCount = ar.Read(_Bits, 256);
+		_Bits = new BYTE[DEF_SINGLE_VIEW_MAX];
+		_ViewCount = ar.Read(_Bits, DEF_SINGLE_VIEW_MAX);
 
 	
 
@@ -128,10 +128,10 @@ void CBitsAnalyserDoc::Serialize(CArchive& ar)
 		while (_ViewCount>0)
 		{
 			_pMain->SendMessage(ID_MESSAGE_UPDATE_PROGRESS, iReadSum, iSize);
- 			_ViewCount   = ((_ViewCount > 256) ? 256: _ViewCount);
+ 			_ViewCount   = ((_ViewCount > DEF_SINGLE_VIEW_MAX) ? DEF_SINGLE_VIEW_MAX : _ViewCount);
 			iReadSum    += _ViewCount;
 			pView->ViewAPDU(_Bits, _ViewCount);
-			_ViewCount   = ar.Read(_Bits, 256);
+			_ViewCount   = ar.Read(_Bits, DEF_SINGLE_VIEW_MAX);
 		
 			
 		}

@@ -29,8 +29,9 @@
 
 #define  _DEF_DESCRIPTTION 11
 
+#define  _DEF_SiNGLE_TEXT_MAX 64
 #define _DEF_FORMATE_LENGTH 400
-
+#define _DEF_TEXT_FORMATE_LENGTH 69
 #define _DEF_NAME_LENGTH    40
 
 #define  DEF_OUTPUTLIST_HOTKEY_C_C 10100
@@ -56,6 +57,10 @@ protected:
 	afx_msg void OnEditSave();
 	afx_msg int  OnCreate(LPCREATESTRUCT lpCreateStruct);
 	DECLARE_MESSAGE_MAP()
+
+	CDC  pTextDC;
+	CString csFormat;
+	long SpaceWidth;
 public:
 	//	afx_msg void OnKillFocus(CWnd* pNewWnd);
 
@@ -78,40 +83,5 @@ public:
 	void         AdjustHorzScroll();
 	long         GetTextWidth(CString csText);
 	CString      GetSpaceText(long lTextWidth);
-};
-
-
-class COutputWnd : public CDockablePane
-{
-// 构造
-public:
-	COutputWnd();
-
-	void UpdateFonts();
-
-// 特性
-protected:
-	CMFCTabCtrl	m_wndTabs;
-
-	COutputList m_wndOutputBuild;
-	COutputList m_wndOutputDebug;
-	COutputList m_wndOutputFind;
-
-protected:
-	void FillBuildWindow();
-	void FillDebugWindow();
-	void FillFindWindow();
-
-	void AdjustHorzScroll(CListBox& wndListBox);
-
-// 实现
-public:
-	virtual ~COutputWnd();
-
-protected:
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-
-	DECLARE_MESSAGE_MAP()
 };
 

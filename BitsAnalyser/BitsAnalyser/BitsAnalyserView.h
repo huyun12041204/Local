@@ -27,9 +27,12 @@
 #define DEF_VCC_BITS 0x20
 #define DEF_RST_BITS 0x10
 
-#define DEF_WORK_BITS 0x30
+#define DEF_WORK_BITS     0x30
+#define DEF_POWEROFF_BITS 0x00
 
 #define DEF_DFAULT_PRESCALE  372
+
+#define DEF_SINGLE_VIEW_MAX 512
 
 class CBitsAnalyserView : public CView
 {
@@ -68,7 +71,7 @@ protected:
 
 // 生成的消息映射函数
 protected:
-	afx_msg void OnFilePrintPreview();
+	//afx_msg void OnFilePrintPreview();
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
@@ -92,7 +95,35 @@ public:
 	//************************************
 
 	int ViewAPDU(BYTE* ucBits, UINT BitsLen, int iVirtualEvent = DEF_TRUE_Event);
+
+	//************************************
+	// Method:    _Handle_Pin_Bytes
+	// FullName:  判断是重启，还是上电，或者下电 
+	// Access:    public 
+	// Returns:   void
+	// Qualifier:
+	// Parameter: BYTE ucPre
+	// Parameter: BYTE ucCur
+	//************************************
+	void _Handle_Pin_Bytes(BYTE ucPre,BYTE ucCur);
+	//************************************
+	// Method:    _InitializeBits
+	// FullName:  用于重置Bits参数
+	// Access:    public 
+	// Returns:   void
+	// Qualifier:
+	//************************************
+	void _InitializeBits();
+
 	int AddEvent(BYTE* ucbits, int ibitslen);
+	//************************************
+	// Method:    ModifyDescription
+	// FullName:  添加最后一个event 的BYTE
+	// Access:    public 
+	// Returns:   int
+	// Qualifier:
+	// Parameter: BYTE __BYTE
+	//************************************
 	int ModifyDescription(BYTE  __BYTE);
 	int RemoveAllAPDU(void);
 };

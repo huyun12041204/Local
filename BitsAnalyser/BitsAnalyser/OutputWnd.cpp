@@ -21,126 +21,6 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// COutputBar
-
-COutputWnd::COutputWnd()
-{
-}
-
-COutputWnd::~COutputWnd()
-{
-}
-
-BEGIN_MESSAGE_MAP(COutputWnd, CDockablePane)
-	ON_WM_CREATE()
-	ON_WM_SIZE()
-END_MESSAGE_MAP()
-
-int COutputWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
-{
-	if (CDockablePane::OnCreate(lpCreateStruct) == -1)
-		return -1;
-
-	CRect rectDummy;
-	rectDummy.SetRectEmpty();
-
-	// 创建选项卡窗口:
-	if (!m_wndTabs.Create(CMFCTabCtrl::STYLE_FLAT, rectDummy, this, 1))
-	{
-		TRACE0("未能创建输出选项卡窗口\n");
-		return -1;      // 未能创建
-	}
-
-	// 创建输出窗格:
-	const DWORD dwStyle = LBS_NOINTEGRALHEIGHT | WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL;
-
-	if (!m_wndOutputBuild.Create(dwStyle, rectDummy, &m_wndTabs, 2) ||
-		!m_wndOutputDebug.Create(dwStyle, rectDummy, &m_wndTabs, 3) ||
-		!m_wndOutputFind.Create(dwStyle, rectDummy, &m_wndTabs, 4))
-	{
-		TRACE0("未能创建输出窗口\n");
-		return -1;      // 未能创建
-	}
-
-	UpdateFonts();
-
-	CString strTabName;
-	BOOL bNameValid;
-
-	// 将列表窗口附加到选项卡:
-	bNameValid = strTabName.LoadString(IDS_BUILD_TAB);
-	ASSERT(bNameValid);
-	m_wndTabs.AddTab(&m_wndOutputBuild, strTabName, (UINT)0);
-	bNameValid = strTabName.LoadString(IDS_DEBUG_TAB);
-	ASSERT(bNameValid);
-	m_wndTabs.AddTab(&m_wndOutputDebug, strTabName, (UINT)1);
-	bNameValid = strTabName.LoadString(IDS_FIND_TAB);
-	ASSERT(bNameValid);
-	m_wndTabs.AddTab(&m_wndOutputFind, strTabName, (UINT)2);
-
-	// 使用一些虚拟文本填写输出选项卡(无需复杂数据)
-	FillBuildWindow();
-	FillDebugWindow();
-	FillFindWindow();
-
-	return 0;
-}
-
-void COutputWnd::OnSize(UINT nType, int cx, int cy)
-{
-	CDockablePane::OnSize(nType, cx, cy);
-
-	// 选项卡控件应覆盖整个工作区:
-	m_wndTabs.SetWindowPos (NULL, -1, -1, cx, cy, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
-}
-
-void COutputWnd::AdjustHorzScroll(CListBox& wndListBox)
-{
-	CClientDC dc(this);
-	CFont* pOldFont = dc.SelectObject(&afxGlobalData.fontRegular);
-
-	int cxExtentMax = 0;
-
-	for (int i = 0; i < wndListBox.GetCount(); i ++)
-	{
-		CString strItem;
-		wndListBox.GetText(i, strItem);
-
-		cxExtentMax = max(cxExtentMax, dc.GetTextExtent(strItem).cx);
-	}
-
-	wndListBox.SetHorizontalExtent(cxExtentMax);
-	dc.SelectObject(pOldFont);
-}
-
-void COutputWnd::FillBuildWindow()
-{
-	m_wndOutputBuild.AddString(_T("生成输出正显示在此处。"));
-	m_wndOutputBuild.AddString(_T("输出正显示在列表视图的行中"));
-	m_wndOutputBuild.AddString(_T("但您可以根据需要更改其显示方式..."));
-}
-
-void COutputWnd::FillDebugWindow()
-{
-	m_wndOutputDebug.AddString(_T("调试输出正显示在此处。"));
-	m_wndOutputDebug.AddString(_T("输出正显示在列表视图的行中"));
-	m_wndOutputDebug.AddString(_T("但您可以根据需要更改其显示方式..."));
-}
-
-void COutputWnd::FillFindWindow()
-{
-	m_wndOutputFind.AddString(_T("查找输出正显示在此处。"));
-	m_wndOutputFind.AddString(_T("输出正显示在列表视图的行中"));
-	m_wndOutputFind.AddString(_T("但您可以根据需要更改其显示方式..."));
-}
-
-void COutputWnd::UpdateFonts()
-{
-	m_wndOutputBuild.SetFont(&afxGlobalData.fontRegular);
-	m_wndOutputDebug.SetFont(&afxGlobalData.fontRegular);
-	m_wndOutputFind.SetFont(&afxGlobalData.fontRegular);
-}
 
 /////////////////////////////////////////////////////////////////////////////
 // COutputList1
@@ -295,7 +175,11 @@ int  COutputList::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CListBox::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
+	pTextDC.CreateCompatibleDC(GetDC());
+	pTextDC.SelectObject(&afxGlobalData.fontRegular);
 
+	_RepeatCString(_T(" "), _DEF_FORMATE_LENGTH, csFormat);
+	SpaceWidth = GetTextWidth(_T(" "));
 	return 0;
 }
 void COutputList::_APDUExplainFormat(CString&csText,int iFormatLength)
@@ -382,7 +266,7 @@ int  COutputList::FomatAPDU(CString csText,CStringArray& csArray,int iNT)
 
 
 	if (!csText.IsEmpty())
-		iCount  = csText.GetLength()/64 +(csText.GetLength()%64 != 0);
+		iCount  = csText.GetLength()/ _DEF_SiNGLE_TEXT_MAX +(csText.GetLength()% _DEF_SiNGLE_TEXT_MAX!= 0);
 	else
 		iCount  = 0;
 
@@ -395,7 +279,7 @@ int  COutputList::FomatAPDU(CString csText,CStringArray& csArray,int iNT)
 			case _DEF_APDU_ATR: csFomat = _T("ATR  : ");break;
 			case _DEF_APDU_HEAD:csFomat = _T("HEAD : ");break;
 			case _DEF_APDU_NULL:csFomat = _T("NULL : ");break;
-	    	case _DEF_APDU_ACK:csFomat  = _T("ACK  : ");break;
+	    	case _DEF_APDU_ACK :csFomat = _T("ACK  : ");break;
 			case _DEF_APDU_DATA:csFomat = _T("DATA : ");break;
 			case _DEF_APDU_SW  :csFomat = _T("SW   : ");break;
 			case _DEF_APDU_PPS: csFomat = _T("PPS  : ");break;
@@ -405,7 +289,7 @@ int  COutputList::FomatAPDU(CString csText,CStringArray& csArray,int iNT)
 		else if(i == 1)
 			csFomat = GetSpaceText (GetTextWidth( csFomat ));
 
-		csTemp = csText.Mid(i*64,64);
+		csTemp = csText.Mid(i* _DEF_SiNGLE_TEXT_MAX, _DEF_SiNGLE_TEXT_MAX);
 		_AppendSpace(csTemp);
 		csArray.Add(csFomat+csTemp);
 	}
@@ -420,21 +304,21 @@ int  COutputList::FomatAPDU(CString csText,CStringArray& csArray,int iNT)
 int  COutputList::FomatDesription(CString csText,CStringArray& csArray)
 {
 
-	CString csFormat = _T(" ");
+	
 	CString csFText;
 	int iOff = 0;
 	int iLength;
 	int iNum= 0;
-	_RepeatCString(csFormat,_DEF_FORMATE_LENGTH,csFText);
-	csFormat = csText.Left(_DEF_FORMATE_LENGTH);
-	csText   = csText.Mid(_DEF_FORMATE_LENGTH);
+	//_RepeatCString(csFormat,_DEF_FORMATE_LENGTH,csFText);
+	csFText  = csText.Left(_DEF_FORMATE_LENGTH);
+	csText   = csText.Mid (_DEF_FORMATE_LENGTH);
 	iLength  = csText.GetLength();
 
 	do 
 	{
-		csArray.Add(csFormat+csText.Mid(iOff ,69));
-		iOff += 69;
-		csFormat = csFText;
+		csArray.Add(csFText +csText.Mid(iOff , _DEF_TEXT_FORMATE_LENGTH));
+		iOff += _DEF_TEXT_FORMATE_LENGTH;
+		csFText = csFormat;
 		iNum += 1;
 	} while (iLength > iOff);
 
@@ -678,37 +562,40 @@ void COutputList::OnSetFocus(CWnd* pOldWnd)
 }
 long COutputList::GetTextWidth( CString csText )
 {
-	return csText.GetLength()*16;
+	//return csText.GetLength()*16;
 	//if (csText.IsEmpty())
 	//	return 0;
 	//CDC* pdc = GetDC();
 
-	//if (pdc == NULL)
-	//{
-	//	 MessageBox("处错误!");
+	////if (pdc == NULL)
+	////{
+	////	 MessageBox("处错误!");
 
-	//	 return csText.GetLength()*16;
+	////	 return csText.GetLength()*16;
 
-	//}
+	////}
 
-	//CSize __Size;
+	CSize __Size;
 	//CFont *pOldfont = pdc->SelectObject(GetFont());
-
-
-	//__Size = pdc->GetTextExtent(csText);
+	__Size = pTextDC.GetTextExtent(csText);
 
 	//pdc->SelectObject(pOldfont);
-	//return __Size.cx;
+	return __Size.cx;
 }
 CString COutputList::GetSpaceText(long lTextWidth)
 {
-	CString csResult;
-	long lSight = GetTextWidth(" ");
-	//调试无法获取CDC 所以无法计算宽度,
-	if (lSight== 0)
-		lSight = 8;
 
-	_RepeatCString(_T(" "),lTextWidth/ lSight,csResult);
+	//long lSight = GetTextWidth(" ");
+	////调试无法获取CDC 所以无法计算宽度,
+	//if (lSight== 0)
+	//	lSight = 8;
+	//int iNumber = lTextWidth / lSight;
+	//if (iNumber >40)
+	//	_RepeatCString(_T(" "), iNumber, csResult);
+	//else
+	//	csResult = csResult.Left(iNumber);
 
-	return  csResult;
+	
+
+	return  csFormat.Left(lTextWidth/SpaceWidth);
 }

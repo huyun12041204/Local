@@ -244,12 +244,16 @@ int CEventList::UpdateEventList(void)
 
 int CEventList::ShowEventList()
 {
-	m_pEventList.ResetContent();
+	//m_pEventList.ResetContent();
 
 	int iCount = ___EentList.GetCount();
 
-	for (int i = 0 ; i< iCount; i++ )
+	m_pEventList.SetRedraw(FALSE);
+	for (int i = m_pEventList.GetCount(); i< iCount; i++ )
 		m_pEventList.AddString(___EentList.GetAt(i));
+
+	m_pEventList.SetRedraw(TRUE);
+	m_pEventList.UpdateWindow();
 
 	return iCount;
 }
