@@ -202,23 +202,23 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CString csInitValue;
 
 	csTitle.LoadString(IDS_STATUS_PANE1);
-	csInitValue  = csTitle + _T("          \1");
+	csInitValue  = csTitle + _T("          \2");
 	m_ElementSta = new CMFCRibbonStatusBarPane(ID_STATUSBAR_PANE1, csInitValue);
 	m_wndStatusBar.AddElement(m_ElementSta,csTitle);
 
 	csTitle.LoadString(IDS_STATUS_PANE2);
-	csInitValue  = _T("ATR:                                                      \1");
+	csInitValue  = _T("ATR:                                                      \2");
 	m_ElementATR = new CMFCRibbonStatusBarPane(ID_STATUSBAR_PANE2, csInitValue);
 	m_wndStatusBar.AddElement(m_ElementATR,csTitle);
 
 
 	csTitle.LoadString(IDS_STATUS_PANE3);
-	csInitValue  = csTitle + _T("          \1");
+	csInitValue  = csTitle + _T("          \2");
 	m_ElementThr = new CMFCRibbonStatusBarPane(ID_STATUSBAR_PANE3, csInitValue);
 	m_wndStatusBar.AddExtendedElement(m_ElementThr,csTitle);
 
 	csTitle.LoadString(IDS_STATUS_PANE4);
-	csInitValue  = _T("0/0          \1");
+	csInitValue  = _T("0/0          \2");
 	m_ElementPro = new CMFCRibbonStatusBarPane(ID_STATUSBAR_PANE4, csInitValue);
 	m_wndStatusBar.AddExtendedElement(m_ElementPro,csTitle);
 
@@ -3591,22 +3591,22 @@ void CMainFrame::_SetCurrentStatus()
 
 	switch(iThread&0xFF)
 	{
-	case Def_Thread_Free:        csTemp = _T("空闲状态.......\1");break;
-	case Def_Thread_GetFile:     csTemp = _T("获取文件中.....\1");break;
-	case Def_Thread_SearchFile:  csTemp = _T("搜索文件中.....\1");break;
-	case Def_Thread_SaveCard:    csTemp = _T("保存文件中.....\1");break;
-	case Def_Thread_MapFile:     csTemp = _T("检查文件列表...\1"); break;
-	case Def_Thread_ReadADN :    csTemp = _T("读取测试号簿...\1"); break;
-	case Def_Thread_WriteADN:    csTemp = _T("写入测试号簿...\1"); break;
-	case Def_Thread_ReadSMS:     csTemp = _T("读取短信.......\1"); break;
-	case Def_Thread_ClearSMS:    csTemp = _T("清空短信.......\1"); break;
-	case Def_Thread_RunScript:   csTemp = _T("运行脚本.......\1"); break;
-	case Def_Thread_Ending:      csTemp = _T("结束进程中.....\1");break;
-	case Def_Thread_ExportCSV:   csTemp = _T("导出文件中.....\1");break;
-	case Def_Thread_GetFlashData:csTemp = _T("获取数据中.....\1");break;
-	case Def_Thread_ReadFile:    csTemp = _T("读取文件.......\1");break;
-	case Def_Thread_UpdateFile:  csTemp = _T("更新文件.......\1");break;
-	default:                     csTemp = _T("未知进程.......\1");break;
+	case Def_Thread_Free:        csTemp = _T("空闲状态.......\2");break;
+	case Def_Thread_GetFile:     csTemp = _T("获取文件中.....\2");break;
+	case Def_Thread_SearchFile:  csTemp = _T("搜索文件中.....\2");break;
+	case Def_Thread_SaveCard:    csTemp = _T("保存文件中.....\2");break;
+	case Def_Thread_MapFile:     csTemp = _T("检查文件列表...\2"); break;
+	case Def_Thread_ReadADN :    csTemp = _T("读取测试号簿...\2"); break;
+	case Def_Thread_WriteADN:    csTemp = _T("写入测试号簿...\2"); break;
+	case Def_Thread_ReadSMS:     csTemp = _T("读取短信.......\2"); break;
+	case Def_Thread_ClearSMS:    csTemp = _T("清空短信.......\2"); break;
+	case Def_Thread_RunScript:   csTemp = _T("运行脚本.......\2"); break;
+	case Def_Thread_Ending:      csTemp = _T("结束进程中.....\2");break;
+	case Def_Thread_ExportCSV:   csTemp = _T("导出文件中.....\2");break;
+	case Def_Thread_GetFlashData:csTemp = _T("获取数据中.....\2");break;
+	case Def_Thread_ReadFile:    csTemp = _T("读取文件.......\2");break;
+	case Def_Thread_UpdateFile:  csTemp = _T("更新文件.......\2");break;
+	default:                     csTemp = _T("未知进程.......\2");break;
 
 	}
 

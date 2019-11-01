@@ -4327,7 +4327,7 @@ BOOL _ExplainSelectData(int iP1,CString csData,CStringArray&csOutput)
 		}
 	
 		else
-			bRet = FALSE;
+			bRet = TRUE;
 		if (bRet)
 			SetCurrentDF(iMarkTemp);
 		break;

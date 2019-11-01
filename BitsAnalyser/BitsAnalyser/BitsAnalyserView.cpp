@@ -740,12 +740,7 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits, UINT BitsLen, int iVirtualEvent)
 						//}
 
 						
-						m_pAPDU.FomatAddString(csSend,_DEF_APDU_HEAD);
-						m_pAPDU.FomatAddString(csPro ,_DEF_APDU_NULL);
-						m_pAPDU.FomatAddString(csACK,_DEF_APDU_ACK);
-						m_pAPDU.FomatAddString(csData,_DEF_APDU_DATA);
-						m_pAPDU.FomatAddString(csLPro,_DEF_APDU_NULL);
-						m_pAPDU.FomatAddString(csSW,_DEF_APDU_SW);
+	
 
 						if (__P3IsLe(csSend + csData + csSW))
 							_ExplainAPDU(csSend, csData + csSW, csInfomation);
@@ -754,6 +749,13 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits, UINT BitsLen, int iVirtualEvent)
 
 						for (int i = 0; i < csInfomation.GetCount(); i++)
 							m_pAPDU.FomatAddString(csInfomation.GetAt(i));
+
+						m_pAPDU.FomatAddString(csSend, _DEF_APDU_HEAD);
+						m_pAPDU.FomatAddString(csPro, _DEF_APDU_NULL);
+						m_pAPDU.FomatAddString(csACK, _DEF_APDU_ACK);
+						m_pAPDU.FomatAddString(csData, _DEF_APDU_DATA);
+						m_pAPDU.FomatAddString(csLPro, _DEF_APDU_NULL);
+						m_pAPDU.FomatAddString(csSW, _DEF_APDU_SW);
 
 
 						break;

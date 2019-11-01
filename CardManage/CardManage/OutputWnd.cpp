@@ -123,6 +123,9 @@ void COutputWnd::UpdateFonts()
 }
 void COutputWnd::Print2Output(CString csLog,CString csSend,CString csResp)
 {
+	m_wndOutputAll.SetRedraw(FALSE);
+	m_wndOutputAPDU.SetRedraw(FALSE);
+	m_wndOutputOper.SetRedraw(FALSE);
 
 
 	if (!csLog.IsEmpty())
@@ -137,6 +140,14 @@ void COutputWnd::Print2Output(CString csLog,CString csSend,CString csResp)
 		PrintAPDU(csSend,csResp);
 
 	}
+
+	m_wndOutputAll.SetRedraw(TRUE);
+	m_wndOutputAPDU.SetRedraw(TRUE);
+	m_wndOutputOper.SetRedraw(TRUE);
+
+	m_wndOutputAll.UpdateWindow();
+	m_wndOutputAPDU.UpdateWindow();
+	m_wndOutputOper.UpdateWindow();
 }
 void COutputWnd::PrintTime2Output(long lTime)
 {
@@ -162,7 +173,11 @@ void COutputWnd::ResetContent()
 }
 void COutputWnd::PrintAPDU(CString csSend,CString csResp)
 {
-	SetRedraw(FALSE);
+//	SetRedraw(FALSE);
+
+	//m_wndOutputAll.SetRedraw(FALSE);
+	//m_wndOutputAPDU.SetRedraw(FALSE);
+	//m_wndOutputOper.SetRedraw(FALSE);
 
 	if (!csSend.IsEmpty())
 	{
@@ -190,8 +205,12 @@ void COutputWnd::PrintAPDU(CString csSend,CString csResp)
 	iRet = m_wndOutputAPDU.SetCaretIndex(m_wndOutputAPDU.GetCount()-1);
 	iRet = m_wndOutputOper.SetCaretIndex(m_wndOutputOper.GetCount()-1);
 
-	SetRedraw(TRUE);
-	UpdateWindow();
+	//m_wndOutputAll.SetRedraw(TRUE);
+	//m_wndOutputAPDU.SetRedraw(TRUE);
+	//m_wndOutputOper.SetRedraw(TRUE);
+	//m_wndOutputAll.UpdateWindow();
+	//m_wndOutputAPDU.UpdateWindow();
+	//m_wndOutputOper.UpdateWindow();
 
 }
 void COutputWnd::PrintInformation( CString csSend,CString csResp )
