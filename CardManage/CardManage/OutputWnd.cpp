@@ -123,9 +123,17 @@ void COutputWnd::UpdateFonts()
 }
 void COutputWnd::Print2Output(CString csLog,CString csSend,CString csResp)
 {
-	m_wndOutputAll.SetRedraw(FALSE);
-	m_wndOutputAPDU.SetRedraw(FALSE);
-	m_wndOutputOper.SetRedraw(FALSE);
+
+	int iNumber = m_wndTabs.GetTabsNum();
+
+	switch (iNumber)
+	{
+	case 0:	m_wndOutputOper.SetRedraw(FALSE); break;
+	case 1:	m_wndOutputAPDU.SetRedraw(FALSE); break;
+	case 2:	m_wndOutputAll.SetRedraw(FALSE); break;
+	}
+
+
 
 
 	if (!csLog.IsEmpty())
@@ -141,13 +149,14 @@ void COutputWnd::Print2Output(CString csLog,CString csSend,CString csResp)
 
 	}
 
-	m_wndOutputAll.SetRedraw(TRUE);
-	m_wndOutputAPDU.SetRedraw(TRUE);
-	m_wndOutputOper.SetRedraw(TRUE);
 
-	m_wndOutputAll.UpdateWindow();
-	m_wndOutputAPDU.UpdateWindow();
-	m_wndOutputOper.UpdateWindow();
+	switch (iNumber)
+	{
+	case 0:	m_wndOutputOper.SetRedraw(TRUE); m_wndOutputOper.UpdateWindow(); break;
+	case 1:	m_wndOutputAPDU.SetRedraw(TRUE); m_wndOutputAPDU.SetRedraw(TRUE); break;
+	case 2:	m_wndOutputAll.SetRedraw(TRUE); m_wndOutputAll.UpdateWindow(); break;
+	}
+
 }
 void COutputWnd::PrintTime2Output(long lTime)
 {

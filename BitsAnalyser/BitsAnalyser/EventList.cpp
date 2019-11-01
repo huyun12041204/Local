@@ -31,6 +31,7 @@ END_MESSAGE_MAP()
 
 // CEventList 消息处理程序
 
+
 //#define VIEW__MODE 
 
 
@@ -46,6 +47,9 @@ int CEventList::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	const DWORD dwStyle = LBS_NOINTEGRALHEIGHT | WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL;
 	m_pEventList.Create(dwStyle, rectDummy, this, IDC_EVENTLIST);
 	
+#ifdef VIEW__MODE
+	m_pEventList.SetRedraw(FALSE);
+#endif
 
 	return 0;
 }
@@ -226,6 +230,8 @@ int CEventList::UpdateEventList(void)
 {
 #ifdef VIEW__MODE
 	//m_pEventList.ResetContent();
+
+
 #else
 	
 	for ( int i = m_pEventList.GetCount(); i < ___EentList.GetCount(); i++)
@@ -244,16 +250,38 @@ int CEventList::UpdateEventList(void)
 
 int CEventList::ShowEventList()
 {
+
+#ifdef VIEW__MODE
+	m_pEventList.SetRedraw(TRUE);
+	m_pEventList.UpdateWindow();
+	return m_pEventList.GetCount();
+
+#else
+
 	//m_pEventList.ResetContent();
 
 	int iCount = ___EentList.GetCount();
 
 	m_pEventList.SetRedraw(FALSE);
-	for (int i = m_pEventList.GetCount(); i< iCount; i++ )
+	for (int i = m_pEventList.GetCount(); i < iCount; i++)
 		m_pEventList.AddString(___EentList.GetAt(i));
 
 	m_pEventList.SetRedraw(TRUE);
 	m_pEventList.UpdateWindow();
 
 	return iCount;
+#endif // VIEW__MODE
+	
+}
+
+ULONG CEventList::GetSize()
+{
+#ifdef VIEW__MODE
+
+	return m_pEventList.GetSize();
+#else
+
+	return ___EentList.GetSize();
+#endif // VIEW__MODE
+
 }

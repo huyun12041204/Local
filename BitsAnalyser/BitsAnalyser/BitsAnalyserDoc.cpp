@@ -93,20 +93,7 @@ void CBitsAnalyserDoc::Serialize(CArchive& ar)
 		}
 
 		delete _Bits;
-		//for (int i = 0 ; i < _EventCount ; i++)
-		//{
-		//	_Event.Empty();
-		//	if (_pMain->m_wndEventList.GetEvent(i, _Event, _EventDes)<=0)
-		//	{
-		//		AfxMessageBox("获取事件失败，此处将直接退出！");
-		//		return;
-		//	}
-		//	//ar.WriteString(_Event);
-		//	_Bits = new BYTE[_Event.GetLength() / 2];
-		//	ar.Write(_Bits, _Event.GetLength() / 2);
-		//	delete _Bits;
 
-		//}
 
 		
 	}
@@ -123,7 +110,7 @@ void CBitsAnalyserDoc::Serialize(CArchive& ar)
 		int iCurrent = 0;
 		int iReadSum = 0;
 		CFile* __File = ar.GetFile();
-		int iSize = __File->GetLength();
+		int iSize = (int)__File->GetLength();
 
 		while (_ViewCount>0)
 		{

@@ -170,6 +170,8 @@ UINT GetBits(LPVOID pParam)
 	int iRet;
 	UINT uiBitsSize;
 	UINT uiRecvSize;
+	UINT uiCurrSize;
+	UINT uiCurrOff;
 	//BYTE _Reci[8];
 
 	while(threadState)
@@ -190,13 +192,26 @@ UINT GetBits(LPVOID pParam)
 			//		_Reci[7];
 			//}
 
+			//获取当前设备内数据大小和以接收大小
 			if (! GetBitsSize(&uiBitsSize,&uiRecvSize))
 				goto __wait_;
 			if (uiBitsSize <= uiRecvLen )
 				goto __wait_;
 			else uiBitsLen = uiBitsSize;
 
-			iRet = _GetBits( (BYTE*)__Bits + uiRecvLen,uiBitsSize - uiRecvLen);
+			//计算当前读取长度
+			uiCurrSize = uiBitsSize - uiRecvLen;
+
+			//计算当前在全局变量的位置;
+			uiCurrOff = uiRecvLen & Max_Size;
+
+			//当前长度 加上 当前位移 ,超过 Max_Size;
+			//表明已经回滚了,
+			//此时应该分两次来取
+			if ((uiCurrSize+ uiCurrOff)> Max_Size)
+				uiCurrSize = Max_Size - uiCurrOff;
+
+			iRet = _GetBits( (BYTE*)__Bits + (uiRecvLen&Max_Address), uiCurrSize);
 
 			uiRecvLen += iRet;
 			continue;
@@ -853,7 +868,8 @@ LRESULT CMainFrame::OnUpdateEvent(WPARAM  wParam, LPARAM  LParam)
 	//表明没有事件,此事应该为出错状态,或者初始状态
 	if (iCount < 1)
 	{
-		m_wndWaveView.m_pWaveForm.RemoveWave();
+
+		m_wndWaveView.RemoveWave();
 		return 0;
 	}
 		

@@ -32,6 +32,7 @@ public:
 	int RemoveAllEvent(void);
 	int UpdateEventList(void);
 	int ShowEventList();
+	ULONG GetSize();
 };
 
 

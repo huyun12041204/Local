@@ -131,6 +131,7 @@ public:
 	int InputEventWnd(CWnd* EventWnd);
 	int InputPrescale(int iPrescale);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	void RemoveWave();
 };
 
 

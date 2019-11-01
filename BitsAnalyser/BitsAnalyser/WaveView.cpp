@@ -325,7 +325,7 @@ CString  GenerateEventText(CString csEvent,  BYTE ___Pre)
 	BYTE* __Event;
 	__Event = new BYTE[csEvent.GetLength() / 2];
 	int Len = _CString2UcHex(csEvent, __Event);
-	int CLK = 0;
+	UINT CLK = 0;
 	for (int i = 1; i < Len; i++)
 	{
 		CLK += (__Event[i] << (i - 1) * 8);
@@ -366,7 +366,11 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 	int  __EventSum = m_hEventList->GetEventCount();
 	BYTE __Pre;
 
+	if (__EventSum == 0)
+	{
+		return;
 
+	}
 	
 
 	if (iOffset == 0)
@@ -556,6 +560,8 @@ void CWaveForm::RemoveWave()
 	CRect rect;
 	GetClientRect(&rect);
 	DrawBackGround(GetDC(), rect);
+	iStartPos = 0;
+	iEndPos = 0;
 }
 
 
@@ -1155,9 +1161,6 @@ int CWaveView::InputPrescale(int iPrescale)
 	
 }
 
-
-
-
 void CWaveView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
@@ -1165,4 +1168,11 @@ void CWaveView::OnLButtonDown(UINT nFlags, CPoint point)
 	m_pWaveForm.OnLButtonDown(nFlags, point);
 
 	CDockablePane::OnLButtonDown(nFlags, point);
+}
+
+void CWaveView::RemoveWave()
+{
+
+	m_pWaveForm.RemoveWave();
+	m_pScrollBar.SetScrollRange(1, 1);
 }

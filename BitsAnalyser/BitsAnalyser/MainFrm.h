@@ -35,7 +35,9 @@
 #define EP_IN    0x81
 #define EP_OUT   0x01
 #define BUF_SIZE 256
-#define Max_Size 1024*1024*100
+
+#define Max_Address 0xFFFFFF
+#define Max_Size   0x1000000 
 
 #define Command_Head_Length 5
 #define Command_TimeOut     5000
