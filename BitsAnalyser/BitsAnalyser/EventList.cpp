@@ -140,7 +140,7 @@ int CEventList::GetEvent(int iIndex, CString& csEvent, CString& csDescription)
 		csDescription.Empty();
 		return DEF_EVENT_SUCCESS;
 	}
-	else
+	else 
 	{
 		csDescription = csEvent.Mid(iDes + 1);
 		csDescription = csDescription.Left(csDescription.GetLength() - 1);

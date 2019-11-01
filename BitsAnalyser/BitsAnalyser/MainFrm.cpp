@@ -26,8 +26,13 @@
 usb_dev_handle *dev ; /* the device handle */
 BYTE _send[Command_Head_Length];
 BYTE __Bits[Max_Size];
+
+
+
+
 int  ConnectState ;
-int  threadState  ;
+int  GetBitsThreadStatue  = 0;
+int  ViewBitsThreadStatue = 0;
 UINT uiBitsLen = 0;
 UINT uiRecvLen = 0;
 UINT uiPrinLen = 0;
@@ -164,6 +169,8 @@ int _InitBits()
 
 
 
+
+
 UINT GetBits(LPVOID pParam) 
 { 
 #if _Command_Mode
@@ -174,7 +181,10 @@ UINT GetBits(LPVOID pParam)
 	UINT uiCurrOff;
 	//BYTE _Reci[8];
 
-	while(threadState)
+	GetBitsThreadStatue  = 1;
+	
+
+	while(GetBitsThreadStatue)
 	{
 		if(dev)
 		{
@@ -222,7 +232,7 @@ __wait_:Sleep(100);
 
 #else
 	int ret;
-	while(threadState)
+	while(GetBitsThreadStatue)
 	{
 		if(dev)
 		{
@@ -255,8 +265,10 @@ UINT ViewBits(LPVOID pParam)
 	CBitsAnalyserView* pView =  (CBitsAnalyserView*)(pFrame->GetActiveView());
 	extern BYTE bPreBit0;
 	BYTE WaitByte[3] = { 0x02,0xFF,0xFF };
+
+	ViewBitsThreadStatue = 1;
 	
-	while(threadState)
+	while(ViewBitsThreadStatue)
 	{
 
 		
@@ -677,11 +689,13 @@ void CMainFrame::OnConnectButton()
 		}
 
 
+
 		if (GetBitThread == NULL)
 			GetBitThread = AfxBeginThread(GetBits, _T("GetBits"));
 		if (ViewBitThread == NULL)
 			ViewBitThread = AfxBeginThread(ViewBits, _T("ViewBits"));
 		//GetDlgItem(IDC_ComConnect_Button)->SetWindowText("Disconnect");
+
 		RemoveAllBitsData();
 		OnUpdateEvent(0, 0);
 		OnUpdateProgress(0, 0);
@@ -731,7 +745,16 @@ void CMainFrame::OnDisconnectButton()
 			dev = NULL;
 		}
 		ConnectState = 0;
+		GetBitsThreadStatue = 0;
+		ViewBitsThreadStatue = 0;
+		//此处设置等待100MS
+		Sleep(100);
+		GetBitThread == NULL;
+		ViewBitThread == NULL;
 	}
+
+
+
 }
 
 void CMainFrame::OnEventButton()
@@ -893,12 +916,13 @@ LRESULT CMainFrame::OnUpdateEvent(WPARAM  wParam, LPARAM  LParam)
 
 void CMainFrame::__Init(void)
 {
-	GetBitThread = NULL;
-	ViewBitThread= NULL;
+	GetBitThread  = NULL;
+	ViewBitThread = NULL;
 	dev = NULL; /* the device handle */
-	ConnectState = 0;
-	threadState  = 1;
-	uiRecvLen    = 0;
+	ConnectState   = 0;
+	GetBitsThreadStatue  = 0;
+	ViewBitsThreadStatue = 0;
+	uiRecvLen      = 0;
 	Initialize_Ribbon();
 
 	//此行为测试使用

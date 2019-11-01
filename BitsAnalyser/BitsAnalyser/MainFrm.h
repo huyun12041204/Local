@@ -62,6 +62,13 @@
 #define DEF_PRESCALE_100000  9
 #define DEF_PRESCALE_1000000 10
 
+
+#define DEF_ON_GETBITS_THREAD   0x01
+#define DEF_OFF_GETBITS_THREAD  0x02
+
+#define DEF_ON_VIEWBITS_THREAD    0x10
+#define DEF_OFF_VIEWBITS_THREAD   0x20
+
 #endif
 
 class CMainFrame : public CFrameWndEx

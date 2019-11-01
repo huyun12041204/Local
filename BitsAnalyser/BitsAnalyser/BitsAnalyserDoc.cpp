@@ -59,7 +59,7 @@ BOOL CBitsAnalyserDoc::OnNewDocument()
 }
 
 
-
+#define DEF_SAVE_SIZE 1024
 
 // CBitsAnalyserDoc 序列化
 
@@ -70,26 +70,50 @@ void CBitsAnalyserDoc::Serialize(CArchive& ar)
 	CString _Event,_EventDes;
 	BYTE* _Bits;
 	int _EventCount;
-	int _ViewCount;
+
+	//Bits总数
+	int iBitsSize   = 0;
+	int iEventSize  = 0;
+	int iHandleSize = 0;
+
 	if (ar.IsStoring())
 	{
+		//iBitsSize = _pMain->m_wndEventList.GetSize();
 		_EventCount = _pMain->m_wndEventList.GetEventCount();
-
-		_Bits = new BYTE[256];
+		iBitsSize = _EventCount;
+		//此处加5预防超出
+		_Bits = new BYTE[DEF_SAVE_SIZE+5];
+		int iSaveOffset = 0;
 		for (int i = 0 ; i < _EventCount ; i++)
 		{
+
+
+
 			_Event.Empty();
 			if (_pMain->m_wndEventList.GetEvent(i, _Event, _EventDes)<=0)
 			{
 				AfxMessageBox("获取事件失败，此处将直接退出！");
 				return;
 			}
-			//ar.WriteString(_Event);
-			
-			_ViewCount = _CString2UcHex(_Event, _Bits);
-			ar.Write(_Bits, _ViewCount);
-			
 
+
+
+			iEventSize = _CString2UcHex(_Event, _Bits+ iSaveOffset);
+
+
+			iHandleSize += iEventSize;
+			iBitsSize += (iEventSize - 1);
+			_pMain->SendMessage(ID_MESSAGE_UPDATE_PROGRESS, iHandleSize, iBitsSize);
+
+
+			iSaveOffset += iEventSize;
+			if ((iSaveOffset >= DEF_SAVE_SIZE)||
+				(i == (_EventCount-1)))
+			{
+				ar.Write(_Bits, iSaveOffset);
+				iSaveOffset = 0;
+			}
+				
 		}
 
 		delete _Bits;
@@ -103,27 +127,26 @@ void CBitsAnalyserDoc::Serialize(CArchive& ar)
 		_pMain -> RemoveAllBitsData();
 
 		_Bits = new BYTE[DEF_SINGLE_VIEW_MAX];
-		_ViewCount = ar.Read(_Bits, DEF_SINGLE_VIEW_MAX);
+		iEventSize = ar.Read(_Bits, DEF_SINGLE_VIEW_MAX);
 
 	
 
-		int iCurrent = 0;
-		int iReadSum = 0;
+		iHandleSize = 0;
 		CFile* __File = ar.GetFile();
-		int iSize = (int)__File->GetLength();
+		int iBitsSize = (int)__File->GetLength();
 
-		while (_ViewCount>0)
+		while (iEventSize>0)
 		{
-			_pMain->SendMessage(ID_MESSAGE_UPDATE_PROGRESS, iReadSum, iSize);
- 			_ViewCount   = ((_ViewCount > DEF_SINGLE_VIEW_MAX) ? DEF_SINGLE_VIEW_MAX : _ViewCount);
-			iReadSum    += _ViewCount;
-			pView->ViewAPDU(_Bits, _ViewCount);
-			_ViewCount   = ar.Read(_Bits, DEF_SINGLE_VIEW_MAX);
+			_pMain->SendMessage(ID_MESSAGE_UPDATE_PROGRESS, iHandleSize, iBitsSize);
+ 			iEventSize   = ((iEventSize > DEF_SINGLE_VIEW_MAX) ? DEF_SINGLE_VIEW_MAX : iEventSize);
+			iHandleSize += iEventSize;
+			pView->ViewAPDU(_Bits, iEventSize);
+			iEventSize   = ar.Read(_Bits, DEF_SINGLE_VIEW_MAX);
 		
 			
 		}
 
-		_pMain->SendMessage(ID_MESSAGE_UPDATE_PROGRESS, iReadSum, iSize);
+		_pMain->SendMessage(ID_MESSAGE_UPDATE_PROGRESS, iHandleSize, iBitsSize);
 		_pMain->SendMessage(ID_MESSAGE_UPDATE_EVENT, 1, 0);
 
 		delete _Bits;
