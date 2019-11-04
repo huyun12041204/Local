@@ -4,6 +4,7 @@
 //#include "pch.h"
 #include "stdafx.h"
 #include "BitsAnalyser.h"
+#include "BitsAnalyserView.h"
 #include "WaveView.h"
 #include "../../AllUsedSource/BasicConvert/BasicConvert/BasicConvert.h"
 
@@ -311,7 +312,7 @@ void CWaveForm::DrawDescription(CDC* pDC, int iTextX,CString csText)
 	CRect* cTextRect;
 	nX = iTextX   ;
 	nY = iIODOWN  ;
-	cTextRect = new CRect(nX, nY, nX + DEF_TEXT_WIDE, nY + DEF_TEXT_HEIGHT);
+	cTextRect = new CRect(nX, nY, nX + DEF_TEXT_WIDE*2, nY + DEF_TEXT_HEIGHT);
 	pDC->DrawText(csText, cTextRect, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_WORDBREAK);
 
 	pDC->SelectObject(Oldfont);
@@ -344,6 +345,31 @@ CString  GenerateEventText(CString csEvent,  BYTE ___Pre)
 
 }
 
+CString GenerateEventDescription(CString csByte, CString csType)
+{
+	if (csByte.IsEmpty()|| csType.IsEmpty())
+	{
+		return csByte;
+	}
+	int iType = _CString2Int(csType);
+	CString csResult;
+	switch (iType&0xF0)
+	{
+	case _TPDU_ATR :csResult = _T("[ATR]"); break;
+	case _TPDU_PPS :csResult = _T("[PPS]"); break;
+	case _TPDU_TPDU:csResult = _T("[APDU]"); break;
+	default:csResult.Empty();break;
+	}
+
+	if (csResult.IsEmpty())
+		return csByte;
+	csResult = csByte + _T("\n\r") + csResult;
+	return csResult;
+
+
+
+}
+
 void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 {
 
@@ -360,7 +386,7 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 	pOldPen = pDC->SelectObject(&newPen);    // 选择新画笔，并将旧画笔的指针保存到pOldPen
 
 #if DEF_EVENTLIST_DATA
-	CString csEvent,csDes;
+	CString csEvent,csEventByte,csEventType;
 	BYTE __Event[8];
 	int  __EventSize = 0;
 	int  __EventSum = m_hEventList->GetEventCount();
@@ -376,7 +402,7 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 	if (iOffset == 0)
 	{
 
-		if (m_hEventList->GetEvent(0, csEvent, csDes)<=0)
+		if (m_hEventList->GetEvent(0, csEvent, csEventByte, csEventType)<=0)
 		{
 			return;
 		}
@@ -392,12 +418,12 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 	}
 	else
 	{
-		m_hEventList->GetEvent(iOffset-1, csEvent, csDes);
+		m_hEventList->GetEvent(iOffset-1, csEvent, csEventByte, csEventType);
 		__EventSize = _CString2UcHex(csEvent, __Event);
 
 		__Pre = __Event[0];
 
-		m_hEventList->GetEvent(iOffset, csEvent, csDes);
+		m_hEventList->GetEvent(iOffset, csEvent, csEventByte, csEventType);
 		__EventSize = _CString2UcHex(csEvent, __Event);
 
 
@@ -435,7 +461,7 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 	{
 		iEndPos = i;
 		__Pre = __Event[0];
-		m_hEventList->GetEvent(i, csEvent, csDes);
+		m_hEventList->GetEvent(i, csEvent, csEventByte, csEventType);
 		__EventSize = _CString2UcHex(csEvent, __Event);
 		GeneratePoint(__Event, __EventSize, &pDesIO, &pDesVCC, &pDesRST, &pDesCLK);
 
@@ -451,7 +477,7 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 		DrawWave(pDC, pOriRST, &pDesRST, DEF_RST_PIN, iLimit);
 		DrawWave(pDC, pOriCLK, &pDesCLK, DEF_CLK_PIN, iLimit);
 
-		DrawDescription(pDC, pOriIO.x, csDes);
+		DrawDescription(pDC, pOriIO.x, GenerateEventDescription(csEventByte, csEventType));
 
 		if (pSelect != NULL)
 		{

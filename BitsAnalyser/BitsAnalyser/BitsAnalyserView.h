@@ -34,6 +34,15 @@
 
 #define DEF_SINGLE_VIEW_MAX 512
 
+#define  _BYTE_Wait    2
+#define  _BYTE_Success 1
+#define  _BYTE_NoData  0
+#define  _BYTE_Error  -1
+#define  _TPDU_NULL  0x00
+#define  _TPDU_ATR   0x10
+#define  _TPDU_PPS   0x20
+#define  _TPDU_TPDU  0x30
+
 class CBitsAnalyserView : public CView
 {
 protected: // 仅从序列化创建
@@ -124,7 +133,7 @@ public:
 	// Qualifier:
 	// Parameter: BYTE __BYTE
 	//************************************
-	int ModifyDescription(BYTE  __BYTE);
+	int ModifyDescription(BYTE __BYTE, int __Type = 0);
 	int RemoveAllAPDU(void);
 };
 

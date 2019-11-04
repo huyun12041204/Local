@@ -222,14 +222,7 @@ CString CLKDiffText(BYTE* bBit,UINT bBitLen)
 
 }
 
-#define  _BYTE_Wait    2
-#define  _BYTE_Success 1
-#define  _BYTE_NoData  0
-#define  _BYTE_Error  -1
-#define  _TPDU_NULL  0x00
-#define  _TPDU_ATR   0x10
-#define  _TPDU_PPS   0x20
-#define  _TPDU_TPDU  0x30
+
 
 #define  _Max_TPDU_Len 0x200
 BYTE bPreByte[_Max_TPDU_Len];
@@ -541,6 +534,11 @@ int ByteData2TPDU(BYTE bByte, BYTE *bTPDU,UINT * uiTPDULen,
 		ZeroMemory(bPreByte, sizeof(bPreByte));
 		iByteLen = 0;
 	}
+	else
+	{
+
+		iRet = iRet | iTPDUStatue;
+	}
 	return iRet;
 
 
@@ -702,7 +700,7 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits, UINT BitsLen, int iVirtualEvent)
 			if (_CLKDiffData2Byte_2(bbits,bbitsLen,&bBYTE) == _BYTE_Success)
 			{
 				//此处 提前添加
-				ModifyDescription(bBYTE);
+				
 
 
 				BYTE bBYTES[300];
@@ -711,6 +709,8 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits, UINT BitsLen, int iVirtualEvent)
 				CString csTPDU;
 				CStringArray csInfomation;
 				int iRet = ByteData2TPDU(bBYTE,bBYTES,&iLen ,csSend,csPro,csACK,csData,csLPro,csSW);
+				
+				ModifyDescription(bBYTE, iRet);
 				if ((iRet&0xF) == _BYTE_Success)
 				{
 
@@ -856,16 +856,17 @@ int CBitsAnalyserView::AddEvent(BYTE* ucbits, int ibitslen)
 	return TRUE;
 }
 
-int CBitsAnalyserView::ModifyDescription(BYTE  __BYTE)
+int CBitsAnalyserView::ModifyDescription(BYTE __BYTE, int __Type /*= 0*/)
 {
-	CString __DES;
+	CString __DES,__TYPE;
 	CMainFrame* _pMain;
 	_pMain = (CMainFrame*)AfxGetApp()->GetMainWnd();
 
 	_UcHex2CString(&__BYTE, 1, __DES);
 	__DES = __DES;
+	__TYPE.Format("%02x", __Type);
 
-	return _pMain->m_wndEventList.SeteEventDes(_pMain->m_wndEventList.GetEventCount() - 1, __DES);
+	return _pMain->m_wndEventList.SetEventDescription(_pMain->m_wndEventList.GetEventCount() - 1, __DES, __TYPE);
 	//CurMainFrm->m_wndEventList.get
 
 

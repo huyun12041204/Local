@@ -67,7 +67,7 @@ void CBitsAnalyserDoc::Serialize(CArchive& ar)
 {
 	CMainFrame*       _pMain = (CMainFrame*)AfxGetApp()->GetMainWnd();
 	CBitsAnalyserView* pView = (CBitsAnalyserView*)(_pMain->GetActiveView());
-	CString _Event,_EventDes;
+	CString _Event,_EventByte;
 	BYTE* _Bits;
 	int _EventCount;
 
@@ -90,7 +90,7 @@ void CBitsAnalyserDoc::Serialize(CArchive& ar)
 
 
 			_Event.Empty();
-			if (_pMain->m_wndEventList.GetEvent(i, _Event, _EventDes)<=0)
+			if (_pMain->m_wndEventList.GetEvent(i, _Event, _EventByte)<=0)
 			{
 				AfxMessageBox("获取事件失败，此处将直接退出！");
 				return;

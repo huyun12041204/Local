@@ -26,9 +26,12 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	// 获取一共有多少个事件
 	int GetEventCount();
-	int GetEvent(int iIndex, CString& csEvent, CString& csDescription);
+	int GetEvent(int iIndex, CString& csEvent, CString& csByte);
+	int GetEvent(int iIndex, CString& csEvent, CString& csByte, CString& csType);
 	int AddEvent(CString csText);
-	int SeteEventDes(int iEventIndex, CString csDes);
+	int SeteEventByte(int iEventIndex, CString csBYTE);
+	int SetEventType(int iEventIndex, CString csType);
+	int SetEventDescription(int iEventIndex, CString csByte, CString csType);
 	int RemoveAllEvent(void);
 	int UpdateEventList(void);
 	int ShowEventList();
