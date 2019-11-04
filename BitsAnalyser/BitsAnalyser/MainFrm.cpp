@@ -345,6 +345,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_UPDATE_COMMAND_UI(ID_COMBO_PRESCALE, &CMainFrame::OnUpdateComboPrescale)
 	ON_COMMAND(ID_COMBO_PRESCALE, &CMainFrame::OnComboPrescale)
 	ON_COMMAND(ID_Event_Button, &CMainFrame::OnEventButton)
+	ON_COMMAND(ID_Erase_Button, &CMainFrame::OnEraseButton)
 END_MESSAGE_MAP()
 
 // CMainFrame 构造/析构
@@ -368,12 +369,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// 基于持久值设置视觉管理器和样式
 	OnApplicationLook(theApp.m_nAppLook);
 
-
 	CreateRibbon();
 
 	CreateStatueBar();
-
-
 
 	// 启用 Visual Studio 2005 样式停靠窗口行为
 	CDockingManager::SetDockingMode(DT_SMART);
@@ -396,7 +394,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndWaveView.EnableDocking(CBRS_ALIGN_ANY);
 	DockPane(&m_wndWaveView);
 	//自定义参数进行初始化
-	__Init();
+
+	Initialize_Ribbon();
+	Initialize_Parameter();
 	return 0;
 }
 
@@ -429,6 +429,7 @@ BOOL CMainFrame::Initialize_Ribbon(void)
 	{
 		return FALSE;
 	}
+	pFontComboBox->RemoveAllItems();
 
 	pFontComboBox->AddItem(_T("10"));
 	pFontComboBox->AddItem(_T("16"));
@@ -486,7 +487,7 @@ BOOL CMainFrame::CreateStatueBar()
 
 BOOL CMainFrame::CreateDockingWindows()
 {
-	BOOL bNameValid;
+	//BOOL bNameValid;
 	// 创建输出窗口
 	CString strOutputWnd;
 	//bNameValid = strOutputWnd.LoadString(IDS_OUTPUT_WND);
@@ -653,6 +654,7 @@ void CMainFrame::OnConnectButton()
 	UINT PreBits, PreSend;
 	if (ConnectState == 0)
 	{
+		Initialize_Parameter();
 		usb_init(); /* initialize the library */
 		usb_find_busses(); /* find all busses */
 		usb_find_devices(); /* find all connected devices */
@@ -680,7 +682,7 @@ void CMainFrame::OnConnectButton()
 		ConnectState = 1;
 
 		_InitBits();
-
+		
 
 		if (GetBitsSize(&PreBits, &PreSend))
 		{
@@ -689,12 +691,27 @@ void CMainFrame::OnConnectButton()
 		}
 
 
-
 		if (GetBitThread == NULL)
+		{
 			GetBitThread = AfxBeginThread(GetBits, _T("GetBits"));
+		}
 		if (ViewBitThread == NULL)
+		{
 			ViewBitThread = AfxBeginThread(ViewBits, _T("ViewBits"));
-		//GetDlgItem(IDC_ComConnect_Button)->SetWindowText("Disconnect");
+		}
+
+		//DWORD code;
+		//bool res = GetExitCodeThread(GetBitThread->m_hThread, &code);
+		//if (!res && code != STILL_ACTIVE)//线程还活着
+		//{
+		//	GetBitThread = AfxBeginThread(GetBits, _T("GetBits"));
+		//}
+
+		//res = GetExitCodeThread(ViewBitThread->m_hThread, &code);
+		//if (!res && code != STILL_ACTIVE)//线程还活着
+		//{
+		//	ViewBitThread = AfxBeginThread(ViewBits, _T("ViewBits"));
+		//}
 
 		RemoveAllBitsData();
 		OnUpdateEvent(0, 0);
@@ -745,17 +762,24 @@ void CMainFrame::OnDisconnectButton()
 			dev = NULL;
 		}
 		ConnectState = 0;
+
 		GetBitsThreadStatue = 0;
 		ViewBitsThreadStatue = 0;
+
+
 		//此处设置等待100MS
 		Sleep(100);
-		GetBitThread == NULL;
-		ViewBitThread == NULL;
+		GetBitThread = NULL;
+		ViewBitThread = NULL;
+
 	}
 
 
 
 }
+
+
+
 
 void CMainFrame::OnEventButton()
 {
@@ -763,6 +787,26 @@ void CMainFrame::OnEventButton()
 	m_wndEventList.ShowEventList();
 
 }
+
+
+void CMainFrame::OnEraseButton()
+{
+	UINT PreBits, PreSend;
+
+
+	_InitBits();
+
+	if (GetBitsSize(&PreBits, &PreSend))
+	{
+		uiRecvLen = PreSend;
+		uiPrinLen = PreSend;
+	}
+
+	RemoveAllBitsData();
+	OnUpdateEvent(0, 0);
+	OnUpdateProgress(0, 0);
+}
+
 
 void CMainFrame::OnComboPrescale()
 {
@@ -775,12 +819,12 @@ void CMainFrame::OnComboPrescale()
 
 
 
-	int iPrescale = _CString2IntDecimal(csPrescale);
-	if (iPrescale <= 0)
+	int __Prescale = _CString2IntDecimal(csPrescale);
+	if (__Prescale <= 0)
 		return;
 
 
-	m_wndWaveView.InputPrescale(iPrescale);
+	m_wndWaveView.InputPrescale(__Prescale);
 
 	//通知更新绘制 WaveView
 	OnUpdateEvent(1, NULL);
@@ -914,7 +958,7 @@ LRESULT CMainFrame::OnUpdateEvent(WPARAM  wParam, LPARAM  LParam)
 }
 
 
-void CMainFrame::__Init(void)
+void CMainFrame::Initialize_Parameter(void)
 {
 	GetBitThread  = NULL;
 	ViewBitThread = NULL;
@@ -923,7 +967,7 @@ void CMainFrame::__Init(void)
 	GetBitsThreadStatue  = 0;
 	ViewBitsThreadStatue = 0;
 	uiRecvLen      = 0;
-	Initialize_Ribbon();
+	
 
 	//此行为测试使用
 	//*************************
@@ -951,6 +995,13 @@ void CMainFrame::__Init(void)
 
 	m_wndWaveView.InputEventWnd(&m_wndEventList);
 	m_wndWaveView.InputPrescale(372);
+
+	CBitsAnalyserView* pView = (CBitsAnalyserView*)GetActiveView();
+
+
+	pView->_InitializeBits();
+
+
 	//*************************
 
 }
@@ -966,3 +1017,5 @@ void CMainFrame::RemoveAllBitsData()
 	m_wndEventList.RemoveAllEvent();
 
  }
+
+

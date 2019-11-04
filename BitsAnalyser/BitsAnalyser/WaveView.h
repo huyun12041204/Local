@@ -129,7 +129,7 @@ public:
 	int GetBitsEvenSum();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	int InputEventWnd(CWnd* EventWnd);
-	int InputPrescale(int iPrescale);
+	int InputPrescale(int __Prescale);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	void RemoveWave();
 };

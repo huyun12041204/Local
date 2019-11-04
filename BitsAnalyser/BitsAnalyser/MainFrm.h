@@ -136,6 +136,9 @@ protected:
 
 	afx_msg LRESULT OnUpdateEvent(WPARAM  wParam, LPARAM  LParam);
 
+	afx_msg void OnErasedataButton();
+	afx_msg void OnEraseButton();
+
 	DECLARE_MESSAGE_MAP()
 protected:
 
@@ -147,13 +150,14 @@ protected:
 	void SetDockingWindowIcons(BOOL bHiColorIcons);
 
 
-	void __Init(void);
+	void Initialize_Parameter(void);
 
 
 
 public:
 
 	void RemoveAllBitsData();
+
 };
 
 

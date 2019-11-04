@@ -887,12 +887,12 @@ int CWaveForm::InputEventWnd(CWnd* EventWnd)
 	return TRUE;
 }
 
-int CWaveForm::InputPrescale(int iPrescale)
+int CWaveForm::InputPrescale(int __Prescale)
 {
 
-	iGroupCLK = iPrescale;
+	iGroupCLK = __Prescale;
 
-	return iPrescale;
+	return __Prescale;
 
 }
 
@@ -1153,11 +1153,11 @@ int CWaveView ::InputEventWnd(CWnd* EventWnd)
 	return m_pWaveForm.InputEventWnd(EventWnd);
 }
 
-int CWaveView::InputPrescale(int iPrescale)
+int CWaveView::InputPrescale(int __Prescale)
 {
 
 
-	return m_pWaveForm.InputPrescale(iPrescale);
+	return m_pWaveForm.InputPrescale(__Prescale);
 	
 }
 
