@@ -87,6 +87,7 @@ public:
 // 重写
 public:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
 // 实现
 public:
@@ -102,7 +103,7 @@ protected:  // 控件条嵌入成员
 	CMFCToolBarImages m_PanelImages;
 	CMFCRibbonStatusBar  m_wndStatusBar;
 
-
+	HACCEL m_hAccel;
 
 
 
@@ -158,6 +159,7 @@ public:
 
 	void RemoveAllBitsData();
 
+	
 };
 
 

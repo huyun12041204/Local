@@ -332,9 +332,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_COMMAND_RANGE(ID_VIEW_APPLOOK_WIN_2000, ID_VIEW_APPLOOK_WINDOWS_7, &CMainFrame::OnApplicationLook)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_VIEW_APPLOOK_WIN_2000, ID_VIEW_APPLOOK_WINDOWS_7, &CMainFrame::OnUpdateApplicationLook)
 	ON_WM_SETTINGCHANGE()
-	ON_COMMAND(ID_Connect_BUTTON, &CMainFrame::OnConnectButton)
-	ON_COMMAND(ID_Disconnect_BUTTON, &CMainFrame::OnDisconnectButton)
-	ON_UPDATE_COMMAND_UI_RANGE(ID_Connect_BUTTON, ID_Disconnect_BUTTON, &CMainFrame::OnUpdateConnected)
+	ON_COMMAND(ID_Connect_Button, &CMainFrame::OnConnectButton)
+	ON_COMMAND(ID_Disconnect_Button, &CMainFrame::OnDisconnectButton)
+	ON_UPDATE_COMMAND_UI_RANGE(ID_Connect_Button, ID_Disconnect_Button, &CMainFrame::OnUpdateConnected)
 	
 	ON_COMMAND_RANGE(ID_VIEW_CHECK_WAVEFORM,ID_VIEW_CHECK_EVENTLIST, &CMainFrame::OnDockablePane)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_VIEW_CHECK_WAVEFORM, ID_VIEW_CHECK_EVENTLIST, &CMainFrame::OnUpdateDockablePane)
@@ -397,6 +397,9 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	Initialize_Ribbon();
 	Initialize_Parameter();
+
+	//初始化快捷键
+	m_hAccel = ::LoadAccelerators(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDR_MAINFRAME));
 	return 0;
 }
 
@@ -410,6 +413,18 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 	return TRUE;
 }
 
+BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: 在此添加专用代码和/或调用基类
+
+	if (m_hAccel)
+	{
+		if (::TranslateAccelerator(m_hWnd, m_hAccel, pMsg))
+			return (TRUE);
+	}
+
+	return CFrameWndEx::PreTranslateMessage(pMsg);
+}
 
 BOOL CMainFrame::CreateRibbon(void)
 {
@@ -855,8 +870,8 @@ void CMainFrame::OnUpdateConnected(CCmdUI* pCmdUI)
 {
 	switch (pCmdUI->m_nID)
 	{
-	case ID_Connect_BUTTON:     pCmdUI->Enable(!ConnectState); break;
-	case ID_Disconnect_BUTTON:   pCmdUI->Enable(ConnectState); break;
+	case ID_Connect_Button:     pCmdUI->Enable(!ConnectState); break;
+	case ID_Disconnect_Button:   pCmdUI->Enable(ConnectState); break;
 	default:break;
 	}
 }
@@ -1017,5 +1032,7 @@ void CMainFrame::RemoveAllBitsData()
 	m_wndEventList.RemoveAllEvent();
 
  }
+
+
 
 

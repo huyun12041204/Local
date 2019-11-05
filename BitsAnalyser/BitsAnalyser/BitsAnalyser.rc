@@ -53,11 +53,11 @@ BEGIN
     "\r\n"
     "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
     "LANGUAGE 4, 2\r\n"
-    "#include ""res\\BitsAnalyser.rc2""  // 闂?Microsoft Visual C++ 缂傚倸鍊归悧鐐垫椤愶附鍎嶉柛鏇ㄥ枤閵堫偅绻?\n"
-    "#include ""l.CHS\\afxres.rc""      // 闂佸搫绉村ú銈夊闯椤栨粎纾奸柛鏇ㄤ簼椤?\n"
+    "#include ""res\\BitsAnalyser.rc2""  // 闂?Microsoft Visual C++ 缂傚倸鍊搁崐褰掓偋閻愬灚顐芥い鎰堕檮閸庡秹鏌涢弴銊ユ灓闁靛牜鍋呯换?\n"
+    "#include ""l.CHS\\afxres.rc""      // 闂備礁鎼粔鏉懨洪妶澶婇棷妞ゆ牗绮庣壕濂告煕閺囥劋绨兼い?\n"
     "#if !defined(_AFXDLL)\r\n"
-    "#include ""l.CHS\\afxprint.rc""        // 闂佺懓鐏氶幐绋跨暤?闂佺懓鐏氶幐绋跨暤閸愨晪绱ｉ柛鏇ㄥ櫘濞兼棃鎮硅鐎氼厾鑺?\n"
-    "#include ""l.CHS\\afxribbon.rc""        // MFC 闂佸憡姊婚崰鏇㈠礂濮椻偓瀹曠娀宕崟顒€顏梺纭呯焽閸屾侗鍋ㄩ梺鍝勵棥閵堝洢鍋掑┑?\n"
+    "#include ""l.CHS\\afxprint.rc""        // 闂備胶鎳撻悘姘跺箰缁嬭法鏆?闂備胶鎳撻悘姘跺箰缁嬭法鏆ら柛鎰ㄦ櫔缁憋綁鏌涢弴銊ユ珮婵炲吋妫冮幃纭咁槻閻庢凹鍘鹃懞?\n"
+    "#include ""l.CHS\\afxribbon.rc""        // MFC 闂備礁鎲″濠氬窗閺囥垹绀傛慨妞诲亾鐎规洜濞€瀹曨偊宕熼鈧顖炴⒑绾懐鐒介柛灞句緱閸嬨劑姊洪崫鍕垫％闁靛牆娲㈤崑鎺戔攽?\n"
     "#endif\r\n"
     "#endif\r\n"
     "\0"
@@ -233,19 +233,21 @@ END
 
 IDR_MAINFRAME ACCELERATORS
 BEGIN
-    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL
-    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
-    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL
-    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL
-    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL
-    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL
-    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL
-    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT
-    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT
-    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL
-    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT
-    VK_F6,          ID_NEXT_PANE,           VIRTKEY 
-    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT
+    "C",            ID_Connect_Button,      VIRTKEY, SHIFT, NOINVERT
+    "D",            ID_Disconnect_Button,   VIRTKEY, SHIFT, NOINVERT
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
 END
 
 
@@ -486,11 +488,11 @@ END
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 LANGUAGE 4, 2
-#include "res\BitsAnalyser.rc2"  // 闂?Microsoft Visual C++ 缂傚倸鍊归悧鐐垫椤愶附鍎嶉柛鏇ㄥ枤閵堫偅绻?
-#include "l.CHS\afxres.rc"      // 闂佸搫绉村ú銈夊闯椤栨粎纾奸柛鏇ㄤ簼椤?
+#include "res\BitsAnalyser.rc2"  // 闂?Microsoft Visual C++ 缂傚倸鍊搁崐褰掓偋閻愬灚顐芥い鎰堕檮閸庡秹鏌涢弴銊ユ灓闁靛牜鍋呯换?
+#include "l.CHS\afxres.rc"      // 闂備礁鎼粔鏉懨洪妶澶婇棷妞ゆ牗绮庣壕濂告煕閺囥劋绨兼い?
 #if !defined(_AFXDLL)
-#include "l.CHS\afxprint.rc"        // 闂佺懓鐏氶幐绋跨暤?闂佺懓鐏氶幐绋跨暤閸愨晪绱ｉ柛鏇ㄥ櫘濞兼棃鎮硅鐎氼厾鑺?
-#include "l.CHS\afxribbon.rc"        // MFC 闂佸憡姊婚崰鏇㈠礂濮椻偓瀹曠娀宕崟顒€顏梺纭呯焽閸屾侗鍋ㄩ梺鍝勵棥閵堝洢鍋掑┑?
+#include "l.CHS\afxprint.rc"        // 闂備胶鎳撻悘姘跺箰缁嬭法鏆?闂備胶鎳撻悘姘跺箰缁嬭法鏆ら柛鎰ㄦ櫔缁憋綁鏌涢弴銊ユ珮婵炲吋妫冮幃纭咁槻閻庢凹鍘鹃懞?
+#include "l.CHS\afxribbon.rc"        // MFC 闂備礁鎲″濠氬窗閺囥垹绀傛慨妞诲亾鐎规洜濞€瀹曨偊宕熼鈧顖炴⒑绾懐鐒介柛灞句緱閸嬨劑姊洪崫鍕垫％闁靛牆娲㈤崑鎺戔攽?
 #endif
 #endif
 
