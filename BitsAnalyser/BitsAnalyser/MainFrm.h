@@ -127,7 +127,7 @@ protected:
 	afx_msg void OnConnectButton();
 	afx_msg void OnDisconnectButton();
 	afx_msg void OnComboPrescale();
-	afx_msg void OnEventButton();
+
 
 	afx_msg void OnUpdateConnected(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateDockablePane(CCmdUI* pCmdUI);
@@ -137,9 +137,10 @@ protected:
 
 	afx_msg LRESULT OnUpdateEvent(WPARAM  wParam, LPARAM  LParam);
 
+public:
 	afx_msg void OnErasedataButton();
 	afx_msg void OnEraseButton();
-
+	afx_msg void OnEventButton();
 	DECLARE_MESSAGE_MAP()
 protected:
 

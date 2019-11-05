@@ -49,6 +49,7 @@ protected:
 	int iIOUP;
 	int iIODOWN;
 	int iVCCUP;
+	int iVCC;
 	int iVCCDOWN;
 	int iRSTUP;
 	int iRSTDOWN;
@@ -62,7 +63,7 @@ protected:
 	int iStartPos;
 	int iEndPos;
 
-
+	int iTextX;
 
 
 #if DEF_EVENTLIST_DATA
@@ -80,9 +81,10 @@ public:
 public:
 	void DrawBackGround(CDC* pDC, CRect& rect);
 	void DrawDescription(CDC* pDC, int iTextX, CString csText);
+	bool DrawVCCText(CDC* pDC, BYTE* ucbits, int ibitsize);
 	void DrawLine(CDC* pDC, CRect& rect, POINT* pSelect = NULL);
 	void DrawWave(CDC* pDC, POINT pStart, POINT* pEnd, int iType = DEF_IO_PIN, int iLimit = 0, int iSighLimit = DEF_SIGHT_LIMIT);
-	void CWaveForm::RemoveWave(void);
+	void RemoveWave(void);
 	void InputBitsDatas(BYTE* Bits, int iBitsLen);
 	//void GenerateStartPoint(int* BitsOffset, POINT* pIO, POINT* pVCC, POINT* pRST);
 	//void GeneratePoint     (int* BitsOffset, POINT* pIO, POINT* pVCC, POINT* pRST);

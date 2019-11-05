@@ -151,6 +151,9 @@ void CBitsAnalyserDoc::Serialize(CArchive& ar)
 
 		delete _Bits;
 
+	
+		_pMain->OnEventButton();
+
 
 
 			//CurMainFrm->csCard += csTemp;

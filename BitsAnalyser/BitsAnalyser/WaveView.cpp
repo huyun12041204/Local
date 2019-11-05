@@ -138,6 +138,8 @@ void CWaveForm::DrawBackGround(CDC* pDC, CRect& rect)
 	pDC->SetBkColor(RGB(0, 0, 0));
 
 	CRect* cTextRect;
+
+
 	nX = iLT.x + DEF_TEXT_INDENT;
 	nY = iLT.y + DEF_TEXT_INDENT;
 	cTextRect = new CRect(nX, nY, nX + DEF_TEXT_WIDE, nY + DEF_TEXT_HEIGHT);
@@ -153,6 +155,8 @@ void CWaveForm::DrawBackGround(CDC* pDC, CRect& rect)
 	cTextRect = new CRect(nX, nY + SigleRow * 3, nX + DEF_TEXT_WIDE, nY + DEF_TEXT_HEIGHT + SigleRow * 3);
 	pDC->DrawText(_T("CLK"), cTextRect, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_WORDBREAK);
 
+	//保存最左边文字的位置；
+	iTextX = nX;
 	//此处开始画单元格的虚线
 	pDC->SelectObject(pOldPen);    // 恢复旧画笔   
 	newPen.DeleteObject();         // 删除新画笔  
@@ -186,6 +190,7 @@ void CWaveForm::DrawBackGround(CDC* pDC, CRect& rect)
 	iIODOWN  = iIOUP    +  SigleRow * 3 / 5;
 
 	iVCCUP = rect.top + DEF_TOP_FRAME_INDENT + SigleRow*6 / 5;
+	iVCC   = iVCCUP;
 	iVCCDOWN = iVCCUP + SigleRow * 3 / 5;
 
 	iRSTUP = rect.top + DEF_TOP_FRAME_INDENT + SigleRow*11 / 5;
@@ -370,6 +375,66 @@ CString GenerateEventDescription(CString csByte, CString csType)
 
 }
 
+bool CWaveForm::DrawVCCText(CDC* pDC, BYTE* ucbits, int ibitsize)
+{
+	//如果没有事件标志位则返回
+	if( (ucbits[0]&0x8) == 0)
+		return false;
+
+	//如果没有电压标志位则返回
+	if ((ucbits[0] & 0x4) == 0)
+		return false;
+
+	int iVcc = ucbits[1] * 0x100 + ucbits[2];
+
+	//iVcc = iVcc * 50 / 0xFFFF;
+
+	//开始写 分割线 标识 
+	int nX, nY;
+
+	//	POINT pStart;
+
+	CFont* Oldfont;
+	CFont font;
+	font.CreateFont(12,                                    //   字体的高度   
+		0,                                          //   字体的宽度  
+		0,                                          //  nEscapement 
+		0,                                          //  nOrientation   
+		FW_NORMAL,                                  //   nWeight   
+		FALSE,                                      //   bItalic   
+		FALSE,                                      //   bUnderline   
+		0,                                                   //   cStrikeOut   
+		ANSI_CHARSET,                             //   nCharSet   
+		OUT_DEFAULT_PRECIS,                 //   nOutPrecision   
+		CLIP_DEFAULT_PRECIS,               //   nClipPrecision   
+		DEFAULT_QUALITY,                       //   nQuality   
+		DEFAULT_PITCH | FF_SWISS,     //   nPitchAndFamily     
+		_T("宋体"));
+
+	Oldfont = pDC->SelectObject(&font);
+
+	pDC->SetTextColor(RGB(0, 255, 0));
+	pDC->SetBkColor(RGB(0, 0, 0));
+
+	CRect* cTextRect;
+	nX = iTextX+ DEF_TEXT_WIDE;
+	//此处应该会使用分压的方式来实现，所以此处*2
+	nY  = (iVCCDOWN - iVCCUP) * iVcc  /0xFFFF;
+	iVCC = iVCCDOWN - nY;
+
+	CString csText;
+	csText.Format("%.1fV", (float)(iVcc * 3.3 / 0xFFFF));
+
+
+	cTextRect = new CRect(nX, iVCC, nX + DEF_TEXT_WIDE * 2, iVCC + DEF_TEXT_HEIGHT);
+	pDC->DrawText(csText, cTextRect, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_WORDBREAK);
+
+	pDC->SelectObject(Oldfont);
+
+	return true;
+}
+
+
 void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 {
 
@@ -409,6 +474,22 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 
 		__EventSize = _CString2UcHex(csEvent, __Event);
 
+		if (DrawVCCText(pDC, __Event, __EventSize))
+		{
+			iOffset += 1;
+			if (m_hEventList->GetEvent(1, csEvent, csEventByte, csEventType) <= 0)
+			{
+				return;
+			}
+
+			__EventSize = _CString2UcHex(csEvent, __Event);
+		}
+		else
+		{
+			BYTE _VirtualEvent[3] = { 0x0E,0xFF,0xFF };
+			DrawVCCText(pDC, _VirtualEvent, 3);
+		}
+
 		if (!GeneratePrePoint(__Event, __EventSize, __Event[0],&pOriIO, &pOriVCC, &pOriRST, &pOriCLK))
 		{
 			AfxMessageBox("EVENTData is wrong　");
@@ -425,6 +506,17 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 
 		m_hEventList->GetEvent(iOffset, csEvent, csEventByte, csEventType);
 		__EventSize = _CString2UcHex(csEvent, __Event);
+
+		if (DrawVCCText(pDC, __Event, __EventSize))
+		{
+			iOffset += 1;
+			if (m_hEventList->GetEvent(1, csEvent, csEventByte, csEventType) <= 0)
+			{
+				return;
+			}
+
+			__EventSize = _CString2UcHex(csEvent, __Event);
+		}
 
 
 		if (!GeneratePrePoint(__Event, __EventSize, __Pre, &pOriIO, &pOriVCC, &pOriRST, &pOriCLK))
@@ -463,6 +555,11 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 		__Pre = __Event[0];
 		m_hEventList->GetEvent(i, csEvent, csEventByte, csEventType);
 		__EventSize = _CString2UcHex(csEvent, __Event);
+
+		if (DrawVCCText(pDC, __Event, __EventSize))
+			continue;
+
+
 		GeneratePoint(__Event, __EventSize, &pDesIO, &pDesVCC, &pDesRST, &pDesCLK);
 
 
@@ -756,8 +853,8 @@ int  CWaveForm::GeneratePrePoint(BYTE* bits, int bitSize, BYTE prebits0,
 	if (iDetal == 0)
 		iDetal = 1;
 
-	if ((iDetal > 40) || (iDetal < 0))
-		iDetal = 40;
+	if ((iDetal > 20) || (iDetal < 0))
+		iDetal = 20;
 
 	pIO->x  = iStartX - iDetal;
 	pVCC->x = iStartX - iDetal;
@@ -771,7 +868,7 @@ int  CWaveForm::GeneratePrePoint(BYTE* bits, int bitSize, BYTE prebits0,
 
 
 	if ((prebits0 & DEF_VCC_PIN) == DEF_VCC_PIN)
-		pVCC->y = iVCCUP;
+		pVCC->y = iVCC;
 	else
 		pVCC->y = iVCCDOWN;
 
@@ -830,7 +927,7 @@ int  CWaveForm::GenerateStartPoint(BYTE* bits,int bitSize,
 
 
 	if ((bits[0] & DEF_VCC_PIN) == DEF_VCC_PIN)
-		pVCC->y = iVCCUP;
+		pVCC->y = iVCC;
 	else
 		pVCC->y = iVCCDOWN;
 
@@ -888,7 +985,7 @@ int CWaveForm::GeneratePoint(BYTE* bits, int bitSize, POINT* pIO, POINT* pVCC, P
 
 
 	if ((bits[0] & DEF_VCC_PIN) == DEF_VCC_PIN)
-		pVCC->y = iVCCUP;
+		pVCC->y = iVCC;
 	else
 		pVCC->y = iVCCDOWN;
 
