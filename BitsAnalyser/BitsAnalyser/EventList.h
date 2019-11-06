@@ -16,9 +16,9 @@ protected:
 
 
 	CStringArray ___EentList;
+	CStringArray ___VCCList;
 
-
-
+	
 public:
 	CListBox m_pEventList;
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
@@ -29,6 +29,7 @@ public:
 	int GetEvent(int iIndex, CString& csEvent, CString& csByte);
 	int GetEvent(int iIndex, CString& csEvent, CString& csByte, CString& csType);
 	int AddEvent(CString csText);
+	int GetVCCForEvent(int iPos, BYTE* ucEvent);
 	int SeteEventByte(int iEventIndex, CString csBYTE);
 	int SetEventType(int iEventIndex, CString csType);
 	int SetEventDescription(int iEventIndex, CString csByte, CString csType);

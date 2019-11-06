@@ -65,6 +65,9 @@ protected:
 
 	int iTextX;
 
+	CString csVCCArray;
+	
+
 
 #if DEF_EVENTLIST_DATA
 

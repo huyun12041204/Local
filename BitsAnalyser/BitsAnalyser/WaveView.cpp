@@ -382,8 +382,8 @@ bool CWaveForm::DrawVCCText(CDC* pDC, BYTE* ucbits, int ibitsize)
 		return false;
 
 	//如果没有电压标志位则返回
-	if ((ucbits[0] & 0x4) == 0)
-		return false;
+	//if ((ucbits[0] & 0x4) == 0)
+	//	return false;
 
 	int iVcc = ucbits[1] * 0x100 + ucbits[2];
 
@@ -423,7 +423,7 @@ bool CWaveForm::DrawVCCText(CDC* pDC, BYTE* ucbits, int ibitsize)
 	iVCC = iVCCDOWN - nY;
 
 	CString csText;
-	csText.Format("%.1fV", (float)(iVcc * 3.3 / 0xFFFF));
+	csText.Format("%.2fV", (float)(iVcc * 3.3 / 0xFFFF));
 
 
 	cTextRect = new CRect(nX, iVCC, nX + DEF_TEXT_WIDE * 2, iVCC + DEF_TEXT_HEIGHT);
@@ -447,6 +447,9 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 	int iOffset = iStartPos;
 	iEndPos = iStartPos;
 
+
+	
+
 	newPen.CreatePen(PS_SOLID, 1, RGB(0, 255, 0));    // 创建实心画笔，粗度为1，颜色为绿色
 	pOldPen = pDC->SelectObject(&newPen);    // 选择新画笔，并将旧画笔的指针保存到pOldPen
 
@@ -457,11 +460,7 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 	int  __EventSum = m_hEventList->GetEventCount();
 	BYTE __Pre;
 
-	if (__EventSum == 0)
-	{
-		return;
 
-	}
 	
 
 	if (iOffset == 0)
@@ -484,11 +483,11 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 
 			__EventSize = _CString2UcHex(csEvent, __Event);
 		}
-		else
-		{
-			BYTE _VirtualEvent[3] = { 0x0E,0xFF,0xFF };
-			DrawVCCText(pDC, _VirtualEvent, 3);
-		}
+		//else
+		//{
+		//	//BYTE _VirtualEvent[3] = { 0x0E,0xFF,0xFF };
+		//	//DrawVCCText(pDC, _VirtualEvent, 3);
+		//}
 
 		if (!GeneratePrePoint(__Event, __EventSize, __Event[0],&pOriIO, &pOriVCC, &pOriRST, &pOriCLK))
 		{
@@ -516,6 +515,19 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 			}
 
 			__EventSize = _CString2UcHex(csEvent, __Event);
+		}
+		else
+		{
+			BYTE __VCCEvent[5];
+			int iCount = m_hEventList->GetVCCForEvent(iStartPos, __VCCEvent);
+			if (iCount > 0)
+			{
+
+				DrawVCCText(pDC, __VCCEvent, iCount);
+			}
+
+
+
 		}
 
 

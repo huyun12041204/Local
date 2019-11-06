@@ -691,7 +691,17 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits, UINT BitsLen, int iVirtualEvent)
 		if (bbitsLen  == bdiflen)
 		{
 			//m_pAPDU.LockWindowUpdate();
-			
+			//此处判断是否为事件类别
+			if ((bbits[0] & 0x8) != 0x00)
+			{
+				
+				AddEvent(bbits, bbitsLen);
+				bbitsLen = 0;
+				bdiflen = 0;
+				
+				continue;
+			}
+				
 
 			_Handle_Pin_Bytes(bPreBit0, bbits[0]);
 

@@ -257,8 +257,37 @@ int CEventList::AddEvent(CString csText)
 #ifdef VIEW__MODE
 	return m_pEventList.AddString(csText);
 #else
+	if ((_CString2Int(csText.Mid(1,1))&0x8 )!= 0)
+	{
+		CString csCount;
+		csCount.Format("%x", ___EentList.GetCount());
+		___VCCList.Add(csCount);
+	}
 	return ___EentList.Add(csText);
 #endif // VIEW__MODE
+
+}
+
+int  CEventList::GetVCCForEvent(int iPos,BYTE* ucEvent)
+{
+	int iRet = 0;
+	int iCount = ___VCCList.GetCount();
+	int iVCCSqu = 0;
+	for (int i = iCount; i>0 ;i--)
+	{
+		iVCCSqu = _CString2Int(___VCCList.GetAt(i - 1));
+		if (iVCCSqu < iPos)
+			break;
+	}
+
+	CString csEvent,csByte;
+
+	if (GetEvent(iVCCSqu, csEvent, csByte) != DEF_EVENT_SUCCESS)
+	{
+		return -1;
+	}
+
+	return _CString2UcHex(csEvent, ucEvent);
 
 }
 
