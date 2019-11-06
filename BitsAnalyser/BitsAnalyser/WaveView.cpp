@@ -1108,6 +1108,41 @@ void CWaveForm::DrawEventCLK(CDC* pDC, CString csEvent,POINT pEventCLK)
 }
 
 
+void CWaveForm::OnWaveformNextButton()
+{
+	// TODO: 在此添加命令处理程序代码
+}
+
+
+void CWaveForm::OnWaveformPreviousButton()
+{
+	// TODO: 在此添加命令处理程序代码
+}
+
+
+void CWaveForm::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
+{
+	CMenu menu;
+	menu.LoadMenu(IDR_WAVEFORM_MENU);
+
+	//CMenu* pSumMenu = menu.GetSubMenu(0);
+
+	//if (AfxGetMainWnd()->IsKindOf(RUNTIME_CLASS(CMDIFrameWndEx)))
+	if (AfxGetMainWnd()->IsKindOf(RUNTIME_CLASS(CFrameWndEx)))
+
+	{
+		CMFCPopupMenu* pPopupMenu = new CMFCPopupMenu;
+
+		if (!pPopupMenu->Create(this, point.x, point.y, (HMENU)menu.m_hMenu, FALSE, TRUE))
+			return;
+
+		((CFrameWndEx*)AfxGetMainWnd())->OnShowPopupMenu(pPopupMenu);
+		UpdateDialogControls(this, FALSE);
+	}
+
+	SetFocus();
+}
+
 
 BEGIN_MESSAGE_MAP(CWaveForm, CStatic)
 
@@ -1115,6 +1150,9 @@ BEGIN_MESSAGE_MAP(CWaveForm, CStatic)
 	ON_WM_SIZE()
 	ON_WM_CREATE()
 	ON_WM_LBUTTONDOWN()
+	ON_COMMAND(ID_WaveForm_Next_Button, &CWaveForm::OnWaveformNextButton)
+	ON_COMMAND(ID_WaveForm_Previous_Button, &CWaveForm::OnWaveformPreviousButton)
+	ON_WM_CONTEXTMENU()
 END_MESSAGE_MAP()
 
 
@@ -1142,6 +1180,7 @@ BEGIN_MESSAGE_MAP(CWaveView, CDockablePane)
 	ON_WM_MOVE()
 	ON_WM_HSCROLL()
 	ON_WM_LBUTTONDOWN()
+	ON_WM_CONTEXTMENU()
 END_MESSAGE_MAP()
 
 
@@ -1310,4 +1349,10 @@ void CWaveView::RemoveWave()
 
 	m_pWaveForm.RemoveWave();
 	m_pScrollBar.SetScrollRange(1, 1);
+}
+
+void CWaveView::OnContextMenu(CWnd* pWnd, CPoint point)
+{
+	// TODO: 在此处添加消息处理程序代码
+	//m_pWaveForm.OnContextMenu(pWnd, point);
 }

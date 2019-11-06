@@ -110,6 +110,9 @@ public:
 
 	void DrawSignLine(CDC* pDC, int x, int StartY, int EndY);
 	void DrawEventCLK(CDC* pDC, CString csEent, POINT pEventCLK);
+	afx_msg void OnWaveformNextButton();
+	afx_msg void OnWaveformPreviousButton();
+	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint point);
 };
 
 
@@ -137,6 +140,7 @@ public:
 	int InputPrescale(int __Prescale);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	void RemoveWave();
+	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint point);
 };
 
 
