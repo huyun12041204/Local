@@ -258,7 +258,6 @@ UINT ViewBits(LPVOID pParam)
 
 
 	UINT uiTEmp;
-	BOOL bEmpty = FALSE;
 
 	
 	CMainFrame* pFrame       =  (CMainFrame*)   AfxGetApp()->GetMainWnd();
@@ -287,29 +286,13 @@ UINT ViewBits(LPVOID pParam)
 			pFrame->SendMessage(ID_MESSAGE_UPDATE_PROGRESS, uiPrinLen, uiRecvLen);
 			pFrame->SendMessage(ID_MESSAGE_UPDATE_EVENT, ((uiRecvLen - uiPrinLen)<= 256), 0);
 
-			bEmpty = TRUE;
 			iWait   = 0;
 			
 			 
 		}
-		else if(bEmpty)
+		else 
 		{
-
-			if (iWait == 1000)
-			{
-				
-				WaitByte[0] = (bPreBit0 & 0xF0) + 2;
-
-				pView->ViewAPDU(WaitByte, 3, DEF_Virtual_Event);
-				bEmpty = FALSE;
-				iWait = 0;
-
-			}
-			else
-			{
-				Sleep(1);
-				iWait += 1;
-			}
+			Sleep(1);
 		}
 		//else if (bShow)
 		//{

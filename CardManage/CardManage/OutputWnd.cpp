@@ -124,14 +124,7 @@ void COutputWnd::UpdateFonts()
 void COutputWnd::Print2Output(CString csLog,CString csSend,CString csResp)
 {
 
-	int iNumber = m_wndTabs.GetTabsNum();
 
-	switch (iNumber)
-	{
-	case 0:	m_wndOutputOper.SetRedraw(FALSE); break;
-	case 1:	m_wndOutputAPDU.SetRedraw(FALSE); break;
-	case 2:	m_wndOutputAll.SetRedraw(FALSE); break;
-	}
 
 
 
@@ -150,12 +143,7 @@ void COutputWnd::Print2Output(CString csLog,CString csSend,CString csResp)
 	}
 
 
-	switch (iNumber)
-	{
-	case 0:	m_wndOutputOper.SetRedraw(TRUE); m_wndOutputOper.UpdateWindow(); break;
-	case 1:	m_wndOutputAPDU.SetRedraw(TRUE); m_wndOutputAPDU.SetRedraw(TRUE); break;
-	case 2:	m_wndOutputAll.SetRedraw(TRUE); m_wndOutputAll.UpdateWindow(); break;
-	}
+
 
 }
 void COutputWnd::PrintTime2Output(long lTime)
@@ -187,6 +175,13 @@ void COutputWnd::PrintAPDU(CString csSend,CString csResp)
 	//m_wndOutputAll.SetRedraw(FALSE);
 	//m_wndOutputAPDU.SetRedraw(FALSE);
 	//m_wndOutputOper.SetRedraw(FALSE);
+	int iNumber = m_wndTabs.GetTabsNum();
+	switch (iNumber)
+	{
+	case 1:	m_wndOutputOper.SetRedraw(FALSE); break;
+	case 2:	m_wndOutputAPDU.SetRedraw(FALSE); break;
+	case 3:	m_wndOutputAll.SetRedraw(FALSE); break;
+	}
 
 	if (!csSend.IsEmpty())
 	{
@@ -221,6 +216,12 @@ void COutputWnd::PrintAPDU(CString csSend,CString csResp)
 	//m_wndOutputAPDU.UpdateWindow();
 	//m_wndOutputOper.UpdateWindow();
 
+	switch (iNumber)
+	{
+	case 1:	m_wndOutputOper.SetRedraw(TRUE); m_wndOutputOper.UpdateWindow(); break;
+	case 2:	m_wndOutputAPDU.SetRedraw(TRUE); m_wndOutputAPDU.UpdateWindow(); break;
+	case 3:	m_wndOutputAll.SetRedraw(TRUE); m_wndOutputAll.UpdateWindow(); break;
+	}
 }
 void COutputWnd::PrintInformation( CString csSend,CString csResp )
 {
@@ -238,7 +239,7 @@ void COutputWnd::PrintInformation( CString csSend,CString csResp )
 		m_wndOutputAll .FomatAddString(csText);	
 	}
 }
-void COutputWnd:: PrintATRInformation(CString csATR)
+void COutputWnd::PrintATRInformation(CString csATR)
 {
 
 	CStringArray csInformation;
@@ -710,7 +711,12 @@ void COutputList::OnLButtonDown(UINT nFlags, CPoint point)
 	SetFocus();
 
 	BOOL bOut;
+
+	if (GetCount() < 1)
+		return;
+
 	int iSelItem = ItemFromPoint(point,bOut);
+
 
 	if (bOut)
 	{

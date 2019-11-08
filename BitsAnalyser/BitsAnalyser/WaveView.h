@@ -36,6 +36,7 @@ class CWaveForm :public CStatic
 public:
 	CWaveForm();
 	virtual ~CWaveForm();
+	CPoint pSelect;
 protected:
 	DECLARE_MESSAGE_MAP()
 
@@ -64,6 +65,8 @@ protected:
 	int iEndPos;
 
 	int iTextX;
+
+
 
 	CString csVCCArray;
 	
@@ -110,6 +113,7 @@ public:
 
 	void DrawSignLine(CDC* pDC, int x, int StartY, int EndY);
 	void DrawEventCLK(CDC* pDC, CString csEent, POINT pEventCLK);
+	void ReDraw(CDC* pDC, CPoint* point);
 	afx_msg void OnWaveformNextButton();
 	afx_msg void OnWaveformPreviousButton();
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint point);
@@ -133,14 +137,14 @@ protected:
 public:
 	afx_msg int  OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 
 	int GetBitsEvenSum();
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	int InputEventWnd(CWnd* EventWnd);
 	int InputPrescale(int __Prescale);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	
 	void RemoveWave();
-	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint point);
 };
 
 

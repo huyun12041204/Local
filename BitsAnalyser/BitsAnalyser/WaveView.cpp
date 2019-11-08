@@ -12,6 +12,17 @@
 
 IMPLEMENT_DYNAMIC(CWaveForm, CStatic)
 
+BEGIN_MESSAGE_MAP(CWaveForm, CStatic)
+
+	ON_WM_PAINT()
+	ON_WM_SIZE()
+	ON_WM_CREATE()
+	ON_WM_LBUTTONDOWN()
+	ON_COMMAND(ID_WaveForm_Next_Button, &CWaveForm::OnWaveformNextButton)
+	ON_COMMAND(ID_WaveForm_Previous_Button, &CWaveForm::OnWaveformPreviousButton)
+	ON_WM_CONTEXTMENU()
+END_MESSAGE_MAP()
+
 CWaveForm::CWaveForm()
 {
 	extern BYTE* __Bits;
@@ -21,7 +32,7 @@ CWaveForm::CWaveForm()
 
 	iStartPos = 0;
 
-
+	pSelect.SetPoint(0, 0);
 
 }
 CWaveForm::~CWaveForm()
@@ -35,23 +46,29 @@ void CWaveForm::OnPaint()
 					   // 不为绘图消息调用 CStatic::OnPaint()
 
 	CStatic::OnPaint();
-	CRect rect;
-	GetClientRect(&rect);//把picture的控件尺寸付给rectPicture对象，传递给以便DrawWave
-	//DrawBackGround(GetDC(), rect);
-	//DrawLine(GetDC(), rect);
-	CDC* pDC = GetDC();
-	CDC memDC;
-	memDC.CreateCompatibleDC(pDC);
-	CBitmap bitmap;
-	bitmap.CreateCompatibleBitmap(pDC, rect.Width(), rect.Height());
-	CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
-	memDC.FillSolidRect(&rect, RGB(255, 255, 255));
+	//CRect rect;
+	//GetClientRect(&rect);//把picture的控件尺寸付给rectPicture对象，传递给以便DrawWave
+	////DrawBackGround(GetDC(), rect);
+	////DrawLine(GetDC(), rect);
+	//CDC* pDC = GetDC();
+	//CDC memDC;
+	//memDC.CreateCompatibleDC(pDC);
+	//CBitmap bitmap;
+	//bitmap.CreateCompatibleBitmap(pDC, rect.Width(), rect.Height());
+	//CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
+	//memDC.FillSolidRect(&rect, RGB(255, 255, 255));
 
-	DrawBackGround(&memDC, rect);
-	DrawLine(&memDC, rect, NULL);
+	//DrawBackGround(&memDC, rect);
+	//DrawLine(&memDC, rect, NULL);
 
-	pDC->BitBlt(0, 0, rect.Width(), rect.Height(), &memDC, 0, 0, SRCCOPY);
-	memDC.SelectObject(pOldBitmap);
+	//pDC->BitBlt(0, 0, rect.Width(), rect.Height(), &memDC, 0, 0, SRCCOPY);
+	//memDC.SelectObject(pOldBitmap);
+
+	if ((pSelect.x == 0 )&& (pSelect.y == 0))
+		ReDraw(GetDC(), NULL);
+	else
+		ReDraw(GetDC(), &pSelect);
+	
 
 
 
@@ -1035,26 +1052,31 @@ int CWaveForm::InputPrescale(int __Prescale)
 void CWaveForm::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
-	CRect rect;
+	
 	CDC* pDC = GetDC();
+
+	ReDraw(pDC, &point);
+
+	pSelect = point;
 	//Invalidate();
 
-	GetClientRect(&rect);
-	//DrawBackGround(pDC, rect);
-	//DrawLine(pDC, rect, &point);
+	//CRect rect;
+	//GetClientRect(&rect);
+	////DrawBackGround(pDC, rect);
+	////DrawLine(pDC, rect, &point);
 
-	CDC memDC;
-	memDC.CreateCompatibleDC(pDC);
-	CBitmap bitmap;
-	bitmap.CreateCompatibleBitmap(pDC, rect.Width(), rect.Height());
-	CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
-	memDC.FillSolidRect(&rect, RGB(255, 255, 255));
+	//CDC memDC;
+	//memDC.CreateCompatibleDC(pDC);
+	//CBitmap bitmap;
+	//bitmap.CreateCompatibleBitmap(pDC, rect.Width(), rect.Height());
+	//CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
+	//memDC.FillSolidRect(&rect, RGB(255, 255, 255));
 
-	DrawBackGround(&memDC, rect);
-	DrawLine(&memDC, rect, &point);
+	//DrawBackGround(&memDC, rect);
+	//DrawLine(&memDC, rect, &point);
 
-	pDC->BitBlt(0, 0, rect.Width(), rect.Height(), &memDC, 0, 0, SRCCOPY);
-	memDC.SelectObject(pOldBitmap);
+	//pDC->BitBlt(0, 0, rect.Width(), rect.Height(), &memDC, 0, 0, SRCCOPY);
+	//memDC.SelectObject(pOldBitmap);
 
 }
 
@@ -1107,6 +1129,24 @@ void CWaveForm::DrawEventCLK(CDC* pDC, CString csEvent,POINT pEventCLK)
 
 }
 
+void CWaveForm::ReDraw(CDC* pDC, CPoint* point)
+{
+	CRect rect;
+	GetClientRect(&rect);
+	CDC memDC;
+	memDC.CreateCompatibleDC(pDC);
+	CBitmap bitmap;
+	bitmap.CreateCompatibleBitmap(pDC, rect.Width(), rect.Height());
+	CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
+	memDC.FillSolidRect(&rect, RGB(255, 255, 255));
+
+	DrawBackGround(&memDC, rect);
+	DrawLine(&memDC, rect, point);
+
+	pDC->BitBlt(0, 0, rect.Width(), rect.Height(), &memDC, 0, 0, SRCCOPY);
+	memDC.SelectObject(pOldBitmap);
+
+}
 
 void CWaveForm::OnWaveformNextButton()
 {
@@ -1144,16 +1184,7 @@ void CWaveForm::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
 }
 
 
-BEGIN_MESSAGE_MAP(CWaveForm, CStatic)
 
-	ON_WM_PAINT()
-	ON_WM_SIZE()
-	ON_WM_CREATE()
-	ON_WM_LBUTTONDOWN()
-	ON_COMMAND(ID_WaveForm_Next_Button, &CWaveForm::OnWaveformNextButton)
-	ON_COMMAND(ID_WaveForm_Previous_Button, &CWaveForm::OnWaveformPreviousButton)
-	ON_WM_CONTEXTMENU()
-END_MESSAGE_MAP()
 
 
 
@@ -1180,7 +1211,6 @@ BEGIN_MESSAGE_MAP(CWaveView, CDockablePane)
 	ON_WM_MOVE()
 	ON_WM_HSCROLL()
 	ON_WM_LBUTTONDOWN()
-	ON_WM_CONTEXTMENU()
 END_MESSAGE_MAP()
 
 
@@ -1198,7 +1228,7 @@ int CWaveView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// TODO:  在此添加您专用的创建代码
 	CRect rectDummy;
 	rectDummy.SetRectEmpty();
-	m_pWaveForm.Create("", WS_CHILD | WS_VISIBLE | SS_CENTER, rectDummy, this, IDC_WAVEFORM);
+	m_pWaveForm.Create("", WS_CHILD | WS_VISIBLE | SS_CENTER| SS_NOTIFY, rectDummy, this, IDC_WAVEFORM);
 
 	m_pScrollBar.Create(  SBS_HORZ | SBS_BOTTOMALIGN| WS_CHILD | WS_VISIBLE, rectDummy, this, IDC_WAVESCROLL);
 
@@ -1223,7 +1253,14 @@ void CWaveView::OnSize(UINT nType, int cx, int cy)
 	
 
 }
+void CWaveView::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
 
+	m_pWaveForm.OnLButtonDown(nFlags, point);
+
+	CDockablePane::OnLButtonDown(nFlags, point);
+}
 
 void CWaveView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
@@ -1309,6 +1346,7 @@ void CWaveView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		if (__pos > m_pScrollBar.GetScrollLimit())
 			__pos = m_pScrollBar.GetScrollLimit();
 
+		m_pWaveForm.pSelect.SetPoint(0, 0);
 		__Newpos = m_pWaveForm.SetPos(__pos);
 
 
@@ -1335,15 +1373,6 @@ int CWaveView::InputPrescale(int __Prescale)
 	
 }
 
-void CWaveView::OnLButtonDown(UINT nFlags, CPoint point)
-{
-	// TODO: 在此添加消息处理程序代码和/或调用默认值
-
-	m_pWaveForm.OnLButtonDown(nFlags, point);
-
-	CDockablePane::OnLButtonDown(nFlags, point);
-}
-
 void CWaveView::RemoveWave()
 {
 
@@ -1351,8 +1380,3 @@ void CWaveView::RemoveWave()
 	m_pScrollBar.SetScrollRange(1, 1);
 }
 
-void CWaveView::OnContextMenu(CWnd* pWnd, CPoint point)
-{
-	// TODO: 在此处添加消息处理程序代码
-	//m_pWaveForm.OnContextMenu(pWnd, point);
-}
