@@ -155,6 +155,22 @@ int CEventList::GetEvent(int iIndex, CString& csEvent, CString& csByte)
 }
 
 
+//************************************
+// Method:    GetEvent
+// FullName:  CEventList::GetEvent
+// Access:    public 
+// Returns:   int  
+//DEF_EVENT_OVER,
+//DEF_EVENT_EMPTY,
+//DEF_EVENT_SUCCESS
+//DEF_EVENT_SUCCESS_EXT1
+//DEF_EVENT_SUCCESS_EXT2
+// Qualifier:
+// Parameter: int iIndex 
+// Parameter: CString & csEvent
+// Parameter: CString & csByte
+// Parameter: CString & csType
+//************************************
 int CEventList::GetEvent(int iIndex, CString& csEvent, CString& csByte,CString& csType)
 {
 	// TODO: 在此处添加实现代码.
@@ -494,4 +510,44 @@ ULONG CEventList::GetSize()
 	return ___EentList.GetSize();
 #endif // VIEW__MODE
 
+}
+
+int CEventList::GetNextEvent(int iType, int iStart,CString& csEvent)
+{
+	int iCount = GetEventCount();
+	CString  __Byte, __Type;
+	CString csType;
+
+	csType.Format("%02x", iType);
+
+
+	for (int i = iStart;i<iCount;i++)
+	{
+		if ((GetEvent(i, csEvent,__Byte, __Type) == DEF_EVENT_SUCCESS_EXT2)&&
+			(csType.Compare(__Type) == 0))
+			return i;
+	}
+	
+	csEvent.Empty();
+	return -1;
+}
+
+int CEventList::GetPreviousEvent(int iType, int iStart, CString& csEvent)
+{
+	int iCount = GetEventCount();
+	CString  __Byte, __Type;
+	CString csType;
+
+	csType.Format("%02x", iType);
+
+
+	for (int i = iStart; i >= 0; i--)
+	{
+		if ((GetEvent(i, csEvent, __Byte, __Type) == DEF_EVENT_SUCCESS_EXT2) &&
+			(csType.Compare(__Type) == 0))
+			return i;
+	}
+
+	csEvent.Empty();
+	return -1;
 }

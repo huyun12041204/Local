@@ -36,6 +36,8 @@ public:
 	int RemoveAllEvent(void);
 	int UpdateEventList(void);
 	int ShowEventList();
+	int GetNextEvent(int iType, int iStart, CString& csEvent);
+	int GetPreviousEvent(int iType, int iStart, CString& csEvent);
 	ULONG GetSize();
 };
 

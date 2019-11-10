@@ -476,7 +476,7 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 	int  __EventSize = 0;
 	int  __EventSum = m_hEventList->GetEventCount();
 	BYTE __Pre;
-
+	BYTE __VCCEvent[5];
 
 	
 
@@ -535,7 +535,7 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 		}
 		else
 		{
-			BYTE __VCCEvent[5];
+			
 			int iCount = m_hEventList->GetVCCForEvent(iStartPos, __VCCEvent);
 			if (iCount > 0)
 			{
@@ -1151,12 +1151,36 @@ void CWaveForm::ReDraw(CDC* pDC, CPoint* point)
 void CWaveForm::OnWaveformNextButton()
 {
 	// TODO: 在此添加命令处理程序代码
+	CString __Event;
+	int __Pos = m_hEventList->GetNextEvent(_TPDU_TPDU | _BYTE_Success, iStartPos+1, __Event);
+
+	if (__Pos > 0)
+	{
+		SetPos(__Pos+1); 
+		ReDraw(GetDC(), NULL);
+		((CWaveView*)GetParent())->m_pScrollBar.SetScrollPos(__Pos + 1);
+	}
+
+
+	
+
+
+
 }
 
 
 void CWaveForm::OnWaveformPreviousButton()
 {
 	// TODO: 在此添加命令处理程序代码
+	CString __Event;
+	int __Pos = m_hEventList->GetPreviousEvent(_TPDU_TPDU | _BYTE_Success, iStartPos-1, __Event);
+
+	if (__Pos > 0)
+	{
+		SetPos(__Pos + 1);
+		ReDraw(GetDC(), NULL);
+		((CWaveView*)GetParent())->m_pScrollBar.SetScrollPos(__Pos + 1);
+	}
 }
 
 
