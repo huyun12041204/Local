@@ -66,6 +66,10 @@
 #define ID_Erase_Button                 32786
 #define ID_WaveForm_Next_Button         32790
 #define ID_WaveForm_Previous_Button     32791
+#define ID_WaveForm_Next_ATR_Button     32792
+#define ID_WaveForm_Previous_ATR_Button 32793
+#define ID_WaveForm_Next_PPS_Button     32794
+#define ID_WaveForm_Previous_PPS_Button 32795
 #define ID_MESSAGE_UPDATE_PROGRESS      40000
 #define ID_MESSAGE_UPDATE_EVENT         40001
 
@@ -74,7 +78,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        312
-#define _APS_NEXT_COMMAND_VALUE         32809
+#define _APS_NEXT_COMMAND_VALUE         32814
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

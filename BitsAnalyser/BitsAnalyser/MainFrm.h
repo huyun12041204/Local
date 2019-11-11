@@ -160,7 +160,6 @@ public:
 
 	void RemoveAllBitsData();
 
-	
 };
 
 

@@ -21,6 +21,10 @@ BEGIN_MESSAGE_MAP(CWaveForm, CStatic)
 	ON_COMMAND(ID_WaveForm_Next_Button, &CWaveForm::OnWaveformNextButton)
 	ON_COMMAND(ID_WaveForm_Previous_Button, &CWaveForm::OnWaveformPreviousButton)
 	ON_WM_CONTEXTMENU()
+	ON_COMMAND(ID_WaveForm_Next_ATR_Button, &CWaveForm::OnWaveformNextAtrButton)
+	ON_COMMAND(ID_WaveForm_Previous_ATR_Button, &CWaveForm::OnWaveformPreviousAtrButton)
+	ON_COMMAND(ID_WaveForm_Next_PPS_Button, &CWaveForm::OnWaveformNextPpsButton)
+	ON_COMMAND(ID_WaveForm_Previous_PPS_Button, &CWaveForm::OnWaveformPreviousPpsButton)
 END_MESSAGE_MAP()
 
 CWaveForm::CWaveForm()
@@ -369,17 +373,71 @@ CString  GenerateEventText(CString csEvent,  BYTE ___Pre)
 
 CString GenerateEventDescription(CString csByte, CString csType)
 {
+	CString csNumber;
 	if (csByte.IsEmpty()|| csType.IsEmpty())
 	{
 		return csByte;
 	}
 	int iType = _CString2Int(csType);
 	CString csResult;
-	switch (iType&0xF0)
+	switch (iType& _TPDU_TYPE)
 	{
-	case _TPDU_ATR :csResult = _T("[ATR]"); break;
-	case _TPDU_PPS :csResult = _T("[PPS]"); break;
-	case _TPDU_TPDU:csResult = _T("[APDU]"); break;
+	case _TPDU_ATR :
+
+
+		csNumber.Format("%d]", iType >> 8);
+		switch (iType & _TPDU_ATR_PALL)
+		{
+		case _TPDU_ATR_TS:csResult = _T("[TS]"); break;
+		case _TPDU_ATR_T0:csResult = _T("[T0]"); break;
+		case _TPDU_ATR_TCK:csResult = _T("[TCK]"); break;
+		case _TPDU_ATR_TA:csResult = _T("[TA")+ csNumber; break;
+		case _TPDU_ATR_TB:csResult = _T("[TB")+ csNumber; break;
+		case _TPDU_ATR_TC:csResult = _T("[TC") + csNumber; break;
+		case _TPDU_ATR_TD:csResult = _T("[TD") + csNumber; break;
+		case _TPDU_ATR_T_NUMBER:csResult = _T("[T") + csNumber; break;
+
+		default:csResult = _T("[ATR]"); break;
+		}
+		break;
+	case _TPDU_PPS :
+		switch (iType & _TPDU_PPS_PALL)
+		{
+		case _TPDU_PPS_PTSS:csResult = _T("[PTSS]"); break;
+		case _TPDU_PPS_PTS0:csResult = _T("[PTS0]"); break;
+		case _TPDU_PPS_PTS1:csResult = _T("[PTS1]"); break;
+		case _TPDU_PPS_PTS2:csResult = _T("[PTS2]"); break;
+		case _TPDU_PPS_PTS3:csResult = _T("[PTS3]"); break;
+		case _TPDU_PPS_PCK:csResult  = _T("[PCK]"); break;
+		case _TPDU_PPS_RPTSS:csResult = _T("[PTSS]"); break;
+		case _TPDU_PPS_RPTS0:csResult = _T("[PTS0]"); break;
+		case _TPDU_PPS_RPTS1:csResult = _T("[PTS1]"); break;
+		case _TPDU_PPS_RPTS2:csResult = _T("[PTS2]"); break;
+		case _TPDU_PPS_RPTS3:csResult = _T("[PTS3]"); break;
+		case _TPDU_PPS_RPCK:csResult = _T("[PCK]"); break;
+		default:csResult = _T("[PPS]"); break;
+		}
+		break;
+		
+	case _TPDU_TPDU:
+		switch (iType& _TPDU_APDU_PALL)
+		{
+		case _TPDU_APDU_CLA:csResult = _T("[CLA]"); break;
+		case _TPDU_APDU_INS:csResult = _T("[INS]"); break;
+		case _TPDU_APDU_P1:csResult = _T("[P1]"); break;
+
+		case _TPDU_APDU_P2:csResult = _T("[P2]"); break;
+		case _TPDU_APDU_P3:csResult = _T("[P3]"); break;
+		case _TPDU_APDU_ACK:csResult = _T("[ACK]"); break;
+		case _TPDU_APDU_NULL:csResult = _T("[NULL]"); break;
+		case _TPDU_APDU_DATA:csResult = _T("[DATA]"); break;
+		case _TPDU_APDU_SW1:csResult = _T("[SW1]"); break;
+		case _TPDU_APDU_SW2:csResult = _T("[SW2]"); break;
+		default:csResult = _T("[APDU]"); break;
+		}
+		break;
+		
+		
 	default:csResult.Empty();break;
 	}
 
@@ -471,7 +529,7 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 	pOldPen = pDC->SelectObject(&newPen);    // 选择新画笔，并将旧画笔的指针保存到pOldPen
 
 #if DEF_EVENTLIST_DATA
-	CString csEvent,csEventByte,csEventType;
+	CString csEvent,csEventByte,csEventType,csEventOffset;
 	BYTE __Event[8];
 	int  __EventSize = 0;
 	int  __EventSum = m_hEventList->GetEventCount();
@@ -483,7 +541,7 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 	if (iOffset == 0)
 	{
 
-		if (m_hEventList->GetEvent(0, csEvent, csEventByte, csEventType)<=0)
+		if (m_hEventList->GetEvent(0, csEvent, csEventByte, csEventType, csEventOffset)<=0)
 		{
 			return;
 		}
@@ -493,7 +551,7 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 		if (DrawVCCText(pDC, __Event, __EventSize))
 		{
 			iOffset += 1;
-			if (m_hEventList->GetEvent(1, csEvent, csEventByte, csEventType) <= 0)
+			if (m_hEventList->GetEvent(1, csEvent, csEventByte, csEventType, csEventOffset) <= 0)
 			{
 				return;
 			}
@@ -515,18 +573,18 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 	}
 	else
 	{
-		m_hEventList->GetEvent(iOffset-1, csEvent, csEventByte, csEventType);
+		m_hEventList->GetEvent(iOffset-1, csEvent, csEventByte, csEventType, csEventOffset);
 		__EventSize = _CString2UcHex(csEvent, __Event);
 
 		__Pre = __Event[0];
 
-		m_hEventList->GetEvent(iOffset, csEvent, csEventByte, csEventType);
+		m_hEventList->GetEvent(iOffset, csEvent, csEventByte, csEventType, csEventOffset);
 		__EventSize = _CString2UcHex(csEvent, __Event);
 
 		if (DrawVCCText(pDC, __Event, __EventSize))
 		{
 			iOffset += 1;
-			if (m_hEventList->GetEvent(1, csEvent, csEventByte, csEventType) <= 0)
+			if (m_hEventList->GetEvent(iOffset, csEvent, csEventByte, csEventType, csEventOffset) <= 0)
 			{
 				return;
 			}
@@ -582,7 +640,7 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 	{
 		iEndPos = i;
 		__Pre = __Event[0];
-		m_hEventList->GetEvent(i, csEvent, csEventByte, csEventType);
+		m_hEventList->GetEvent(i, csEvent, csEventByte, csEventType, csEventOffset);
 		__EventSize = _CString2UcHex(csEvent, __Event);
 
 		if (DrawVCCText(pDC, __Event, __EventSize))
@@ -1152,13 +1210,14 @@ void CWaveForm::OnWaveformNextButton()
 {
 	// TODO: 在此添加命令处理程序代码
 	CString __Event;
-	int __Pos = m_hEventList->GetNextEvent(_TPDU_TPDU | _BYTE_Success, iStartPos+1, __Event);
+	int __Pos = m_hEventList->GetNextEvent(_TPDU_APDU_CLA|_TPDU_TPDU , iStartPos+2, __Event);
+
 
 	if (__Pos > 0)
 	{
-		SetPos(__Pos+1); 
+		SetPos(__Pos);
 		ReDraw(GetDC(), NULL);
-		((CWaveView*)GetParent())->m_pScrollBar.SetScrollPos(__Pos + 1);
+		((CWaveView*)GetParent())->m_pScrollBar.SetScrollPos(__Pos);
 	}
 
 
@@ -1173,15 +1232,80 @@ void CWaveForm::OnWaveformPreviousButton()
 {
 	// TODO: 在此添加命令处理程序代码
 	CString __Event;
-	int __Pos = m_hEventList->GetPreviousEvent(_TPDU_TPDU | _BYTE_Success, iStartPos-1, __Event);
+	int __Pos = m_hEventList->GetPreviousEvent(_TPDU_APDU_CLA | _TPDU_TPDU , iStartPos-2, __Event);
 
 	if (__Pos > 0)
 	{
-		SetPos(__Pos + 1);
+		SetPos(__Pos );
 		ReDraw(GetDC(), NULL);
-		((CWaveView*)GetParent())->m_pScrollBar.SetScrollPos(__Pos + 1);
+		((CWaveView*)GetParent())->m_pScrollBar.SetScrollPos(__Pos );
 	}
 }
+
+
+void CWaveForm::OnWaveformNextAtrButton()
+{
+	// TODO: 在此添加命令处理程序代码
+	CString __Event;
+	int __Pos = m_hEventList->GetNextEvent(_TPDU_ATR_TS | _TPDU_ATR, iStartPos + 2, __Event);
+
+
+	if (__Pos > 0)
+	{
+		SetPos(__Pos);
+		ReDraw(GetDC(), NULL);
+		((CWaveView*)GetParent())->m_pScrollBar.SetScrollPos(__Pos);
+	}
+
+}
+
+
+void CWaveForm::OnWaveformPreviousAtrButton()
+{
+	// TODO: 在此添加命令处理程序代码
+	CString __Event;
+	int __Pos = m_hEventList->GetPreviousEvent(_TPDU_ATR_TS | _TPDU_ATR, iStartPos - 2, __Event);
+
+	if (__Pos > 0)
+	{
+		SetPos(__Pos);
+		ReDraw(GetDC(), NULL);
+		((CWaveView*)GetParent())->m_pScrollBar.SetScrollPos(__Pos);
+	}
+}
+
+
+void CWaveForm::OnWaveformNextPpsButton()
+{
+	// TODO: 在此添加命令处理程序代码
+	CString __Event;
+	int __Pos = m_hEventList->GetNextEvent(_TPDU_PPS_PTSS | _TPDU_PPS, iStartPos + 2, __Event);
+
+
+	if (__Pos > 0)
+	{
+		SetPos(__Pos);
+		ReDraw(GetDC(), NULL);
+		((CWaveView*)GetParent())->m_pScrollBar.SetScrollPos(__Pos);
+	}
+
+}
+
+
+void CWaveForm::OnWaveformPreviousPpsButton()
+{
+	// TODO: 在此添加命令处理程序代码
+	CString __Event;
+	int __Pos = m_hEventList->GetPreviousEvent(_TPDU_PPS_PTSS | _TPDU_PPS, iStartPos - 2, __Event);
+
+	if (__Pos > 0)
+	{
+		SetPos(__Pos);
+		ReDraw(GetDC(), NULL);
+		((CWaveView*)GetParent())->m_pScrollBar.SetScrollPos(__Pos);
+	}
+}
+
 
 
 void CWaveForm::OnContextMenu(CWnd* /*pWnd*/, CPoint point)
@@ -1403,4 +1527,6 @@ void CWaveView::RemoveWave()
 	m_pWaveForm.RemoveWave();
 	m_pScrollBar.SetScrollRange(1, 1);
 }
+
+
 

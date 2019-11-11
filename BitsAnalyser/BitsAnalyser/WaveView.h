@@ -118,6 +118,10 @@ public:
 	afx_msg void OnWaveformPreviousButton();
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint point);
 
+	afx_msg void OnWaveformNextAtrButton();
+	afx_msg void OnWaveformPreviousAtrButton();
+	afx_msg void OnWaveformNextPpsButton();
+	afx_msg void OnWaveformPreviousPpsButton();
 };
 
 

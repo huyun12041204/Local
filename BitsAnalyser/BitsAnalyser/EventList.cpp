@@ -82,77 +82,72 @@ int CEventList::GetEventCount()
 	
 }
 
-#define DEF_EVENT_OVER  -1
-#define DEF_EVENT_EMPTY  0
-#define DEF_EVENT_SUCCESS      1
-#define DEF_EVENT_SUCCESS_EXT  2
-#define DEF_EVENT_SUCCESS_EXT1  DEF_EVENT_SUCCESS_EXT
-#define DEF_EVENT_SUCCESS_EXT2  DEF_EVENT_SUCCESS_EXT
-int CEventList::GetEvent(int iIndex, CString& csEvent, CString& csByte)
-{
-	// TODO: 在此处添加实现代码.
 
-
-#ifdef VIEW__MODE
-	if (iIndex > m_pEventList.GetCount())
-		return DEF_EVENT_OVER;
-
-	_DeleteEnterSpace(csEvent);
-	;
-	m_pEventList.GetText(iIndex, csEvent);
-
-	if (csEvent.IsEmpty())
-		return DEF_EVENT_EMPTY;
-
-	int iDes = csEvent.Find(_T("["));
-
-	if (iDes <= 0)
-	{
-		csByte.Empty();
-		return DEF_EVENT_SUCCESS;
-	}
-	else
-	{
-		csByte = csEvent.Mid(iDes + 1);
-		csByte = csByte.Left(csByte.GetLength() - 1);
-		csEvent = csEvent.Mid(0, iDes);
-
-	}
-
-	return DEF_EVENT_SUCCESS_EXT;
-#else
-	if(iIndex<0)
-		return DEF_EVENT_OVER;
-
-	if (iIndex >= ___EentList.GetCount())
-		return DEF_EVENT_OVER;
-
-	_DeleteEnterSpace(csEvent);
-
-
-	csEvent = ___EentList.GetAt(iIndex);
-
-	if (csEvent.IsEmpty())
-		return DEF_EVENT_EMPTY;
-
-	int iDes = csEvent.Find(_T("["));
-
-	if (iDes <= 0)
-	{
-		csByte.Empty();
-		return DEF_EVENT_SUCCESS;
-	}
-	else 
-	{
-		csByte = csEvent.Mid(iDes + 1,2);
-		//csByte = csByte.Left(csByte.GetLength() - 1);
-		csEvent = csEvent.Mid(0, iDes);
-
-	}
-
-	return DEF_EVENT_SUCCESS_EXT;
-#endif // VIEW__MODE
-}
+//int CEventList::GetEvent(int iIndex, CString& csEvent, CString& csByte)
+//{
+//	// TODO: 在此处添加实现代码.
+//
+//
+//#ifdef VIEW__MODE
+//	if (iIndex > m_pEventList.GetCount())
+//		return DEF_EVENT_OVER;
+//
+//	_DeleteEnterSpace(csEvent);
+//	;
+//	m_pEventList.GetText(iIndex, csEvent);
+//
+//	if (csEvent.IsEmpty())
+//		return DEF_EVENT_EMPTY;
+//
+//	int iDes = csEvent.Find(_T("["));
+//
+//	if (iDes <= 0)
+//	{
+//		csByte.Empty();
+//		return DEF_EVENT_SUCCESS;
+//	}
+//	else
+//	{
+//		csByte = csEvent.Mid(iDes + 1);
+//		csByte = csByte.Left(csByte.GetLength() - 1);
+//		csEvent = csEvent.Mid(0, iDes);
+//
+//	}
+//
+//	return DEF_EVENT_SUCCESS_EXT;
+//#else
+//	if(iIndex<0)
+//		return DEF_EVENT_OVER;
+//
+//	if (iIndex >= ___EentList.GetCount())
+//		return DEF_EVENT_OVER;
+//
+//	_DeleteEnterSpace(csEvent);
+//
+//
+//	csEvent = ___EentList.GetAt(iIndex);
+//
+//	if (csEvent.IsEmpty())
+//		return DEF_EVENT_EMPTY;
+//
+//	int iDes = csEvent.Find(_T("["));
+//
+//	if (iDes <= 0)
+//	{
+//		csByte.Empty();
+//		return DEF_EVENT_SUCCESS;
+//	}
+//	else 
+//	{
+//		csByte = csEvent.Mid(iDes + 1,2);
+//		//csByte = csByte.Left(csByte.GetLength() - 1);
+//		csEvent = csEvent.Mid(0, iDes);
+//
+//	}
+//
+//	return DEF_EVENT_SUCCESS_EXT;
+//#endif // VIEW__MODE
+//}
 
 
 //************************************
@@ -171,7 +166,7 @@ int CEventList::GetEvent(int iIndex, CString& csEvent, CString& csByte)
 // Parameter: CString & csByte
 // Parameter: CString & csType
 //************************************
-int CEventList::GetEvent(int iIndex, CString& csEvent, CString& csByte,CString& csType)
+int CEventList::GetEvent(int iIndex, CString& csEvent, CString& csByte,CString& csType, CString& csOffset)
 {
 	// TODO: 在此处添加实现代码.
 
@@ -187,9 +182,9 @@ int CEventList::GetEvent(int iIndex, CString& csEvent, CString& csByte,CString& 
 	if (_Event.IsEmpty())
 		return DEF_EVENT_EMPTY;
 
-	int iDes = _Event.Find(_T("["));
+	int iStart = _Event.Find(_T("["));
 
-	if (iDes <= 0)
+	if (iStart <= 0)
 	{
 		csByte.Empty();
 		csEvent = _Event;
@@ -197,22 +192,22 @@ int CEventList::GetEvent(int iIndex, CString& csEvent, CString& csByte,CString& 
 	}
 	else
 	{
-		csByte = _Event.Mid(iDes + 1, 2);
+		csByte = _Event.Mid(iStart + 1, 2);
 		//csByte = csByte.Left(csByte.GetLength() - 1);
-		csEvent = _Event.Mid(0, iDes);
+		csEvent = _Event.Mid(0, iStart);
 
 	}
 
-	iDes = _Event.Find(_T("("));
+	iStart = _Event.Find(_T("("));
 
-	if (iDes <= 0)
+	if (iStart <= 0)
 	{
 		csType.Empty();
 		return DEF_EVENT_SUCCESS_EXT1;
 	}
 	else
 	{
-		csType = _Event.Mid(iDes + 1, 2);
+		csType = _Event.Mid(iStart + 1, 2);
 
 	}
 
@@ -229,39 +224,70 @@ int CEventList::GetEvent(int iIndex, CString& csEvent, CString& csByte,CString& 
 
 	CString _Event = ___EentList.GetAt(iIndex);
 
+
 	if (_Event.IsEmpty())
 		return DEF_EVENT_EMPTY;
 
-	int iDes = _Event.Find(_T("["));
+	
 
-	if (iDes <= 0)
+
+	int iRet = DEF_EVENT_SUCCESS;;
+	int iStart = _Event.Find(_T("["));
+	int iOffset = _Event.GetLength();
+
+
+	if (iStart <= 0)
 	{
-		csByte.Empty();
-		csEvent = _Event;
-		return DEF_EVENT_SUCCESS;
+		csByte.Empty();	
 	}
 	else
 	{
-		csByte = _Event.Mid(iDes + 1, 2);
-		//csByte = csByte.Left(csByte.GetLength() - 1);
-		csEvent = _Event.Mid(0, iDes);
+		if (iStart < iOffset)
+			iOffset = iStart;
+		csByte = _Event.Mid(iStart + 1, 2);
+		iRet |= DEF_EVENT_SUCCESS_EXT1;
 
 	}
 
-	 iDes = _Event.Find(_T("("));
+	 iStart = _Event.Find(_T("("));
 
-	if (iDes <= 0)
+
+
+	if (iStart <= 0)
 	{
 		csType.Empty();
-		return DEF_EVENT_SUCCESS_EXT1;
+		//iRet =  DEF_EVENT_SUCCESS_EXT1;
 	}
 	else
 	{
-		csType = _Event.Mid(iDes + 1, 2);
+		if ( iStart < iOffset)
+			iOffset = iStart;
+		csType = _Event.Mid(iStart + 1, 3);
+	
+		iRet |= DEF_EVENT_SUCCESS_EXT2;
 
 	}
 
-	return DEF_EVENT_SUCCESS_EXT2;
+	iStart = _Event.Find(_T("<"));
+
+	if (iStart <= 0)
+	{
+		csOffset.Empty();
+		//iRet = DEF_EVENT_SUCCESS_EXT2;
+	}
+	else
+	{
+		if (iStart < iOffset)
+			iOffset = iStart;
+		csOffset = _Event.Mid(iStart + 1, 2);
+		iRet |= DEF_EVENT_SUCCESS_EXT3;
+
+	}
+
+	csEvent = _Event.Left(iOffset);
+
+	return iRet;
+
 #endif // VIEW__MODE
 }
 
@@ -296,9 +322,9 @@ int  CEventList::GetVCCForEvent(int iPos,BYTE* ucEvent)
 			break;
 	}
 
-	CString csEvent,csByte;
+	CString csEvent,csByte,_EventType, _EventOffset;;
 
-	if (GetEvent(iVCCSqu, csEvent, csByte) != DEF_EVENT_SUCCESS)
+	if (GetEvent(iVCCSqu, csEvent, csByte, _EventType, _EventOffset) != DEF_EVENT_SUCCESS)
 	{
 		return -1;
 	}
@@ -316,7 +342,7 @@ int CEventList::SeteEventByte(int iEventIndex, CString csBYTE)
 
 #ifdef VIEW__MODE
 	CString csEvent, csEventByte;
-	int iRet = GetEvent(iEventIndex, csEvent, csEventByte);
+	int iRet = GetEvent(iEventIndex, csEvent, csEventByte, TODO);
 	if (iRet != DEF_EVENT_SUCCESS)
 		return iRet;
 
@@ -334,8 +360,8 @@ int CEventList::SeteEventByte(int iEventIndex, CString csBYTE)
 
 	return 1;
 #else
-	CString csEvent, csEventByte;
-	int iRet = GetEvent(iEventIndex, csEvent, csEventByte);
+	CString csEvent, csEventByte,csEventType, csEventOffset;
+	int iRet = GetEvent(iEventIndex, csEvent, csEventByte, csEventType,csEventOffset);
 	if (iRet != DEF_EVENT_SUCCESS)
 		return iRet;
 
@@ -360,7 +386,7 @@ int CEventList::SetEventType(int iEventIndex, CString csType)
 
 #ifdef VIEW__MODE
 	CString csEvent, csEventByte, csEventType;
-	int iRet = GetEvent(iEventIndex, csEvent, csEventByte, csEventType);
+	int iRet = GetEvent(iEventIndex, csEvent, csEventByte, csEventType, TODO);
 	if (iRet == DEF_EVENT_SUCCESS_EXT2)
 		return iRet;
 
@@ -375,8 +401,8 @@ int CEventList::SetEventType(int iEventIndex, CString csType)
 	return 1;
 #else
 
-	CString csEvent, csEventByte,csEventType;
-	int iRet = GetEvent(iEventIndex, csEvent, csEventByte,csEventType);
+	CString csEvent, csEventByte,csEventType,csEventOffset;
+	int iRet = GetEvent(iEventIndex, csEvent, csEventByte,csEventType, csEventOffset);
 	if (iRet == DEF_EVENT_SUCCESS_EXT2)
 		return iRet;
 
@@ -393,11 +419,11 @@ int CEventList::SetEventType(int iEventIndex, CString csType)
 
 }
 
-int CEventList::SetEventDescription(int iEventIndex, CString csByte,CString csType)
+int CEventList::SetEventDescription(int iEventIndex, CString csByte,CString csType, CString csOffset)
 {
 #ifdef VIEW__MODE
 	CString csEvent, csEventByte;
-	int iRet = GetEvent(iEventIndex, csEvent, csEventByte);
+	int iRet = GetEvent(iEventIndex, csEvent, csEventByte, TODO);
 	if (iRet != DEF_EVENT_SUCCESS)
 		return iRet;
 
@@ -418,16 +444,22 @@ int CEventList::SetEventDescription(int iEventIndex, CString csByte,CString csTy
 	return 1;
 #else
 
-	CString csEvent, csEventByte, csEventType;
-	int iRet = GetEvent(iEventIndex, csEvent, csEventByte, csEventType);
-	if (iRet != DEF_EVENT_SUCCESS)
+	CString csEvent, csEventByte, csEventType,csEventOffset;
+	int iRet = GetEvent(iEventIndex, csEvent, csEventByte, csEventType, csEventOffset);
+	if ((iRet& DEF_EVENT_SUCCESS) != DEF_EVENT_SUCCESS)
 		return iRet;
 
-	csByte = _T("[") + csByte + _T("]");
+	if (!csByte.IsEmpty())
+		csByte = _T("[") + csByte + _T("]");
+	
+	if (!csType.IsEmpty())
+		csType = _T("(") + csType + _T(")");
+	
+	if (!csOffset.IsEmpty())
+		csOffset = _T("<") + csOffset + _T(">");
 
-	csType = _T("(") + csType + _T(")");
 
-	csEvent = csEvent + csByte +csType;
+	csEvent = csEvent + csByte +csType+ csOffset;
 
 	___EentList.RemoveAt(iEventIndex);
 	___EentList.InsertAt(iEventIndex, csEvent);
@@ -515,15 +547,15 @@ ULONG CEventList::GetSize()
 int CEventList::GetNextEvent(int iType, int iStart,CString& csEvent)
 {
 	int iCount = GetEventCount();
-	CString  __Byte, __Type;
+	CString  __Byte, __Type, __Offset;
 	CString csType;
 
-	csType.Format("%02x", iType);
+	csType.Format("%03x", iType);
 
 
 	for (int i = iStart;i<iCount;i++)
 	{
-		if ((GetEvent(i, csEvent,__Byte, __Type) == DEF_EVENT_SUCCESS_EXT2)&&
+		if (((GetEvent(i, csEvent,__Byte, __Type, __Offset)& DEF_EVENT_SUCCESS_EXT2) == DEF_EVENT_SUCCESS_EXT2)&&
 			(csType.Compare(__Type) == 0))
 			return i;
 	}
@@ -535,15 +567,15 @@ int CEventList::GetNextEvent(int iType, int iStart,CString& csEvent)
 int CEventList::GetPreviousEvent(int iType, int iStart, CString& csEvent)
 {
 	int iCount = GetEventCount();
-	CString  __Byte, __Type;
+	CString  __Byte, __Type,__Offset;
 	CString csType;
 
-	csType.Format("%02x", iType);
+	csType.Format("%03x", iType);
 
 
 	for (int i = iStart; i >= 0; i--)
 	{
-		if ((GetEvent(i, csEvent, __Byte, __Type) == DEF_EVENT_SUCCESS_EXT2) &&
+		if (((GetEvent(i, csEvent, __Byte, __Type, __Offset) & DEF_EVENT_SUCCESS_EXT2) == DEF_EVENT_SUCCESS_EXT2) &&
 			(csType.Compare(__Type) == 0))
 			return i;
 	}

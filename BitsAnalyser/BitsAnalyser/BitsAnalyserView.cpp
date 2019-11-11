@@ -146,6 +146,7 @@ int _CLKDiffData2Byte_2(BYTE* bBit,UINT bBitLen, BYTE *bByte)
 		}
 		else
 		{
+
 			if (_Bits2Byte(bBitt, 11, bByte)== _Bits_Success)
 				iRet = _CLK_Success;
 			else
@@ -164,7 +165,7 @@ int _CLKDiffData2Byte_2(BYTE* bBit,UINT bBitLen, BYTE *bByte)
 
 
 	bPreBit0 = bBit[0];
-	return iRet;
+	return iRet | (iBitStatue<<4);
 
 }
 
@@ -229,21 +230,26 @@ BYTE bPreByte[_Max_TPDU_Len];
 UINT iByteLen = 0;
 int  iTPDUStatue = _TPDU_NULL;
 
-bool _ATRIsComplete(BYTE* bATR,UINT iATRLen)
+int _ATRIsComplete(BYTE* bATR,UINT iATRLen)
 {
 	UINT iHisLen;
 	//必然要有TS T0
-	if (iATRLen < 2)
-		return false;
+
+	if (iATRLen == 1)
+		return _TPDU_ATR_TS;
+
+	if (iATRLen == 2)
+		return _TPDU_ATR_T0;
+
 	iHisLen = bATR[1] & 0xF;
 
-	if (iATRLen < 2 + iHisLen)
-		return false;
+	//if (iATRLen < 2 + iHisLen)
+	//	return FALSE;
 
 	//此处检查是否 Txi 是否进行完毕
 	int iCheckSum = 0;
 	int iLevel    = 0;
-	UINT iOffset   = 2;
+	UINT iOffset  = 2;
 	BYTE TDi;
 
 	do 
@@ -251,30 +257,57 @@ bool _ATRIsComplete(BYTE* bATR,UINT iATRLen)
 		//前一个TDi
 		TDi = bATR[iOffset-1];
 		//如果出现F协议，则表示需要校验位
-		if ((iLevel != 0)&&
-			((TDi&0xF) == 0xF))
+		if ((iLevel != 0) &&
+			((TDi & 0xF) == 0xF))
+		{
 			iCheckSum = 1;
-
-
-		if (TDi&0x10)
+		}
+		
+		if (TDi & 0x10)
+		{
 			iOffset += 1;
+			if (iOffset == iATRLen)
+				return _TPDU_ATR_TA + ((iLevel+1)<<8);
+
+		}
+			
 		if (TDi & 0x20)
+		{
 			iOffset += 1;
+			if (iOffset == iATRLen)
+				return _TPDU_ATR_TB + ((iLevel + 1) << 8);
+
+		}
 		if (TDi & 0x40)
+		{
 			iOffset += 1;
+			if (iOffset == iATRLen)
+				return _TPDU_ATR_TC + ((iLevel + 1) << 8);
+
+		}
 		if (TDi & 0x80)
+		{
 			iOffset += 1;
-		if (iOffset>iATRLen)
-			return false;
+			if (iOffset == iATRLen)
+				return _TPDU_ATR_TD + ((iLevel + 1) << 8);
+
+		}
+		//if (iOffset>iATRLen)
+		//	return FALSE;
 		iLevel++;
 	} while (TDi&0x80);
 
+
+
 	if ((iOffset+iHisLen+iCheckSum) == iATRLen)
-		return true;
+		return _TPDU_ATR_TCK;
 
+	if (iATRLen >= (iOffset+ iCheckSum))
+	{
+		return _TPDU_ATR_T_NUMBER+0x100+ ((iATRLen- (iOffset + iCheckSum)) <<8);
+	}
 
-
-	return false;
+	return FALSE;
 }
 
 //************************************
@@ -287,19 +320,96 @@ bool _ATRIsComplete(BYTE* bATR,UINT iATRLen)
 // Parameter: UINT iPPSLen
 // 当前只判断了T0 协议
 //************************************
-bool _PPSIsComplete(BYTE* bPPS, UINT iPPSLen)
+int _PPSIsComplete(BYTE* bPPS, UINT iPPSLen)
 {
-	if (iPPSLen<7)
-		return false;
+	if (iPPSLen == 1)
+		return _TPDU_PPS_PTSS;
+	if (iPPSLen == 2)
+		return _TPDU_PPS_PTS0;
+	int iPTSNUM = 0;
+	int iOffset = 2;
+	//PTS0 bit 5 表示存在 PTS1
+	if (bPPS[1] & 0x10)
+	{
+		iOffset += 1;
+		if (iPPSLen == (iOffset))
+			return _TPDU_PPS_PTS1;
+	}
+	//PTS0 bit 6 表示存在 PTS2
+	if (bPPS[1] & 0x20)
+	{
+		iOffset += 1;
+		if (iPPSLen == (iOffset))
+			return _TPDU_PPS_PTS2;
+	}
+	//PTS0 bit 7 表示存在 PTS3
+	if (bPPS[1] & 0x40)
+	{
+		iOffset += 1;
+		if (iPPSLen == (iOffset))
+			return _TPDU_PPS_PTS3;
+	}
 
-	if ((bPPS[6] == 0)&&
-		(iPPSLen == 7))
-		return true;
+	// 此处为 PCK
+	iOffset += 1;
+	if (iPPSLen == iOffset)
+		return _TPDU_PPS_PCK;
 
-	if (iPPSLen == 8)
-		return true;
+
+	// 此处为 RPTSS
+	iOffset += 1;
+	if (iPPSLen == iOffset)
+		return _TPDU_PPS_RPTSS;
+
+
+	// 此处为 RPTS0
+	iOffset += 1;
+	int iRPTS0 = iOffset;
+	if (iPPSLen == iOffset)
+		return _TPDU_PPS_RPTS0;
+
+	
+
+	//PTS0 bit 5 表示存在 PTS1
+	if (bPPS[iRPTS0 -1] & 0x10)
+	{
+		iOffset += 1;
+		if (iPPSLen == (iOffset))
+			return _TPDU_PPS_RPTS1;
+	}
+	//PTS0 bit 6 表示存在 PTS2
+	if (bPPS[iRPTS0 - 1] & 0x20)
+	{
+		iOffset += 1;
+		if (iPPSLen == (iOffset))
+			return _TPDU_PPS_RPTS2;
+	}
+	//PTS0 bit 7 表示存在 PTS3
+	if (bPPS[iRPTS0 - 1] & 0x40)
+	{
+		iOffset += 1;
+		if (iPPSLen == (iOffset))
+			return _TPDU_PPS_RPTS3;
+	}
+
+	// 此处为 RPCK
+	iOffset += 1;
+	if (iPPSLen == iOffset)
+		return _TPDU_PPS_RPCK;
+
 
 	return false;
+	//if (iPPSLen<7)
+	//	return false;
+
+	//if ((bPPS[6] == 0)&&
+	//	(iPPSLen == 7))
+	//	return true;
+
+	//if (iPPSLen == 8)
+	//	return true;
+
+	//return false;
 }
 
 //************************************
@@ -339,16 +449,23 @@ int _PPSIsSuccess(BYTE* bPPS, UINT iPPSLen,
 	return iCurPrescale;
 }
 
-bool _TPDUIsComplete(BYTE* bTPDU, UINT iTPDULen,
+int _TPDUIsComplete(BYTE* bTPDU, UINT iTPDULen,
 	CString&csSend,
 	CString&csProduce, CString&csACK,
 	CString&csData, CString&csLProduce,CString&csSW)
 {
-	bool bRet = false;
+	int bRet = false;
 	int iDataLen;
-	if (iTPDULen < 7)
-		return false;
 
+
+
+	//此处 为 APDU 头部分, 如果 这都不满足,则肯定不完整
+	if (iTPDULen <= 5)
+	{
+		bRet = (iTPDULen << 4);
+		return bRet;
+	}
+	
 	//此处判断是否有过程字符
 	UINT iProduceNumber = 0;
 	UINT iLProduceNumber = 0;
@@ -360,8 +477,9 @@ bool _TPDUIsComplete(BYTE* bTPDU, UINT iTPDULen,
 			break;
 	
 	}
-	if (iTPDULen < (iProduceNumber+7))
-		return false;
+	//如果存在过程字节, 表明此时,还是过程字节
+	if (iTPDULen <= (iProduceNumber+5))
+		return _TPDU_APDU_NULL;
 
 
 
@@ -377,14 +495,21 @@ bool _TPDUIsComplete(BYTE* bTPDU, UINT iTPDULen,
 			csACK.Empty();
 			csData.Empty();
 			_UcHex2CString(bTPDU + 5+ iProduceNumber, 2, csSW);
-			bRet = true;
+			bRet = _TPDU_APDU_SW2;
 		}
+		else
+			bRet = _TPDU_APDU_SW1;
 
 	}
 	//case 2
-	else
+	else if (iTPDULen == 6 + iProduceNumber)
 	{
-
+		//表明此时存在ACK
+		bRet = _TPDU_APDU_ACK;
+	}
+	else 
+	{
+		
 		if (bTPDU[4] == 0)
 			iDataLen = 0x100;
 		else
@@ -400,17 +525,57 @@ bool _TPDUIsComplete(BYTE* bTPDU, UINT iTPDULen,
 
 		}
 
-		if ((iDataLen + 8 + iProduceNumber+iLProduceNumber) == iTPDULen)
+		int iALLProduce = iProduceNumber + iLProduceNumber;
+		//APDU HEAD ,起始 PRODUCE , ACK ,响应 PRODUCE
+		// 5        iProduceNumber,  1  ,  iLProduceNumber     
+		if (iTPDULen == (6 + iALLProduce))
 		{
-			_UcHex2CString(bTPDU , 5, csSend);
+			bRet = _TPDU_APDU_NULL;
+		}
+		else if (iTPDULen == (7 + iDataLen + iALLProduce))
+		{
+			bRet = _TPDU_APDU_SW1;
+		}
+		else if (iTPDULen == (8 + iDataLen + iALLProduce))
+		{
+			_UcHex2CString(bTPDU, 5, csSend);
 			_UcHex2CString(bTPDU + 5, iProduceNumber, csProduce);
 			_UcHex2CString(bTPDU + 5 + iProduceNumber, 1, csACK);
-			_UcHex2CString(bTPDU + 5 + iProduceNumber + 1,  iDataLen, csData);
-			_UcHex2CString(bTPDU + 5 + iProduceNumber + 1 + iDataLen,  iLProduceNumber, csLProduce);
+			_UcHex2CString(bTPDU + 5 + iProduceNumber + 1, iDataLen, csData);
+			_UcHex2CString(bTPDU + 5 + iProduceNumber + 1 + iDataLen, iLProduceNumber, csLProduce);
 			_UcHex2CString(bTPDU + 5 + iProduceNumber + 1 + iDataLen + iLProduceNumber, 2, csSW);
-			bRet = true;
-
+			bRet = _TPDU_APDU_SW2;
 		}
+		else
+			bRet = _TPDU_APDU_DATA;
+
+
+
+
+		//if (iTPDULen == (iDataLen + 8 + iProduceNumber + iLProduceNumber))
+		//{
+		//	_UcHex2CString(bTPDU, 5, csSend);
+		//	_UcHex2CString(bTPDU + 5, iProduceNumber, csProduce);
+		//	_UcHex2CString(bTPDU + 5 + iProduceNumber, 1, csACK);
+		//	_UcHex2CString(bTPDU + 5 + iProduceNumber + 1, iDataLen, csData);
+		//	_UcHex2CString(bTPDU + 5 + iProduceNumber + 1 + iDataLen, iLProduceNumber, csLProduce);
+		//	_UcHex2CString(bTPDU + 5 + iProduceNumber + 1 + iDataLen + iLProduceNumber, 2, csSW);
+		//	bRet = _TPDU_APDU_SW2;
+		//}
+
+		//if ((iDataLen + 8 + iProduceNumber+iLProduceNumber) == iTPDULen)
+		//{
+		//	_UcHex2CString(bTPDU , 5, csSend);
+		//	_UcHex2CString(bTPDU + 5, iProduceNumber, csProduce);
+		//	_UcHex2CString(bTPDU + 5 + iProduceNumber, 1, csACK);
+		//	_UcHex2CString(bTPDU + 5 + iProduceNumber + 1,  iDataLen, csData);
+		//	_UcHex2CString(bTPDU + 5 + iProduceNumber + 1 + iDataLen,  iLProduceNumber, csLProduce);
+		//	_UcHex2CString(bTPDU + 5 + iProduceNumber + 1 + iDataLen + iLProduceNumber, 2, csSW);
+		//	bRet = _TPDU_APDU_COMPLETE;
+
+		//}
+
+
 
 
 
@@ -487,11 +652,13 @@ int ByteData2TPDU(BYTE bByte, BYTE *bTPDU,UINT * uiTPDULen,
 
 	switch (iTPDUStatue)
 	{
-	case _TPDU_NULL:iTPDUStatue = _TPDU_ATR; break;
+	case _TPDU_NULL:iTPDUStatue = _TPDU_ATR;
 	case _TPDU_ATR :
-		if (_ATRIsComplete(bPreByte, iByteLen))
+
+		iRet = _ATRIsComplete(bPreByte, iByteLen);
+		if (iRet == _TPDU_ATR_COMPLETE)
 		{
-			iRet = _BYTE_Success|_TPDU_ATR;
+			iRet = _BYTE_Success|_TPDU_ATR| iRet;
 			_UcHex2CString(bPreByte, iByteLen, csData);
 			
 			iTPDUStatue = _TPDU_PPS;
@@ -502,23 +669,18 @@ int ByteData2TPDU(BYTE bByte, BYTE *bTPDU,UINT * uiTPDULen,
 		if (bPreByte[0] != 0xFF)
 			iTPDUStatue = _TPDU_TPDU;
 
-		if (_PPSIsComplete(bPreByte, iByteLen))
+		iRet = _PPSIsComplete(bPreByte, iByteLen);
+		if (iRet == _TPDU_PPS_COMPLETE)
 		{
-			iRet = _BYTE_Success|_TPDU_PPS;
-
-			iPrescale = _PPSIsSuccess(bPreByte, iByteLen, csSend, csData);
-
-		
+			iRet = _BYTE_Success | _TPDU_PPS | iRet;
+			iPrescale = _PPSIsSuccess(bPreByte, iByteLen, csSend, csData);	
 		}
 		break;
 	case _TPDU_TPDU:
 
-		if (_TPDUIsComplete(bPreByte, iByteLen, csSend,csProduce,csACK,csData,csLProduce,csSW))
-		{
-			iRet = _BYTE_Success|_TPDU_TPDU;
-
-		
-		}
+		iRet = _TPDUIsComplete(bPreByte, iByteLen, csSend, csProduce, csACK, csData, csLProduce, csSW);
+		if (iRet == _TPDU_APDU_COMPLETE)
+			iRet = _BYTE_Success | _TPDU_TPDU| iRet;
 
 		break;
 
@@ -527,7 +689,7 @@ int ByteData2TPDU(BYTE bByte, BYTE *bTPDU,UINT * uiTPDULen,
 	}
 
 
-	if ((iRet&0xF) == _BYTE_Success)
+	if ((iRet&0x3) == _BYTE_Success)
 	{
 		*uiTPDULen = iByteLen;
 		memcpy(bTPDU, bPreByte, iByteLen);
@@ -706,8 +868,9 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits, UINT BitsLen, int iVirtualEvent)
 			_Handle_Pin_Bytes(bPreBit0, bbits[0]);
 
 	
+			int __bitRet = _CLKDiffData2Byte_2(bbits, bbitsLen, &bBYTE);
 
-			if (_CLKDiffData2Byte_2(bbits,bbitsLen,&bBYTE) == _BYTE_Success)
+			if ((__bitRet&0x0F) == _CLK_Success)
 			{
 				//此处 提前添加
 				
@@ -718,13 +881,13 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits, UINT BitsLen, int iVirtualEvent)
 				CString csSend,csPro,csACK,csData,csLPro,csSW;
 				CString csTPDU;
 				CStringArray csInfomation;
-				int iRet = ByteData2TPDU(bBYTE,bBYTES,&iLen ,csSend,csPro,csACK,csData,csLPro,csSW);
+				int __ByteRet = ByteData2TPDU(bBYTE,bBYTES,&iLen ,csSend,csPro,csACK,csData,csLPro,csSW);
 				
-				ModifyDescription(bBYTE, iRet);
-				if ((iRet&0xF) == _BYTE_Success)
+				ModifyDescription(bBYTE, __ByteRet, (__bitRet));
+				if ((__ByteRet& _BYTE_Result) == _BYTE_Success)
 				{
 
-					switch(iRet&0xF0)
+					switch(__ByteRet& _TPDU_TYPE)
 					{
 
 					case _TPDU_ATR:
@@ -777,14 +940,21 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits, UINT BitsLen, int iVirtualEvent)
 					m_pAPDU.SetCaretIndex(m_pAPDU.GetCount()-1);
 
 				}
+				//else
+				//	ModifyDescription(bBYTE, __ByteRet, (__bitRet));
 
-				if (iRet < 0)
+				if (__ByteRet < 0)
 				{
 					CString csErr;
-					csErr.Format("Error code : %x",iRet);
+					csErr.Format("Error code : %x",__ByteRet);
 					AfxMessageBox(csErr);
 				}
 			}
+			else if((__bitRet &0xF) == _BYTE_Wait)
+			{
+				ModifyDescription(0, 0, (__bitRet));
+			}
+				
 			if (iVirtualEvent!= DEF_Virtual_Event)
 				AddEvent(bbits, bbitsLen);
 			
@@ -866,21 +1036,70 @@ int CBitsAnalyserView::AddEvent(BYTE* ucbits, int ibitslen)
 	return TRUE;
 }
 
-int CBitsAnalyserView::ModifyDescription(BYTE __BYTE, int __Type /*= 0*/)
+int CBitsAnalyserView::ModifyDescription(BYTE __BYTE, int __Type /*= 0*/, int __BitCLKRet /*= 0*/)
 {
-	CString __DES,__TYPE;
+	CString __Byte,__TYPE,__Offset;
+	CString ___Event, ___Byte, ___TYPE, ___Offset;
 	CMainFrame* _pMain;
 	_pMain = (CMainFrame*)AfxGetApp()->GetMainWnd();
 
-	_UcHex2CString(&__BYTE, 1, __DES);
-	__DES = __DES;
-	__TYPE.Format("%02x", __Type);
 
-	return _pMain->m_wndEventList.SetEventDescription(_pMain->m_wndEventList.GetEventCount() - 1, __DES, __TYPE);
-	//CurMainFrm->m_wndEventList.get
+	if ((__BitCLKRet  & 0xF) == _CLK_Success)
+	{
+		_UcHex2CString(&__BYTE, 1, __Byte);
+		__Byte = __Byte;
+
+		__TYPE.Format("%03x", __Type);
+		//__TYPE.Empty();
+		//__Offset.Empty();
+		__Offset.Format("%02x", __BitCLKRet >> 4);
+
+	}
+	else
+		__Offset.Format("%02x", __BitCLKRet>>4);
+
+	int iNumber = _pMain->m_wndEventList.GetEventCount();
+	if (iNumber == 0)
+		return TRUE;
+
+	if ((__BYTE != 0) && (__Type != 0))
+	{
+
+		//iNUmber -1 为 结束的位置, 现在找寻,起始的位置, 往前一个个 找 BITSOFFSET
+		int iGetRet;
+		int iPre = 0;
+		for (int i = 2; i < 12; i++)
+		{
+			iGetRet = _pMain->m_wndEventList.GetEvent(iNumber - i, ___Event, ___Byte, ___TYPE, ___Offset);
+
+			if (((iGetRet & DEF_EVENT_SUCCESS_EXT3) != DEF_EVENT_SUCCESS_EXT3) ||
+				(_CString2Int(___Offset) == 0))
+			{
+				iPre = i-2;
+				break;
+			}
+
+		}
+
+		_pMain->m_wndEventList.GetEvent(iNumber - iPre, ___Event, ___Byte, ___TYPE, ___Offset);
 
 
+		_pMain->m_wndEventList.SetEventDescription(iNumber - 1, "", "", __Offset);
 
+		return _pMain->m_wndEventList.SetEventDescription(iNumber - iPre, __Byte, __TYPE, ___Offset);
+
+		//return 
+
+	}
+
+	else
+	{
+	return _pMain->m_wndEventList.SetEventDescription(iNumber - 1, __Byte, __TYPE, __Offset);
+
+	}
+
+	
+	
 
 }
 

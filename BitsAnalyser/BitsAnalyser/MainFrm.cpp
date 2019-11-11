@@ -1019,3 +1019,4 @@ void CMainFrame::RemoveAllBitsData()
 
 
 
+

@@ -1,6 +1,13 @@
 #pragma once
 
 
+#define DEF_EVENT_OVER  -1
+#define DEF_EVENT_EMPTY  0
+#define DEF_EVENT_SUCCESS       1
+#define DEF_EVENT_SUCCESS_EXT   2
+#define DEF_EVENT_SUCCESS_EXT1  2
+#define DEF_EVENT_SUCCESS_EXT2  4
+#define DEF_EVENT_SUCCESS_EXT3  8
 // CEventList
 
 class CEventList : public CDockablePane
@@ -26,13 +33,13 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	// 获取一共有多少个事件
 	int GetEventCount();
-	int GetEvent(int iIndex, CString& csEvent, CString& csByte);
-	int GetEvent(int iIndex, CString& csEvent, CString& csByte, CString& csType);
+	//int GetEvent(int iIndex, CString& csEvent, CString& csByte);
+	int GetEvent(int iIndex, CString& csEvent, CString& csByte, CString& csType, CString& csOffset);
 	int AddEvent(CString csText);
 	int GetVCCForEvent(int iPos, BYTE* ucEvent);
 	int SeteEventByte(int iEventIndex, CString csBYTE);
 	int SetEventType(int iEventIndex, CString csType);
-	int SetEventDescription(int iEventIndex, CString csByte, CString csType);
+	int SetEventDescription(int iEventIndex, CString csByte, CString csType, CString csOffset);
 	int RemoveAllEvent(void);
 	int UpdateEventList(void);
 	int ShowEventList();
