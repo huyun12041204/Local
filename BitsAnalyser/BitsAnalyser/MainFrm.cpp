@@ -939,18 +939,20 @@ LRESULT CMainFrame::OnUpdateEvent(WPARAM  wParam, LPARAM  LParam)
 	}
 		
 	//ÉèÖÃ¹öÂÖÊý×é;
-	m_wndWaveView.m_pScrollBar.SetScrollRange(1, iCount);
+	m_wndWaveView.SetScrollRange(1, iCount);
 
 	if (wParam != 0)
 	{
-		m_wndWaveView.m_pWaveForm.OnPaint();
+		m_wndWaveView.RedrawWaveForm();
+
+
 	}
 	if (LParam != 0)
 	{
 		m_wndEventList.UpdateEventList();
 	}
 
-	m_wndWaveView.m_pScrollBar.SetScrollPos(m_wndWaveView.m_pScrollBar.GetScrollPos());
+	m_wndWaveView.SetScrollPos(m_wndWaveView.GetScrollPos());
 
 	return 1;
 }

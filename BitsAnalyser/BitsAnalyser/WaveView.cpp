@@ -573,13 +573,34 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 	}
 	else
 	{
-		m_hEventList->GetEvent(iOffset-1, csEvent, csEventByte, csEventType, csEventOffset);
+		//此处是为了获取PREBIT0
+		m_hEventList->GetEvent(iOffset - 1, csEvent, csEventByte, csEventType, csEventOffset);
 		__EventSize = _CString2UcHex(csEvent, __Event);
 
 		__Pre = __Event[0];
 
+
+		if ((__Pre == 0xFA)&& (iOffset != 1))
+		{
+
+			m_hEventList->GetEvent(iOffset - 2, csEvent, csEventByte, csEventType, csEventOffset);
+			__EventSize = _CString2UcHex(csEvent, __Event);
+			__Pre = __Event[0];
+		}
+
+
 		m_hEventList->GetEvent(iOffset, csEvent, csEventByte, csEventType, csEventOffset);
 		__EventSize = _CString2UcHex(csEvent, __Event);
+
+		if (__Pre == 0xFA)
+		{
+			__Pre = __Event[0];
+		}
+
+
+
+
+
 
 		if (DrawVCCText(pDC, __Event, __EventSize))
 		{
@@ -589,6 +610,7 @@ void CWaveForm::DrawLine(CDC* pDC, CRect& rect,POINT* pSelect)
 				return;
 			}
 
+			__Pre = __Event[0];
 			__EventSize = _CString2UcHex(csEvent, __Event);
 		}
 		else
@@ -1097,6 +1119,11 @@ int CWaveForm::InputEventWnd(CWnd* EventWnd)
 	return TRUE;
 }
 
+CWnd* CWaveForm::GetEventWnd()
+{
+	return  (CWnd*)m_hEventList;
+}
+
 int CWaveForm::InputPrescale(int __Prescale)
 {
 
@@ -1217,7 +1244,7 @@ void CWaveForm::OnWaveformNextButton()
 	{
 		SetPos(__Pos);
 		ReDraw(GetDC(), NULL);
-		((CWaveView*)GetParent())->m_pScrollBar.SetScrollPos(__Pos);
+		((CWaveView*)GetParent())->SetScrollPos(__Pos);
 	}
 
 
@@ -1238,7 +1265,7 @@ void CWaveForm::OnWaveformPreviousButton()
 	{
 		SetPos(__Pos );
 		ReDraw(GetDC(), NULL);
-		((CWaveView*)GetParent())->m_pScrollBar.SetScrollPos(__Pos );
+		((CWaveView*)GetParent())->SetScrollPos(__Pos );
 	}
 }
 
@@ -1254,7 +1281,7 @@ void CWaveForm::OnWaveformNextAtrButton()
 	{
 		SetPos(__Pos);
 		ReDraw(GetDC(), NULL);
-		((CWaveView*)GetParent())->m_pScrollBar.SetScrollPos(__Pos);
+		((CWaveView*)GetParent())->SetScrollPos(__Pos);
 	}
 
 }
@@ -1270,7 +1297,7 @@ void CWaveForm::OnWaveformPreviousAtrButton()
 	{
 		SetPos(__Pos);
 		ReDraw(GetDC(), NULL);
-		((CWaveView*)GetParent())->m_pScrollBar.SetScrollPos(__Pos);
+		((CWaveView*)GetParent())->SetScrollPos(__Pos);
 	}
 }
 
@@ -1286,7 +1313,7 @@ void CWaveForm::OnWaveformNextPpsButton()
 	{
 		SetPos(__Pos);
 		ReDraw(GetDC(), NULL);
-		((CWaveView*)GetParent())->m_pScrollBar.SetScrollPos(__Pos);
+		((CWaveView*)GetParent())->SetScrollPos(__Pos);
 	}
 
 }
@@ -1302,7 +1329,7 @@ void CWaveForm::OnWaveformPreviousPpsButton()
 	{
 		SetPos(__Pos);
 		ReDraw(GetDC(), NULL);
-		((CWaveView*)GetParent())->m_pScrollBar.SetScrollPos(__Pos);
+		((CWaveView*)GetParent())->SetScrollPos(__Pos);
 	}
 }
 
@@ -1494,6 +1521,22 @@ void CWaveView::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		if (__pos > m_pScrollBar.GetScrollLimit())
 			__pos = m_pScrollBar.GetScrollLimit();
 
+
+		//************************************************************************************//
+		//此处为了防止 预画部分为 EVENT为电压EVENT ,所以提前+1一个, 如果为向左移动一位,则多-1;//
+		CString __Event, __Byte, __Type, __Offset;	                                         
+		if (__pos>1)                                                                       
+			((CEventList*)m_pWaveForm.GetEventWnd())->GetEvent(__pos - 2, __Event, __Byte, __Type, __Offset); 
+		if (_CString2Int(__Event.Mid(0,2)) == 0xFA)                                        
+		{
+			if (nSBCode == SB_LINELEFT)
+				__pos -= 1;
+			else
+				__pos += 1;		
+		}
+		//************************************************************************************//
+
+
 		m_pWaveForm.pSelect.SetPoint(0, 0);
 		__Newpos = m_pWaveForm.SetPos(__pos);
 
@@ -1521,11 +1564,32 @@ int CWaveView::InputPrescale(int __Prescale)
 	
 }
 
-void CWaveView::RemoveWave()
+void CWaveView::RemoveWave(void)
 {
 
 	m_pWaveForm.RemoveWave();
 	m_pScrollBar.SetScrollRange(1, 1);
+}
+
+void CWaveView::RedrawWaveForm(void)
+{
+	m_pWaveForm.OnPaint();
+}
+
+
+void CWaveView::SetScrollPos(int nPos)
+{
+	m_pScrollBar.SetScrollPos(nPos);
+
+}
+
+int CWaveView::GetScrollPos()
+{
+	return m_pScrollBar.GetScrollPos();
+}
+void CWaveView::SetScrollRange(int nMinPos,int nMaxPos)
+{
+    m_pScrollBar.SetScrollRange(nMinPos, nMaxPos);
 }
 
 

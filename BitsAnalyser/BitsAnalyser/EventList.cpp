@@ -324,7 +324,7 @@ int  CEventList::GetVCCForEvent(int iPos,BYTE* ucEvent)
 
 	CString csEvent,csByte,_EventType, _EventOffset;;
 
-	if (GetEvent(iVCCSqu, csEvent, csByte, _EventType, _EventOffset) != DEF_EVENT_SUCCESS)
+	if ((GetEvent(iVCCSqu, csEvent, csByte, _EventType, _EventOffset)& DEF_EVENT_SUCCESS) != DEF_EVENT_SUCCESS)
 	{
 		return -1;
 	}

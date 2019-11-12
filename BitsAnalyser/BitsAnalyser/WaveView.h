@@ -73,7 +73,7 @@ protected:
 
 
 #if DEF_EVENTLIST_DATA
-
+public:
 	CEventList* m_hEventList;
 
 #endif
@@ -106,7 +106,8 @@ public:
 
 	int GeneratePoint(BYTE* bits, int bitSize, POINT* pIO, POINT* pVCC, POINT* pRST, POINT* pCLK);
 
-	int InputEventWnd(CWnd* EventWnd);
+	int   InputEventWnd(CWnd* EventWnd);
+	CWnd* GetEventWnd(void);
 	int InputPrescale(int iPrescale);
 
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
@@ -134,10 +135,10 @@ class CWaveView : public CDockablePane
 public:
 	CWaveView();
 	virtual ~CWaveView();
-
+protected:
 	CWaveForm  m_pWaveForm;
 	CScrollBar m_pScrollBar;
-protected:
+
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg int  OnCreate(LPCREATESTRUCT lpCreateStruct);
@@ -145,11 +146,15 @@ public:
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 
-	int GetBitsEvenSum();
 	int InputEventWnd(CWnd* EventWnd);
 	int InputPrescale(int __Prescale);
 	
-	void RemoveWave();
+	void RemoveWave(void);
+	void RedrawWaveForm(void);
+	void SetScrollPos(int nPos);
+	void SetScrollRange(int nMinPos, int nMaxPos);
+	int  GetScrollPos();
+	
 };
 
 
