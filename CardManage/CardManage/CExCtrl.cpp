@@ -16,6 +16,7 @@ IMPLEMENT_DYNAMIC(CSkinListCtrl, CListCtrl)
 CSkinListCtrl::CSkinListCtrl()  
 {  
    LIST_ITEM_HEIGHT = 50;  
+   iSelectedSubItem = 0;
 }  
 CSkinListCtrl::~CSkinListCtrl()  
 {  
@@ -363,7 +364,7 @@ void CSkinListCtrl::AdjustColumnSize(int icx)
 	iColSum = ((CHeaderCtrl*)GetHeaderCtrl())->GetItemCount();
 
 	uiX     = new UINT[iColSum];
-	ZeroMemory(uiX,iColSum+5);
+	ZeroMemory(uiX,iColSum);
 	icx     = icx;
 
 
@@ -401,7 +402,7 @@ void CSkinListCtrl::AdjustColumnSize(int icx)
 		}
 	}
 
-	delete uiX;
+	delete[] uiX;
 }
 
 
@@ -449,7 +450,7 @@ int CSkinListCtrl::SetSelectedSumItem(int iSubItem)
 int CSkinListCtrl::GetHitTestSubItem(void)
 {
 	CPoint cpPoint;
-	UINT uFlag ;
+	UINT uFlag = NULL;
 	int iSum,iWidth,iCurWidth;
 
 

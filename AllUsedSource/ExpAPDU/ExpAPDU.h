@@ -241,17 +241,32 @@ public:
 	int iLevel;
 	int iOperater;
 	CMilenage StMilenage;
-	CString csK;
+//	CString csK;
+
+	 //此处存储Random 用于计算结果
 	CString csComput;
 	CStringArray csMsgArray;
-	CStringArray csCURFMKey;
+	//CStringArray csCURFMKey;
 	CString csDeriveData;
-	CString csK1;
-	CString csKIc;
+	//CString csK1;
+	//CString csKIc;
+
+	
+
 
 // 重写
 public:
 	virtual BOOL InitInstance();
+
+	BOOL CreateSubKeyProfile(CString SubKeyName, CString csUsage, CString csIndex, CString csValue);
+	BOOL CreateKIcProfile();
+	BOOL CreateKIDProfile();
+	BOOL CreateKIKProfile();
+	BOOL CreateCMCCProfile();
+	BOOL CreateCUCProfile();
+	BOOL CreateCTCProfile();
+	BOOL CreateMilenageProfile();
+	BOOL CreateKeyProfile();
 	BOOL InitParamerter();
 	void ResetParameter();
 	DECLARE_MESSAGE_MAP()

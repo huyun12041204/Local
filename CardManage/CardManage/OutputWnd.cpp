@@ -954,7 +954,7 @@ IMPLEMENT_DYNAMIC(CGetFlashWnd, CDockablePane)
 
 CGetFlashWnd::CGetFlashWnd()
 {
-
+	uiOffset = 0;
 }
 
 CGetFlashWnd::~CGetFlashWnd()
@@ -1148,7 +1148,7 @@ void CGetFlashWnd::DisplayFlashData(CString csInput)
 		fTime   = (float)((iTime*655));
 		fTime   = fTime/100000;
 		iTime   = (int)fTime/60;
-		csTime.Format("%d:%.2f",iTime,(float)(fTime - iTime*60));
+		csTime.Format("%d:%.2f",iTime,(float)(fTime - (float)(iTime*60)));
 		
 		csClass = csInput.Mid(iOffset,2);
 		if (iLength < (iOffset+2))

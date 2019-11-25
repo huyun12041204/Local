@@ -170,7 +170,7 @@ CString CKeySetting::GetCi(int iNumber)
 {
 
 	CString csCi;
-	int iID;
+	int iID  = IDC_C1_Edit;
 	switch(iNumber)
 	{
 	case 1:iID = IDC_C1_Edit;break;
@@ -178,6 +178,7 @@ CString CKeySetting::GetCi(int iNumber)
 	case 3:iID = IDC_C3_Edit;break;
 	case 4:iID = IDC_C4_Edit;break;
 	case 5:iID = IDC_C5_Edit;break;
+	default:iID = IDC_C1_Edit; break;
 	}
 	m_Milenage.GetDlgItemTextA(iID,csCi);
 	return csCi;
@@ -188,7 +189,7 @@ CString CKeySetting::GetCi(int iNumber)
 int CKeySetting::GetRi(int iNumber)
 {
 	CString csRi;
-	int iID;
+	int iID = IDC_R1_Edit;
 	switch(iNumber)
 	{
 	case 1:iID = IDC_R1_Edit;break;
@@ -196,6 +197,7 @@ int CKeySetting::GetRi(int iNumber)
 	case 3:iID = IDC_R3_Edit;break;
 	case 4:iID = IDC_R4_Edit;break;
 	case 5:iID = IDC_R5_Edit;break;
+	default:iID = IDC_R1_Edit; break;
 	}
 	m_Milenage.GetDlgItemTextA(iID,csRi);
 	return _CString2Int(csRi);
@@ -644,7 +646,7 @@ IMPLEMENT_DYNAMIC(CSIMToolkit, CDialogEx)
 	CSIMToolkit::CSIMToolkit(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CSIMToolkit::IDD, pParent)
 {
-
+	iSTKSW = 0x9F00;
 }
 
 CSIMToolkit::~CSIMToolkit()
@@ -1408,7 +1410,7 @@ BOOL CSIMToolkit::PreTranslateMessage(MSG* pMsg)
 	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE) return TRUE;
 	if (pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_RETURN) 
 	{
-		if (GetDlgItem(IDC_Input_Edit),IsWindowVisible())
+		if (GetDlgItem(IDC_Input_Edit)->IsWindowVisible())
 		{
 			CString csInput;
 

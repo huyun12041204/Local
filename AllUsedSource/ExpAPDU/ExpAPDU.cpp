@@ -45,6 +45,12 @@ END_MESSAGE_MAP()
 CExpAPDUApp::CExpAPDUApp()
 {
 	// TODO: 在此处添加构造代码，
+
+	 iCurrentDF = 0;
+	 iPreIns = 0;
+	 iPreSPI = 0;
+	 iLevel = 0;
+	 iOperater = 0;
 	// 将所有重要的初始化放置在 InitInstance 中
 }
 
@@ -66,57 +72,340 @@ BOOL CExpAPDUApp::InitInstance()
 	InitParamerter();
 	return TRUE;
 }
+
+
+BOOL CExpAPDUApp::CreateSubKeyProfile(CString SubKeyName, CString csUsage, CString csIndex, CString csValue)
+{
+	CString csPath = _T("Setting\\Key\\");
+
+	if (csIndex.IsEmpty())
+		return WriteProfileString(csPath + SubKeyName, csUsage, csValue);
+	else
+		return WriteProfileString(csPath +SubKeyName, csUsage + _T(" ")+csIndex, csValue);
+}
+
+
+BOOL CExpAPDUApp::CreateKIcProfile()
+{
+
+
+	//0348
+	CString csPath, SubKeyName ,csUsage,csIndex;
+	csPath = _T("Setting\\Key\\");
+	SubKeyName = _T("0348");
+	csUsage = _T("KIc ");
+
+	for (int i = 0 ; i < 0x10; i++)
+	{
+		_Int2CString(i, csIndex, 2);
+		if (GetProfileString(csPath + SubKeyName, csUsage + csIndex).IsEmpty())
+		{
+			if (!CreateSubKeyProfile(SubKeyName, csUsage, csIndex, _T("11223344556677889900112233445566")))
+				return FALSE;
+		}		
+	}
+	return TRUE;
+}
+
+BOOL CExpAPDUApp::CreateKIDProfile()
+{
+
+
+	//0348
+	CString csPath, SubKeyName, csUsage, csIndex;
+	csPath = _T("Setting\\Key\\");
+	SubKeyName = _T("0348");
+	csUsage = _T("KID ");
+
+	for (int i = 0; i < 0x10; i++)
+	{
+		_Int2CString(i, csIndex, 2);
+		if (GetProfileString(csPath + SubKeyName, csUsage + csIndex).IsEmpty())
+		{
+			if (!CreateSubKeyProfile(SubKeyName, csUsage, csIndex, _T("0102030405060708090A0B0C0D0E0F00")))
+				return FALSE;
+		}
+	}
+	return TRUE;
+}
+
+BOOL CExpAPDUApp::CreateKIKProfile()
+{
+
+
+	//0348
+	CString csPath, SubKeyName, csUsage, csIndex;
+	csPath = _T("Setting\\Key\\");
+	SubKeyName = _T("0348");
+	csUsage = _T("KIK ");
+
+	for (int i = 0; i < 0x10; i++)
+	{
+		_Int2CString(i, csIndex, 2);
+		if (GetProfileString(csPath + SubKeyName, csUsage + csIndex).IsEmpty())
+		{
+			if (!CreateSubKeyProfile(SubKeyName, csUsage, csIndex, _T("00112233445566778899AABBCCDDEEFF")))
+				return FALSE;
+		}
+	}
+	return TRUE;
+}
+
+BOOL CExpAPDUApp::CreateCMCCProfile()
+{
+
+
+	//0348
+	CString csPath, SubKeyName, csUsage, csIndex;
+	csPath = _T("Setting\\Key\\");
+	SubKeyName = _T("CMCC");
+	csUsage = _T("K1");
+
+	if (GetProfileString(csPath + SubKeyName, csUsage).IsEmpty())
+	{
+		if (!CreateSubKeyProfile(SubKeyName, csUsage, _T(""), _T("11111111111111111111111111111111")))
+			return FALSE;
+	}
+
+	return TRUE;
+}
+
+BOOL CExpAPDUApp::CreateCUCProfile()
+{
+
+
+	//0348
+	CString csPath, SubKeyName, csUsage, csIndex;
+	csPath = _T("Setting\\Key\\");
+	SubKeyName = _T("CUC");
+	csUsage = _T("RFM ");
+
+	_Int2CString(0, csIndex, 2);
+	if (GetProfileString(csPath + SubKeyName, csUsage + csIndex).IsEmpty())
+	{
+		if (!CreateSubKeyProfile(SubKeyName, csUsage, csIndex, _T("D82988A3FBB59A6B7429C911B0E65858")))
+			return FALSE;
+	}
+
+	_Int2CString(1, csIndex, 2);
+	if (GetProfileString(csPath + SubKeyName, csUsage + csIndex).IsEmpty())
+	{
+		if (!CreateSubKeyProfile(SubKeyName, csUsage, csIndex, _T("FE20AA0FADC918ABA3CBD601D9D027F2")))
+			return FALSE;
+	}
+
+	_Int2CString(2, csIndex, 2);
+	if (GetProfileString(csPath + SubKeyName, csUsage + csIndex).IsEmpty())
+	{
+		if (!CreateSubKeyProfile(SubKeyName, csUsage, csIndex, _T("865DA51D9CE035348F834942C6E88EE2")))
+			return FALSE;
+	}
+
+	_Int2CString(3, csIndex, 2);
+	if (GetProfileString(csPath + SubKeyName, csUsage + csIndex).IsEmpty())
+	{
+		if (!CreateSubKeyProfile(SubKeyName, csUsage, csIndex, _T("0E0C60B1F82A741B0D5CE2D29FCD3E24")))
+			return FALSE;
+	}
+
+	_Int2CString(4, csIndex, 2);
+	if (GetProfileString(csPath + SubKeyName, csUsage + csIndex).IsEmpty())
+	{
+		if (!CreateSubKeyProfile(SubKeyName, csUsage, csIndex, _T("46544681A599B3022AB5852A45E93B8C")))
+			return FALSE;
+	}
+
+	return TRUE;
+}
+
+BOOL CExpAPDUApp::CreateCTCProfile()
+{
+
+
+	//0348
+	CString csPath, SubKeyName, csUsage, csIndex;
+	csPath = _T("Setting\\Key\\");
+	SubKeyName = _T("CTC");
+	csUsage = _T("SIMAUTH");
+
+	if (GetProfileString(csPath + SubKeyName, csUsage).IsEmpty())
+	{
+		if (!CreateSubKeyProfile(SubKeyName, csUsage, _T(""), _T("EA1E7659805B7B7D6843E85F790EDC98")))
+			return FALSE;
+	}
+
+	return TRUE;
+}
+
+
+BOOL CExpAPDUApp::CreateMilenageProfile()
+{
+
+
+	//0348
+	CString csPath, SubKeyName, csUsage;
+	csPath = _T("Setting\\Key\\");
+	SubKeyName = _T("Milenage");
+	csUsage = _T("KI");
+
+	if (GetProfileString(csPath + SubKeyName, csUsage).IsEmpty())
+	{
+		if (!CreateSubKeyProfile(SubKeyName, csUsage,_T(""), _T("000102030405060708000102030405060708")))
+			return FALSE;
+	}
+
+	csUsage = _T("OPc");
+	if (GetProfileString(csPath + SubKeyName, csUsage).IsEmpty())
+	{
+		if (!CreateSubKeyProfile(SubKeyName, csUsage, _T(""), _T("000102030405060708000102030405060708")))
+			return FALSE;
+	}
+
+	csUsage = _T("c1");
+	if (GetProfileString(csPath + SubKeyName, csUsage).IsEmpty())
+	{
+		if (!CreateSubKeyProfile(SubKeyName, csUsage, _T(""), _T("00000000000000000000000000000000")))
+			return FALSE;
+	}
+
+	csUsage = _T("c2");
+	if (GetProfileString(csPath + SubKeyName, csUsage).IsEmpty())
+	{
+		if (!CreateSubKeyProfile(SubKeyName, csUsage, _T(""), _T("00000000000000000000000000000001")))
+			return FALSE;
+	}
+
+	csUsage = _T("c3");
+	if (GetProfileString(csPath + SubKeyName, csUsage).IsEmpty())
+	{
+		if (!CreateSubKeyProfile(SubKeyName, csUsage, _T(""), _T("00000000000000000000000000000002")))
+			return FALSE;
+	}
+
+	csUsage = _T("c4");
+	if (GetProfileString(csPath + SubKeyName, csUsage).IsEmpty())
+	{
+		if (!CreateSubKeyProfile(SubKeyName, csUsage, _T(""), _T("00000000000000000000000000000004")))
+			return FALSE;
+	}
+
+	csUsage = _T("c5");
+	if (GetProfileString(csPath + SubKeyName, csUsage).IsEmpty())
+	{
+		if (!CreateSubKeyProfile(SubKeyName, csUsage, _T(""), _T("00000000000000000000000000000008")))
+			return FALSE;
+	}
+
+	csUsage = _T("r1");
+	if (GetProfileString(csPath + SubKeyName, csUsage).IsEmpty())
+	{
+		if (!CreateSubKeyProfile(SubKeyName, csUsage, _T(""), _T("40")))
+			return FALSE;
+	}
+
+	csUsage = _T("r2");
+	if (GetProfileString(csPath + SubKeyName, csUsage).IsEmpty())
+	{
+		if (!CreateSubKeyProfile(SubKeyName, csUsage, _T(""), _T("00")))
+			return FALSE;
+	}
+
+	csUsage = _T("r3");
+	if (GetProfileString(csPath + SubKeyName, csUsage).IsEmpty())
+	{
+		if (!CreateSubKeyProfile(SubKeyName, csUsage, _T(""), _T("20")))
+			return FALSE;
+	}
+
+	csUsage = _T("r4");
+	if (GetProfileString(csPath + SubKeyName, csUsage).IsEmpty())
+	{
+		if (!CreateSubKeyProfile(SubKeyName, csUsage, _T(""), _T("40")))
+			return FALSE;
+	}
+
+	csUsage = _T("r5");
+	if (GetProfileString(csPath + SubKeyName, csUsage).IsEmpty())
+	{
+		if (!CreateSubKeyProfile(SubKeyName, csUsage, _T(""), _T("60")))
+			return FALSE;
+	}
+
+	return TRUE;
+}
+
+
+
+
+BOOL CExpAPDUApp::CreateKeyProfile()
+{
+	CreateKIcProfile();
+	CreateKIDProfile();
+	CreateKIKProfile();
+	CreateCMCCProfile();
+	CreateCUCProfile();
+	CreateCTCProfile();
+	CreateMilenageProfile();
+	return TRUE;
+}
+
 BOOL CExpAPDUApp::InitParamerter()
 {
 
-	
-	;
-
+	CString csPath,csUsage;
 //	iLevel        = Def_APDUBASICINFOMATION|Def_APDUINFOMATION;
 
 	iLevel        = GetProfileInt("Setting","Level",Def_APDUBASICINFOMATION|Def_APDUINFOMATION);
 
+	CreateKeyProfile();
 	//0348
-	csKIc         = GetProfileString("Setting\\Key\\0348\\KIc","00");
-	if (csKIc.IsEmpty())
-		csKIc = _T("11223344556677889900112233445566");
+	
+	//csPath  = _T("Setting\\Key\\0348");
+	//csUsage = _T("KIc00");
+	//csKIc  = GetProfileString(csPath, csUsage);
+	//if (csKIc.IsEmpty())
+	//{
+	//	csKIc = _T("11223344556677889900112233445566");
+	//	WriteProfileString(csPath, csUsage, csKIc);
+	//}
+	//	
 
-	csKIc         = GetProfileString("Setting\\Key\\0348\\KID","00");
-	if (csKIc.IsEmpty())
-		csKIc = _T("11223344556677889900112233445566");
+	//csKIc         = GetProfileString("Setting\\Key\\0348\\KID","00");
+	//if (csKIc.IsEmpty())
+	//	csKIc = _T("11223344556677889900112233445566");
 
-	csKIc         = GetProfileString("Setting\\Key\\0348\\KIK","00");
-	if (csKIc.IsEmpty())
-		csKIc = _T("11223344556677889900112233445566");
+	//csKIc         = GetProfileString("Setting\\Key\\0348\\KIK","00");
+	//if (csKIc.IsEmpty())
+	//	csKIc = _T("11223344556677889900112233445566");
 
-	//CMCC
-	csK1          = GetProfileString("Setting\\Key\\CMCC","K1");
-	if (csK1.IsEmpty())
-		csK1 = _T("11111111111111111111111111111111");
+	////CMCC
+	//csK1          = GetProfileString("Setting\\Key\\CMCC","K1");
+	//if (csK1.IsEmpty())
+	//	csK1 = _T("11111111111111111111111111111111");
 
 
-	//CUC
-	CString csTemp;
-	csTemp          = GetProfileString("Setting\\Key\\CUC\\RFM","00");
-	if (csTemp.IsEmpty())
-		csK1 = _T("D82988A3FBB59A6B7429C911B0E65858");
-	csCURFMKey.Add(csTemp);
-	csTemp          = GetProfileString("Setting\\Key\\CUC\\RFM","01");
-	if (csTemp.IsEmpty())
-		csK1 = _T("FE20AA0FADC918ABA3CBD601D9D027F2");
-	csCURFMKey.Add(csTemp);
-	csTemp          = GetProfileString("Setting\\Key\\CUC\\RFM","02");
-	if (csTemp.IsEmpty())
-		csK1 = _T("865DA51D9CE035348F834942C6E88EE2");
-	csCURFMKey.Add(csTemp);
-	csTemp          = GetProfileString("Setting\\Key\\CUC\\RFM","03");
-	if (csTemp.IsEmpty())
-		csK1 = _T("0E0C60B1F82A741B0D5CE2D29FCD3E24");
-	csCURFMKey.Add(csTemp);
-	csTemp          = GetProfileString("Setting\\Key\\CUC\\RFM","04");
-	if (csTemp.IsEmpty())
-		csK1 = _T("46544681A599B3022AB5852A45E93B8C");
-	csCURFMKey.Add(csTemp);
+	////CUC
+	//CString csTemp;
+	//csTemp          = GetProfileString("Setting\\Key\\CUC\\RFM","00");
+	//if (csTemp.IsEmpty())
+	//	csK1 = _T("D82988A3FBB59A6B7429C911B0E65858");
+	//csCURFMKey.Add(csTemp);
+	//csTemp          = GetProfileString("Setting\\Key\\CUC\\RFM","01");
+	//if (csTemp.IsEmpty())
+	//	csK1 = _T("FE20AA0FADC918ABA3CBD601D9D027F2");
+	//csCURFMKey.Add(csTemp);
+	//csTemp          = GetProfileString("Setting\\Key\\CUC\\RFM","02");
+	//if (csTemp.IsEmpty())
+	//	csK1 = _T("865DA51D9CE035348F834942C6E88EE2");
+	//csCURFMKey.Add(csTemp);
+	//csTemp          = GetProfileString("Setting\\Key\\CUC\\RFM","03");
+	//if (csTemp.IsEmpty())
+	//	csK1 = _T("0E0C60B1F82A741B0D5CE2D29FCD3E24");
+	//csCURFMKey.Add(csTemp);
+	//csTemp          = GetProfileString("Setting\\Key\\CUC\\RFM","04");
+	//if (csTemp.IsEmpty())
+	//	csK1 = _T("46544681A599B3022AB5852A45E93B8C");
+	//csCURFMKey.Add(csTemp);
 
 
 
@@ -238,7 +527,12 @@ void SetDeriveData(CString csInput)
 }
 void SetK1(CString csInput)
 {
-	theApp.csK1 = csInput;
+	//theApp.csK1 = csInput;
+
+	WriteProfileString("Setting\\Key\\CMCC", "K1", csInput);
+
+
+
 }
 
 BOOL __APDUIsComplete(CString csAPDU)
@@ -3196,7 +3490,7 @@ BOOL _ExplainProtocolIdentifier(CString csPID,CStringArray&csOutput)
 			case 21:
 			case 22:
 			case 23:csText = _T("(reserved, 5 combinations)");break;
-			case 0x31:csText = _T("A GSM mobile station. The SC converts the SM from the received TP-Data-Coding-Scheme to any data coding scheme supported by that MS (e.g. the default).");break;
+			case 31:csText = _T("A GSM mobile station. The SC converts the SM from the received TP-Data-Coding-Scheme to any data coding scheme supported by that MS (e.g. the default).");break;
 			default:csText = _T("values specific to each SC, usage based on mutual agreement between the SME and the SC (7combinations available for each SC)");break;
 			}
 		}
@@ -5463,7 +5757,9 @@ BOOL _ExplainAuthenticate(CString csSend,CStringArray&csOutput)
 {
 	int iRandLen;
 	int iAuthLen;
-	CString csText;
+	
+
+	CString csText,csKI;
 	BOOL bRet = TRUE;
 	int iP2 = _CString2Int(csSend.Mid(6,2));
 	csText = _T("Authentication context \\- ");
@@ -5473,6 +5769,8 @@ BOOL _ExplainAuthenticate(CString csSend,CStringArray&csOutput)
 	       csOutput.Add( _T("Rand \\- ")+csSend.Mid(12,_CString2Int(csSend.Mid(10,2))*2));
 		   break;
 	case 1:csOutput.Add(csText+_T("3G context"));
+
+		    csKI = theApp.GetProfileString(_T("Setting\\Key\\Milenage"), _T("KI"));
 	       iRandLen = _CString2Int(csSend.Mid(10,2));
 		   //此处存储Random 用于计算结果
 		   theApp.csComput = csSend.Mid(12,iRandLen*2);
@@ -5480,7 +5778,9 @@ BOOL _ExplainAuthenticate(CString csSend,CStringArray&csOutput)
 		   iAuthLen = _CString2Int(csSend.Mid(12+iRandLen*2,2));
 		   csOutput.Add( _T("AUTN \\- ")+csSend.Mid(14+iRandLen*2,iAuthLen*2));
 		   csOutput.Add( _T("AK xor SQN \\- ")+csSend.Mid(14+iRandLen*2,12));
-		   _ExplainAKSQN(csSend.Mid(14+iRandLen*2,12) ,theApp.csK ,csSend.Mid(12,iRandLen*2),csOutput);
+
+
+		   _ExplainAKSQN(csSend.Mid(14+iRandLen*2,12) , csKI ,csSend.Mid(12,iRandLen*2),csOutput);
 
 		   csOutput.Add( _T("AMF \\- ")+csSend.Mid(26+iRandLen*2,4));
 		   csOutput.Add( _T("MAC \\- ")+csSend.Mid(30+iRandLen*2,16));
@@ -5519,6 +5819,7 @@ BOOL _ExplainAuthenticateGSMResponse(CString csResp,CStringArray&csOutput)
 BOOL _ExplainAuthenticate3GResponse(CString csResp,CStringArray&csOutput)
 {
 	BOOL bRet = TRUE;
+	CString csKI;
 
 	switch(_CString2Int(csResp.Mid(0,2)))
 	{
@@ -5527,7 +5828,8 @@ BOOL _ExplainAuthenticate3GResponse(CString csResp,CStringArray&csOutput)
 			return FALSE;
 		csOutput.Add(_T("AKStar xor SQNMax \\- ")+ csResp.Mid(4,12));
 
-		_ExplainAKStarSQNMax(csResp.Mid(4,12),theApp.csK, theApp.csComput,csOutput);
+		csKI = theApp.GetProfileString(_T("Setting\\Key\\Milenage"), _T("KI"));
+		_ExplainAKStarSQNMax(csResp.Mid(4,12), csKI, theApp.csComput,csOutput);
 		csOutput.Add(_T("MacS \\- ")+ csResp.Mid(16,16));
 		break;
 
@@ -5564,7 +5866,8 @@ BOOL _ExplainAuthenticateResponse(CString csResp,CStringArray&csOutput)
 
 void SetK(CString csKey)
 {
-	theApp.csK = csKey;
+	//theApp.csK = csKey;
+	WriteProfileString(_T("Setting\\Key\\Milenage"), _T("KI"), csKey);
 }
  BOOL MilenageSetCi(CString csC1,CString csC2,CString csC3,CString csC4,CString csC5)
 {
@@ -5575,6 +5878,11 @@ void SetK(CString csKey)
 	BYTE ucC4[16]; 
 	BYTE ucC5[16]; 
 
+	theApp.WriteProfileString("Setting\\Key\\Milenage", "c1", csC1);
+	theApp.WriteProfileString("Setting\\Key\\Milenage", "c2", csC2);
+	theApp.WriteProfileString("Setting\\Key\\Milenage", "c3", csC3);
+	theApp.WriteProfileString("Setting\\Key\\Milenage", "c4", csC4);
+	theApp.WriteProfileString("Setting\\Key\\Milenage", "c5", csC5);
 
 	iRet = _CString2UcHex(csC1,ucC1);
 	iRet = _CString2UcHex(csC2,ucC2);
@@ -5591,6 +5899,8 @@ void SetK(CString csKey)
 	theApp.StMilenage.mv_SetC4(ucC4);
 	theApp.StMilenage.mv_SetC5(ucC5);
 
+
+
 	return TRUE;
 
 }
@@ -5602,7 +5912,23 @@ void SetK(CString csKey)
 	iRot[2] = iR3;
 	iRot[3] = iR4;
 	iRot[4] = iR5;
+
+	CString csRi;
+	_Int2CString(iR1, csRi,2);
+	theApp.WriteProfileString("Setting\\Key\\Milenage", "r1", csRi);
+	_Int2CString(iR2, csRi, 2);
+	theApp.WriteProfileString("Setting\\Key\\Milenage", "r2", csRi);
+	_Int2CString(iR3, csRi, 2);
+	theApp.WriteProfileString("Setting\\Key\\Milenage", "r3", csRi);
+	_Int2CString(iR4, csRi, 2);
+	theApp.WriteProfileString("Setting\\Key\\Milenage", "r4", csRi);
+	_Int2CString(iR5, csRi, 2);
+	theApp.WriteProfileString("Setting\\Key\\Milenage", "r5", csRi);
+
+
 	theApp.StMilenage.mv_SetRot(iRot);
+
+
 	return TRUE;
 
 }
@@ -5639,6 +5965,8 @@ void SetK(CString csKey)
 		return FALSE;
 	theApp.StMilenage.mv_SetOP_c(pucOPc);
 	MilenageSetOPInd("OP_c");
+	theApp.WriteProfileString("Setting\\Key\\Milenage", "OPc", csOPc);
+
 	return TRUE;
 }
  BOOL Milenagef1(CString csK, CString csRand,
@@ -6275,6 +6603,7 @@ void SetK(CString csKey)
 
  BOOL __ExpainCipherUserData(CStringArray& csOutput)
  {
+	 CString csKey, csIndex;
 	 CString csIEIA,csSM;
 	 CString csSMDataAll,csSMCur;
 	 int iCount = GetMessageArrayCount();
@@ -6324,10 +6653,15 @@ void SetK(CString csKey)
 	 {
 		 if (__GetTAR(csSMDataAll) == _T("B0001F"))
 		 {
-			 CString csKey;
+
 			 CString csRandom = __GetRandom(csSMDataAll); 
 			 csSM.Empty();
-			 csKey   = theApp.csCURFMKey.GetAt((_CString2Int(csRandom.Right(2))&7)%5);
+
+			 _Int2CString((_CString2Int(csRandom.Right(2)) & 7) % 5, csIndex, 2);
+
+			 csKey = theApp.GetProfileStringA(_T("Setting\\Key\\CUC"), _T("RFM ")+ csIndex);
+
+			// csKey   = theApp.csCURFMKey.GetAt((_CString2Int(csRandom.Right(2))&7)%5);
 
 			 _Triple_Des_Decrypt(__GenerateSessionKey(csRandom,csKey,theApp.csDeriveData),__GetCUCRFMCipher(csSMDataAll),csSM);
 
@@ -6348,7 +6682,9 @@ void SetK(CString csKey)
 		 if (__GetTAR(csSMDataAll) == _T("B000F2"))
 		 {
 
-			 _Triple_Des_Decrypt(theApp.csK1,csSMDataAll.Mid(20),csSM);
+			 csKey = theApp.GetProfileStringA(_T("Setting\\Key\\CMCC"), _T("K1"));
+
+			 _Triple_Des_Decrypt(csKey,csSMDataAll.Mid(20),csSM);
 
 			 csOutput.Add(_T("解密 数据 \\- ")+csSM);
 			 csOutput.Add(_T("解密 Counter \\- ")+csSM.Mid(0,10));
@@ -6363,7 +6699,14 @@ void SetK(CString csKey)
 
 		 if (__GetTAR(csSMDataAll) == _T("B000B0"))
 		 {
-			 _Triple_Des_Decrypt(theApp.csKIc,csSMDataAll.Mid(20),csSM);
+
+			 // 获取KIC 
+			 int iKIc = __GetKIc(csSMDataAll);
+
+			 _Int2CString(iKIc, csIndex, 2);
+			 csKey = theApp.GetProfileString(_T("Setting\\Key\\0348"), _T("KIc ") + csIndex);
+
+			 _Triple_Des_Decrypt(csKey,csSMDataAll.Mid(20),csSM);
 
 			 csOutput.Add(_T("解密 数据 \\- ")+csSM);
 			 csOutput.Add(_T("解密 Counter \\- ")+csSM.Mid(0,10));
@@ -6425,8 +6768,9 @@ void SetK(CString csKey)
 
 		 if (__GetTAR(csSMDataAll) == _T("CA0101"))
 		 {
+			 csKey = theApp.GetProfileString(_T("Setting\\Key\\CTC"), _T("SIMAUTH"));
 
-			 _Triple_Des_Decrypt(_T("EA1E7659805B7B7D6843E85F790EDC98"),csSMDataAll.Mid(20),csSM);
+			 _Triple_Des_Decrypt(csKey,csSMDataAll.Mid(20),csSM);
 
 			 csOutput.Add(_T("解密 数据 \\- ")+csSM);
 			 csOutput.Add(_T("解密 Counter \\- ")+csSM.Mid(0,10));
