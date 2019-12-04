@@ -636,16 +636,21 @@ void CChangeFile::SetFileData(CString csFCI,CString csData)
 	csFileType          = csFileInformation.Mid(00,02);
 	iFileType           = _CString2Int(csFileType);
 	csFileValue         = csData;
-
+	csTemp.Empty();
 	switch(iFileType&0x7)
 	{
 	case 01:
 
 		m_FileType.SetCurSel(0);
 		m_FileRecord.EnableWindow(FALSE);
+
+		iRecordLen = _CString2Int( GetTLVData(csFCI, 0x80));
 		//SetDlgItemText(IDC_FileData_Eidt,csData);
-		iRecordLen = csData.GetLength()/2;
-		csTemp = csData;
+		if (!csData.IsEmpty())
+		{
+			csTemp = csData;
+		}
+
 		break;
 	case 02:
 	case 06:
@@ -667,7 +672,12 @@ void CChangeFile::SetFileData(CString csFCI,CString csData)
 		m_FileRecord.EnableWindow(TRUE);
 
 
-		csTemp = csFileValue.Mid(0,iRecordLen*2);
+		if (!csData.IsEmpty())
+		{
+			csTemp = csData.Mid(0, iRecordLen * 2);
+		}
+
+		
 
 
 		//OnCbnSelchangeFilerecordCombo();
@@ -676,9 +686,8 @@ void CChangeFile::SetFileData(CString csFCI,CString csData)
 		break;
 	}
 
-	//_AppendEnter(csTemp);
+
 	_AppendSpace(csTemp);
-	//_AppendSign(csTemp,"\r",24);
 	SetDlgItemText(IDC_FileData_Eidt,csTemp);
 	OnBnClicked2rightButton();
 }

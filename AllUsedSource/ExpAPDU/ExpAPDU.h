@@ -267,6 +267,7 @@ public:
 	BOOL CreateCTCProfile();
 	BOOL CreateMilenageProfile();
 	BOOL CreateKeyProfile();
+	BOOL ResetMilenageParamerter();
 	BOOL InitParamerter();
 	void ResetParameter();
 	DECLARE_MESSAGE_MAP()

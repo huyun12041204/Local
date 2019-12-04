@@ -104,8 +104,6 @@
     <None Include="res\mainfram.bmp">
       <Filter>资源文件</Filter>
     </None>
-    <None Include="ClassDiagram1.cd" />
-    <None Include="ClassDiagram2.cd" />
     <None Include="res\Pin_wnd.ico">
       <Filter>资源文件</Filter>
     </None>
@@ -115,7 +113,6 @@
     <None Include="res\Applist_wnd.ico">
       <Filter>资源文件</Filter>
     </None>
-    <None Include="ClassDiagram3.cd" />
     <None Include="..\..\AllUsedSource\CCR5\CCR5.vcproj" />
     <None Include="..\..\AllUsedSource\CCR5\CCR5.vcxproj" />
     <None Include="res\Output_View.bmp">

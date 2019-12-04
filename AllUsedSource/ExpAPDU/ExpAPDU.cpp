@@ -51,6 +51,7 @@ CExpAPDUApp::CExpAPDUApp()
 	 iPreSPI = 0;
 	 iLevel = 0;
 	 iOperater = 0;
+
 	// 将所有重要的初始化放置在 InitInstance 中
 }
 
@@ -334,9 +335,6 @@ BOOL CExpAPDUApp::CreateMilenageProfile()
 	return TRUE;
 }
 
-
-
-
 BOOL CExpAPDUApp::CreateKeyProfile()
 {
 	CreateKIcProfile();
@@ -347,6 +345,113 @@ BOOL CExpAPDUApp::CreateKeyProfile()
 	CreateCTCProfile();
 	CreateMilenageProfile();
 	return TRUE;
+}
+
+
+BOOL CExpAPDUApp::ResetMilenageParamerter()
+{
+
+	CString csPath, SubKeyName, csUsage;
+	CString csOPc;
+	CString csC1, csC2, csC3, csC4, csC5;
+	CString csR1, csR2, csR3, csR4, csR5;
+	csPath = _T("Setting\\Key\\");
+	SubKeyName = _T("Milenage");
+
+
+	csOPc = GetProfileString(csPath + SubKeyName, _T("OPc"));
+
+	if (csOPc.GetLength()!= 32)
+		return FALSE;
+
+
+	csC1 = GetProfileString(csPath + SubKeyName, _T("c1"));
+
+	if (csC1.GetLength() != 32)
+		return FALSE;
+
+	csC2 = GetProfileString(csPath + SubKeyName, _T("c2"));
+
+	if (csC2.GetLength() != 32)
+		return FALSE;
+
+	csC3 = GetProfileString(csPath + SubKeyName, _T("c3"));
+
+	if (csC3.GetLength() != 32)
+		return FALSE;
+
+	csC4 = GetProfileString(csPath + SubKeyName, _T("c4"));
+
+	if (csC4.GetLength() != 32)
+		return FALSE;
+
+	csC5 = GetProfileString(csPath + SubKeyName, _T("c5"));
+
+	if (csC5.GetLength() != 32)
+		return FALSE;
+
+
+	csR1 = GetProfileString(csPath + SubKeyName, _T("r1"));
+
+	if (csR1.GetLength() != 2)
+		return FALSE;
+
+	csR2 = GetProfileString(csPath + SubKeyName, _T("r2"));
+
+	if (csR2.GetLength() != 2)
+		return FALSE;
+
+	csR3 = GetProfileString(csPath + SubKeyName, _T("r3"));
+
+	if (csR3.GetLength() != 2)
+		return FALSE;
+
+	csR4 = GetProfileString(csPath + SubKeyName, _T("r4"));
+
+	if (csR4.GetLength() != 2)
+		return FALSE;
+
+	csR5 = GetProfileString(csPath + SubKeyName, _T("r5"));
+
+	if (csR5.GetLength() != 2)
+		return FALSE;
+
+	BYTE ucC1[16];
+	BYTE ucC2[16];
+	BYTE ucC3[16];
+	BYTE ucC4[16];
+	BYTE ucC5[16];
+	int iRet;
+	iRet = _CString2UcHex(csC1, ucC1);
+	iRet = _CString2UcHex(csC2, ucC2);
+	iRet = _CString2UcHex(csC3, ucC3);
+	iRet = _CString2UcHex(csC4, ucC4);
+	iRet = _CString2UcHex(csC5, ucC5);
+
+
+	StMilenage.mv_SetC1(ucC1);
+	StMilenage.mv_SetC2(ucC2);
+	StMilenage.mv_SetC3(ucC3);
+	StMilenage.mv_SetC4(ucC4);
+	StMilenage.mv_SetC5(ucC5);
+
+
+	int iRot[5];
+	iRot[0] = _CString2Int(csR1);
+	iRot[1] = _CString2Int(csR2);
+	iRot[2] = _CString2Int(csR3);
+	iRot[3] = _CString2Int(csR4);
+	iRot[4] = _CString2Int(csR5);
+
+	StMilenage.mv_SetRot(iRot);
+
+	BYTE ucOpc[16];
+	iRet = _CString2UcHex(csOPc, ucOpc);
+	StMilenage.mv_SetOP_c(ucOpc);
+
+
+	return TRUE;
+
 }
 
 BOOL CExpAPDUApp::InitParamerter()
@@ -5753,6 +5858,10 @@ BOOL _ExplainAKStarSQNMax(CString csInput,CString csK,
 
 
 }
+
+
+
+
 BOOL _ExplainAuthenticate(CString csSend,CStringArray&csOutput)
 {
 	int iRandLen;

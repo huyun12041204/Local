@@ -1349,10 +1349,12 @@ void CClassTreeCtrl::OnNMClick(NMHDR *pNMHDR, LRESULT *pResult)
 		if (CurMainFrm->GetChangeFileDlg()->IsWindowVisible())
 		{
 			if (SelectItem(hItem))
-				CurMainFrm->DClickClassTreeView(hItem,TRUE);
+				CurMainFrm->DClickClassTreeView(hItem, TRUE);
 		}
-		else
-			CurMainFrm->ClickClassTreeView(hItem);
+		else if (!CurMainFrm->ClickClassTreeView(hItem))
+			MessageBox("∂¡»° ß∞‹!");
+			
+		
 
 	}
 	*pResult = 0;

@@ -2745,14 +2745,18 @@ int CMainFrame::ReadFileAndDisplayThread()
 
 	CString csFileData = CurMainFrm-> _TestCaseReadCurrentFileData(CurMainFrm->csMutlFCI,CurMainFrm->bIsUICC);
 
+	if (csFileData.IsEmpty())
+		CurMainFrm->MessageBox("读取文件失败!");
+
 	iThread = Def_Thread_Free;
 
-	if (csFileData.IsEmpty())
-	{
-		return FALSE;
-	}
 	if (CurMainFrm->m_dlgChangeFile.IsWindowVisible())
-		CurMainFrm->SendMessage(ID_Update_Dialog_Event,IDD_ChangeFile_Dialog,(LPARAM)&csFileData);
+		CurMainFrm->SendMessage(ID_Update_Dialog_Event, IDD_ChangeFile_Dialog, (LPARAM)&csFileData);
+
+	if (csFileData.IsEmpty())
+		return FALSE;
+
+
 
 
 	
@@ -3198,6 +3202,7 @@ void CMainFrame::Changefilevalue()
 
 	if (!DClickClassTreeView(m_wndClassView->GetSelectedItem(),TRUE))
 	{
+		MessageBox("修改失败!");
 		return;
 	}
 }
