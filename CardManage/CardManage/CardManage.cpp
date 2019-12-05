@@ -94,7 +94,7 @@ BOOL CCardManageApp::InitInstance()
 	CString csDate;
 	GetSysDate(csDate);
 
-	if (( _CString2IntDecimal(csDate)> 20191204)||( _CString2IntDecimal(csDate)< 20180825))
+	if (( _CString2IntDecimal(csDate)> 20201204)||( _CString2IntDecimal(csDate)< 20180825))
 	{
 		MessageBox(NULL,_T("ÇëÁªÏµhuyun12041204@hotmail.com"),NULL,MB_OK);
 		return FALSE;

@@ -114,8 +114,9 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PreBuildEvent>
-      <Command>copy D:\_Git\C-Project\\AllUsedSource\$(TargetedSDKConfiguration)\BasicConvert.dll         $(OutDir)BasicConvert.dll/y
-copy D:\_Git\C-Project\\AllUsedSource\$(TargetedSDKConfiguration)\ParameterConvert.dll $(OutDir)ParameterConvert.dll/y</Command>
+      <Command>copy C:\GIT\GitHub\Local\AllUsedSource\$(TargetedSDKConfiguration)\BasicConvert.dll         $(OutDir)BasicConvert.dll/y
+
+copy C:\GIT\GitHub\Local\AllUsedSource\$(TargetedSDKConfiguration)\ParameterConvert.dll $(OutDir)ParameterConvert.dll/y</Command>
     </PreBuildEvent>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>

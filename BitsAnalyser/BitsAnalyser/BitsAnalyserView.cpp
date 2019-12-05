@@ -66,20 +66,24 @@ BYTE bPreBit0 = 0;//前面一个的bit数据
 
 
 
-//************************************
-// 函数名称:    _Bits2Byte
-// 函数说明:    
-// 访问权限:    public 
-// 创建日期:    2019/12/03 17:21
-// 创建人  :    hum
-// 函数参数:    bool * bBits                                 
-// 函数参数:    UINT bBitLen                                 
-// 函数参数:    BYTE * bByte                                 
-// 返回值  :    int
-// 返回说明:   
-//************************************
 
 
+//************************************************************************
+// Method   :    _Bits2Byte
+// Comment  :     
+//          :    
+// Access   :    public 
+// DataTime :    2019/12/04 09:33
+// Author   :    hum
+// Parameter:    bool * bBits  ,
+// Parameter:    UINT bBitLen  ,
+// Parameter:    BYTE * bByte  ,
+// Return   :    int 
+//-1 : bBits长度不够;
+//-2 : 起始位为 高电平
+//-3 : 保护位为 低电平
+//-4 : 校验为 错误
+//************************************************************************
 int _Bits2Byte(bool *bBits, UINT bBitLen, BYTE* bByte)
 {
 
@@ -863,7 +867,7 @@ int CBitsAnalyserView::ViewAPDU(BYTE* ucBits, UINT BitsLen, int iVirtualEvent)
 		bbits[bbitsLen] =  ucBits[k];
 
 		if (bbitsLen == 0)
-			bdiflen = (bbits[0]&0x7)+1;
+			bdiflen = (bbits[0]&0x3)+1;
 		bbitsLen = bbitsLen+1;
 
 		if (bbitsLen  == bdiflen)
