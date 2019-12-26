@@ -261,8 +261,38 @@ void _Genrate80ADN(CString csAlpha,int iAlphaLen,CString csNumber,CString& csOut
 	_RepeatCString(_T("FF"),iAlphaLen,csPadding);
 	if (!csAlpha.IsEmpty())
 	{
-		_ConvertUcs2(csAlpha,csAlpha);
-		csAlpha   = _T("80")+csAlpha+csPadding;
+
+
+
+
+		CString csText = csAlpha;
+
+
+
+		BOOL bUC2 = FALSE;
+		char* cTemp = csText.GetBuffer();
+		int iLen = csText.GetLength();
+		for (int i = 0; i < iLen; i++)
+		{
+			if (cTemp[i] < 0)
+			{
+				bUC2 = TRUE;
+				break;
+			}
+		}
+
+
+		if (bUC2)
+		{
+			_ConvertUcs2(csText, csAlpha);
+			csAlpha = _T("80") + csAlpha;
+		}
+		else
+			_ConvertAscii(csText, csAlpha);
+
+		csAlpha = csAlpha + csPadding;
+
+
 		csAlpha   = csAlpha.Left(iAlphaLen*2);
 	}
 	else
@@ -290,13 +320,16 @@ void _ConvertSMSP(CString csAlpID,CString csTPDesAdd,CString csTSSCA,CString csT
 	if (_IsValid(csTSSCA))
 		iParaInd = iParaInd&0xFD;
 
-	if (_IsValid(csTPPId))
+	if(csTPPId.GetLength()!=0)
+//	if (_IsValid(csTPPId))
 		iParaInd = iParaInd&0xFB;
 
-	if (_IsValid(csTPDCS))
+	if (csTPDCS.GetLength() != 0)
+	//if (_IsValid(csTPDCS))
 		iParaInd = iParaInd&0xF7;
 
-	if (_IsValid(csTPVP))
+	if (csTPVP.GetLength() != 0)
+	//if (_IsValid(csTPVP))
 		iParaInd = iParaInd&0xEF;
 
 	csParaInd.Format(_T("%02X"),iParaInd);

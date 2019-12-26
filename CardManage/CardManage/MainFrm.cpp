@@ -2288,7 +2288,7 @@ bool CMainFrame::_TestCaseUpdateCycLicData(CString csAllData,int iRecordLen,int 
 
 bool CMainFrame::_TestCaseVerify( int iNum,bool bSure /*= false*/ )
 {
-	if ((!bSure)&&(bNotVerify))
+	if ((!bSure)&&((bNotVerify)||(!bGetARR)) )
 		return true;
 
 

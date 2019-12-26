@@ -85,9 +85,11 @@ BOOL _IsValid(CString csInput)
 
 	for (i=0;i<iDataLen;i++)
 	{
-		iCurData = _ttoi(csInput.Mid(i,1));
-
-		if ((iCurData!=0x0)&&(iCurData!=0xf))
+		if (csInput.Mid(i, 1) != _T("f"))
+			return TRUE;
+		if (csInput.Mid(i, 1) != _T("F"))
+			return TRUE;
+		if (csInput.Mid(i, 1) != _T("0"))
 			return TRUE;
 	}
 	return FALSE;

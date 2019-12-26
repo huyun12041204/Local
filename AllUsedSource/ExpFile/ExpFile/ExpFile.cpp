@@ -9647,6 +9647,31 @@ BOOL ComplilePNNData(CMFCPropertyGridProperty* pGrop,CString &csPNN)
 
 }
 
+BOOL ComplileAlphaId(CString csText, CString& AlphaId)
+{
+	BOOL bUC2 = FALSE;
+	char* cTemp  = csText.GetBuffer();
+	int iLen = csText.GetLength();
+	for (int i = 0; i < iLen; i++)
+	{
+		if (cTemp[i] < 0)
+		{
+			bUC2 = TRUE;
+			break;
+		}
+	}
+
+	
+	if (bUC2)
+	{
+		AlphaId = _T("80") + ConvertUcs2(csText);
+	}
+	else
+		AlphaId = ConvertAscii(csText);
+
+	return TRUE;
+
+}
 
 BOOL ComplileSMSPData(CMFCPropertyGridProperty* pGrop,CString &csSMSP,int iSMSPLen)
 {
@@ -9656,14 +9681,16 @@ BOOL ComplileSMSPData(CMFCPropertyGridProperty* pGrop,CString &csSMSP,int iSMSPL
 	if (iSum != 6) 
 		return FALSE;
 
-	CString csAlpha,csADN,csTemp2,csTemp3,csTemp4,csTemp5;
+	CString csAlphaText,csAlpha,csADN,csTemp2,csTemp3,csTemp4,csTemp5;
 
 	csSMSP.Empty();
 
-	csAlpha = pGrop->GetSubItem(0)->GetValue();
-	if (!csAlpha.IsEmpty())
+	csAlphaText = pGrop->GetSubItem(0)->GetValue();
+	if (!csAlphaText.IsEmpty())
 	{
-		csAlpha = _T("80")+ConvertUcs2(csAlpha);
+		//csAlpha = _T("80")+ConvertUcs2(csAlpha);
+
+		ComplileAlphaId(csAlphaText, csAlpha);
 		csAlpha = csAlpha +  RepeatCString(_T("FF"),iSMSPLen - 28);
 		csAlpha = csAlpha.Left(iSMSPLen*2 - 56);
 
